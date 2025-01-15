@@ -1,0 +1,7 @@
+/build*
+.vscode/
+*.DS_Store
+**.cache
+nvim_tempfiles/
+.vs/
+out/
