@@ -1,8 +1,8 @@
 #ifndef CORE_PLATFORM_PLATFORM_H
 #define CORE_PLATFORM_PLATFORM_H 
+#include <cstdint>
 namespace ReiToEngine
 {
-
 #ifdef _WIN32
     #define RT_SYSTEM_WINDOWS
     #ifdef _WIN64
@@ -34,10 +34,13 @@ namespace ReiToEngine
     #else // 使用 DLL 的项目
         #define RTENGINE_API __declspec(dllimport)
     #endif
+    #define RT_FORCEINLINE __RT_FORCEINLINE
 #elif defined(RT_SYSTEM_APPLE) // macOS
     #define RTENGINE_API __attribute__((visibility("default")))
+    #define RT_FORCEINLINE inline __attribute__((always_inline))
 #elif defined(RT_SYSTEM_LINUX) // Linux
     #define RTENGINE_API __attribute__((visibility("default")))
+    #define RT_FORCEINLINE inline __attribute__((always_inline))
 #else
     #error "Unsupported platform"
 #endif

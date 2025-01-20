@@ -2,7 +2,7 @@
 #define CORE_COMMON_MEMORYMANAGER_MEMORYMANAGER_H
 
 #include <iostream>
-#include "Core/Platform/Platform.h"
+#include "Core/HAL/Platform.h"
 namespace ReiToEngine
 {
 template <typename T>
