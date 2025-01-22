@@ -8,36 +8,53 @@ RTCMemoryManager::~RTCMemoryManager() = default;
 
 void* RTCMemoryManager::allocateImpl(uint32_t size, uint32_t alignment)
 {
-	if (!size)
-	{
-		return nullptr;
-	}
-	if (alignment == 0)
-	{
-		return std::malloc(size);
-	}
-	else
-	{
-		return std::aligned_alloc(alignment, size);
-	}
-	return nullptr;
+	std::cout << "allocate" << size << std::endl;
+
+	return std::malloc(size);
 }
 
-void RTCMemoryManager::deallocateImpl(void* addr, uint32_t size, uint32_t alignment)
+void RTCMemoryManager::deallocateImpl(void* addr, uint32_t alignment)
 {
-	if (addr == nullptr)
-	{
-		return;
-	}
-
-	if (alignment == 0)
-	{
-		free(addr);
-	}
-	else
-	{
-		return std::free(addr);
-	}
+	std::free(addr);
+}
 }
 
+// 在全局作用域强制替换
+ void* operator new(size_t uiSize)
+{
+	std::cout << "allocate1";
+    return ReiToEngine::RTCMemoryManager::GetInstance().Allocate(uiSize,4); 
 }
+ void* operator new[] (size_t uiSize)
+{
+	std::cout << "allocate2";
+	return ReiToEngine::RTCMemoryManager::GetInstance().Allocate(uiSize,4); 
+}
+
+ void operator delete (void* pvAddr)noexcept
+{
+	std::cout << "dallocate1";
+	return ReiToEngine::RTCMemoryManager::GetInstance().Deallocate(pvAddr, 4); 
+}
+ void operator delete[] (void* pvAddr)noexcept
+{
+	std::cout << "dallocate2";
+	return ReiToEngine::RTCMemoryManager::GetInstance().Deallocate(pvAddr, 4); 
+}
+
+// 重载 malloc 和 free
+// void* malloc(size_t size)
+// {
+//     std::cout << "Custom malloc called, allocating " << size << " bytes\n";
+//     // 你的自定义分配逻辑...
+//     // return ReiToEngine::RTCMemoryManager::GetInstance().Allocate(size,4); //  或者你自己的底层分配机制
+//     return nullptr;
+// }
+
+// void free(void* ptr)
+// {
+//     std::cout << "Custom free called\n";
+//     // 你的自定义释放逻辑...
+//     // ReiToEngine::RTCMemoryManager::GetInstance().Deallocate(ptr, 4); //  或者你自己的底层分配机制
+//     return;
+// }

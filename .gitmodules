@@ -1,0 +1,6 @@
+[submodule "Engine/Thirdparty/stb"]
+	path = Engine/Thirdparty/stb
+	url = https://github.com/nothings/stb.git
+[submodule "Engine/Thirdparty/Assimp"]
+	path = Engine/Thirdparty/Assimp
+	url = https://github.com/assimp/assimp.git

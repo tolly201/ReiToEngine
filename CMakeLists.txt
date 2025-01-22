@@ -8,35 +8,30 @@ if(MSVC)
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 endif()
-# 定义源文件目录 - 更清晰的组织方式
-set(RUNTIME_SOURCE_DIR Engine/Source/Runtime)
-set(EDITOR_SOURCE_DIR Engine/Source/Editor)
 
-file(GLOB_RECURSE RUNTIME_SOURCES Engine/Source/Runtime/**.cpp)
-file(GLOB_RECURSE RUNTIME_HEADERS Engine/Source/Runtime/**.h)
-file(GLOB_RECURSE EDITOR_SOURCES Engine/Source/Editor/**.cpp)
-file(GLOB_RECURSE EDITOR_HEADERS Engine/Source/Editor/**.h)
-# file(GLOB PROJECT_SHADERS Engine/Shaders/*.glsl) # 假设你的shader文件扩展名为 .glsl
+set(ENGINE_ROOT_DIR Engine)
 
-source_group("Headers" FILES ${RUNTIME_HEADERS})
-source_group("Headers" FILES ${EDITOR_HEADERS})
-# source_group("Shaders" FILES ${PROJECT_SHADERS})
-# 构建 DLL
-add_library(${PROJECT_NAME} SHARED)
-target_sources( ReiToEngine PRIVATE
-                ${RUNTIME_SOURCES}
+# set(ASSIMP_NO_EXPORT ON)           # 如果不需要导出功能，可以禁用
+include_directories(
+# ${ENGINE_ROOT_DIR}Thirdparty/glad/include/
+${ENGINE_ROOT_DIR}Thirdparty/stb/
+# ${ENGINE_ROOT_DIR}Thirdparty/Assimp/include/
 )
-target_compile_definitions(${PROJECT_NAME} PRIVATE REITOENGINE_EXPORTS)
+set (ENGINE_RUNTIME_DIR Engine/Source/Runtime)
+add_subdirectory(Engine/Source/Runtime)
 
-# 构建使用 DLL 的可执行文件
-add_executable(editor ${EDITOR_SOURCES})
-target_link_libraries(editor ReiToEngine)
+# 设置 Assimp 的构建选项
+set(ASSIMP_BUILD_TESTS OFF)        # 禁用测试
+set(ASSIMP_BUILD_SAMPLES OFF)      # 禁用示例
+set(ASSIMP_BUILD_DOCS OFF)         # 禁用文档
+set(ASSIMP_WARNINGS_AS_ERRORS OFF)
+include(${CMAKE_SOURCE_DIR}/Engine/Scripts/modify_cmake.cmake)
+include_directories(
+# ${ENGINE_ROOT_DIR}Thirdparty/glad/include/
+# ${ENGINE_ROOT_DIR}Thirdparty/stb/
+${ENGINE_ROOT_DIR}Thirdparty/Assimp/include/
+)
+add_subdirectory(Engine/Thirdparty/Assimp)
 
-# 可选择: 设置包含目录
-target_include_directories(ReiToEngine PUBLIC ${RUNTIME_SOURCE_DIR})
-target_include_directories(editor PRIVATE ${EDITOR_SOURCE_DIR} ${RUNTIME_SOURCE_DIR}) # editor 需要包含 runtime 和 editor 的头文件
-
-
-# 假设你使用glslang来编译shader，这里只是一个示例，你需要根据实际情况修改
-# find_package(glslang REQUIRED)
-# add_custom_command(...) # 使用glslang编译shader
+add_subdirectory(Engine/Source/Editor)
+include(${CMAKE_SOURCE_DIR}/Engine/Scripts/remove_modify.cmake)

@@ -14,23 +14,30 @@ public:
     {
         return static_cast<T*>(this)->allocateImpl(size, alignment);
     }
-    void Deallocate(void* addr, uint32_t size, uint32_t alignment)
+    void Deallocate(void* addr, uint32_t alignment)
     {
-        static_cast<T*>(this)->deallocateImpl(addr, size, alignment);   
+        static_cast<T*>(this)->deallocateImpl(addr, alignment);   
     }
 protected:
     virtual void* allocateImpl(uint32_t, uint32_t) = 0;
-    virtual void deallocateImpl(void*, uint32_t, uint32_t) = 0; 
+    virtual void deallocateImpl(void*, uint32_t) = 0; 
 };
 
 class RTENGINE_API RTCMemoryManager : public RTMemoryManager<RTCMemoryManager>
 {
 friend class RTMemoryManager<RTCMemoryManager>;
-public:
+public:    
+    
+    static RTCMemoryManager& GetInstance() {
+        static RTCMemoryManager instance;
+        return instance;
+    }
     ~RTCMemoryManager();
 protected:
     void* allocateImpl(uint32_t size, uint32_t alignment) override; // Ensure this is correctly declared
-    void deallocateImpl(void* addr, uint32_t size, uint32_t alignment) override; 
+    void deallocateImpl(void* addr, uint32_t alignment) override; 
+private:
+    RTCMemoryManager() = default;
 };
 }
 
