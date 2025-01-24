@@ -9,6 +9,7 @@ template <typename T>
 class RTENGINE_API RTMemoryManager
 {
 public:
+    RTMemoryManager() = default;
     virtual ~RTMemoryManager() = 0; // 声明
     void* Allocate(uint32_t size, uint32_t alignment)
     {
@@ -27,7 +28,6 @@ class RTENGINE_API RTCMemoryManager : public RTMemoryManager<RTCMemoryManager>
 {
 friend class RTMemoryManager<RTCMemoryManager>;
 public:    
-    
     static RTCMemoryManager& GetInstance() {
         static RTCMemoryManager instance;
         return instance;
@@ -38,6 +38,11 @@ protected:
     void deallocateImpl(void* addr, uint32_t alignment) override; 
 private:
     RTCMemoryManager() = default;
+};
+
+class RTENGINE_API RTDebugStackMemoryManager : public RTMemoryManager<RTDebugStackMemoryManager>
+{
+    
 };
 }
 

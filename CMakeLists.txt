@@ -14,7 +14,7 @@ set(ENGINE_ROOT_DIR Engine)
 # set(ASSIMP_NO_EXPORT ON)           # 如果不需要导出功能，可以禁用
 include_directories(
 # ${ENGINE_ROOT_DIR}Thirdparty/glad/include/
-${ENGINE_ROOT_DIR}Thirdparty/stb/
+${ENGINE_ROOT_DIR}/Thirdparty/stb/
 # ${ENGINE_ROOT_DIR}Thirdparty/Assimp/include/
 )
 set (ENGINE_RUNTIME_DIR Engine/Source/Runtime)

@@ -1,8 +1,8 @@
-#include "MemoryManager.h"
+#include "IMemoryManager.h"
 namespace ReiToEngine
 {
 template <typename T>
-RTMemoryManager<T>::~RTMemoryManager() = default;  // 这里提供了析构函数的定义
+RTMemoryManager<T>::~RTMemoryManager() = default;
 
 RTCMemoryManager::~RTCMemoryManager() = default;
 
@@ -20,30 +20,30 @@ void RTCMemoryManager::deallocateImpl(void* addr, uint32_t alignment)
 }
 
 // 在全局作用域强制替换
- void* operator new(size_t uiSize)
+RTENGINE_API void* operator new(size_t uiSize)
 {
 	std::cout << "allocate1";
     return ReiToEngine::RTCMemoryManager::GetInstance().Allocate(uiSize,4); 
 }
- void* operator new[] (size_t uiSize)
+RTENGINE_API void* operator new[] (size_t uiSize)
 {
 	std::cout << "allocate2";
 	return ReiToEngine::RTCMemoryManager::GetInstance().Allocate(uiSize,4); 
 }
 
- void operator delete (void* pvAddr)noexcept
+RTENGINE_API void operator delete (void* pvAddr)noexcept
 {
 	std::cout << "dallocate1";
 	return ReiToEngine::RTCMemoryManager::GetInstance().Deallocate(pvAddr, 4); 
 }
- void operator delete[] (void* pvAddr)noexcept
+RTENGINE_API void operator delete[] (void* pvAddr)noexcept
 {
 	std::cout << "dallocate2";
 	return ReiToEngine::RTCMemoryManager::GetInstance().Deallocate(pvAddr, 4); 
 }
 
 // 重载 malloc 和 free
-// void* malloc(size_t size)
+// RTENGINE_API void* malloc(size_t size)
 // {
 //     std::cout << "Custom malloc called, allocating " << size << " bytes\n";
 //     // 你的自定义分配逻辑...
@@ -51,7 +51,7 @@ void RTCMemoryManager::deallocateImpl(void* addr, uint32_t alignment)
 //     return nullptr;
 // }
 
-// void free(void* ptr)
+// RTENGINE_API void free(void* ptr)
 // {
 //     std::cout << "Custom free called\n";
 //     // 你的自定义释放逻辑...

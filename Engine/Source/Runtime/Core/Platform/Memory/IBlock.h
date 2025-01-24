@@ -3,16 +3,17 @@
 #include "Core/HAL/Platform.h"
 namespace ReiToEngine
 {
+enum EBlock
+{
+	BEGIN_MASK = 0xDEADC0DE,
+	END_MASK = 0xDEADC0DE,
+	RECORD_NUM = 32,
+	CALLSTACK_NUM = 32
+};
 class RTENGINE_API RTBlock
 {
 	public:
-	enum
-	{
-		BEGIN_MASK = 0xDEADC0DE,
-		END_MASK = 0xDEADC0DE,
-		RECORD_NUM = 32,
-		CALLSTACK_NUM = 32
-	};
+
     RTBlock()
 	{
 		for (uint32_t i = 0; i < CALLSTACK_NUM; ++i)
