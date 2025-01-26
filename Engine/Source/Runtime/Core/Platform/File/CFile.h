@@ -3,16 +3,15 @@
 #include "IFile.h"
 #include <fstream>
 namespace ReiToEngine
-
 {
 class RTENGINE_API RTCFile : public RTFile<RTCFile>
 {
 public:
-	RTCFile() = default;
-	~RTCFile() = default;
+	RTCFile();
+	~RTCFile();
 	bool FlushImpl() override;
 	bool SeekImpl(uint32_t offset,uint32_t origin) override;
-	bool OpenImpl(const char* fileName,EFileOpenFlags openMode) override;
+	bool OpenImpl(const char* fileName,uint32_t openMode) override;
 	bool WriteImpl(const char* buffer,uint32_t size) override;
 	bool ReadImpl(char* buffer,uint32_t size) override;
 	bool GetLineImpl(char* buffer,uint32_t size) override;
@@ -20,5 +19,8 @@ public:
 protected:
 	std::fstream fs;
 };
+
+class RTENGINE_API RTFArchive : public RTCFile
+{}; 
 }
 #endif

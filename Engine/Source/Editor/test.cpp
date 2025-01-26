@@ -5,21 +5,18 @@
 #include <assimp/postprocess.h>     // Post processing flags
 int main()
 {
-    int width, height, channels;
-    unsigned char *data = stbi_load("image.png", &width, &height, &channels, 0);
-
-    if (data) {
-        // 处理图像数据...
-        std::cout << "loaded";
-        stbi_image_free(data); // 释放图像数据
+    ReiToEngine::RTCFileManager m;
+    ReiToEngine::RTFArchive* ac = m.CreateDebugFileWriter("./test.txt");
+    bool result = ac->Seek(0,0);
+    std::cout <<result;
+    char* count = new char[4];
+    ac->Read(count, 4);
+    for (int i = 0; i < 4; ++i)
+    {
+        std::cout << count[i];
     }
-    Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile("nanosuit/nanosuit.obj",
-                                             aiProcess_Triangulate | aiProcess_FlipUVs);
-
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
-        return 1;
-    }
+    result = ac->Write("1234", 4);
+    std::cout <<result;
+    ac->Flush();
     return 0;
 }

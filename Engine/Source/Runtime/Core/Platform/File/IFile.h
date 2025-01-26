@@ -1,5 +1,5 @@
 #ifndef CORE_PLATFORM_FILE_IFILE_H
-#define CORE_PLATFORM_FILE_IILE_H
+#define CORE_PLATFORM_FILE_IFILE_H
 #include "Core/HAL/Platform.h"
 namespace ReiToEngine
 {
@@ -62,11 +62,11 @@ public:
 	{
 		return static_cast<T*>(this)->SeekImpl(offset, origin);
 	}
-	bool Open(const char* fileName, EFileOpenFlags openMode)
+	bool Open(const char* fileName, uint32_t openMode)
 	{
 		return static_cast<T*>(this)->OpenImpl(fileName, openMode);
 	}
-	bool Write(const char* buffer,uint32_t size_t)
+	bool Write(const char* buffer,uint32_t size)
 	{
 		return static_cast<T*>(this)->WriteImpl(buffer, size);
 	}
@@ -89,7 +89,7 @@ public:
 protected:
 	virtual bool FlushImpl() = 0;
 	virtual bool SeekImpl(uint32_t offset,uint32_t origin) = 0;
-	virtual bool OpenImpl(const char* fileName,EFileOpenFlags openMode) = 0;
+	virtual bool OpenImpl(const char* fileName,uint32_t openMode) = 0;
 	virtual bool WriteImpl(const char* buffer,uint32_t size) = 0;
 	virtual bool ReadImpl(char* buffer,uint32_t size) = 0;
 	virtual bool GetLineImpl(char* buffer,uint32_t size) = 0;
@@ -98,5 +98,10 @@ protected:
 	char* FilePath = new char[EFileCommon::FILE_MAX_PATH];
 	SFileStatData FileState;
 	};
+template <typename T>
+RTFile<T>::~RTFile()
+{
+    CloseImpl();
+};
 }
 #endif
