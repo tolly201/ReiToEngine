@@ -17,7 +17,7 @@ namespace ReiToEngine
     #else
         #define RT_SYSTEM_BIT_WIDTH 32
     #endif
-#elif defined(__LINUX__) // Linux
+#elif defined(__linux__) // Linux
     #define RT_SYSTEM_LINUX
     #if defined(__x86_64__) || defined(__ppc64__)
         #define RT_SYSTEM_BIT_WIDTH 64

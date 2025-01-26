@@ -1,5 +1,6 @@
 #include "CFile.h"
 #include <iostream>
+#include <cstring>
 namespace ReiToEngine
 {
 	RTCFile::RTCFile() = default;
