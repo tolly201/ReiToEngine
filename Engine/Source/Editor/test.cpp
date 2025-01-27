@@ -18,5 +18,18 @@ int main()
     result = ac->Write("1234", 4);
     std::cout <<result;
     ac->Flush();
+    std::string str = "hello";
+    std::string other = std::move(str);
+    // 不要使用 str 的值，因为它处于未指定状态
+    std::cout << std::endl; // 输出 "world"  
+    std::cout << str << std::endl; // 输出 "world" 
+   std::cout << std::endl; // 输出 "world"  
+    std::cout << other << std::endl; // 输出 "world" 
+    str = "world"; // 现在 str 重新赋值，可以安全地使用
+    std::cout << str << std::endl; // 输出 "world"
+
+    str.clear(); // 清空 str，使其处于已知状态
+
     return 0;
+
 }
