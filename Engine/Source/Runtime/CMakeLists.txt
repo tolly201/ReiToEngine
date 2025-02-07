@@ -11,10 +11,41 @@ target_sources(ReiToRuntime PRIVATE
 # Set compile flags for ReiToRuntime (important for custom delete)
 # set_target_properties(ReiToRuntime PROPERTIES COMPILE_FLAGS)
 
+if(MSVC)
+    target_compile_options(ReiToRuntime PRIVATE /RTC1 /sdl)
+elseif(APPLE)
+    # GCC/Clang 编译选项
+    target_compile_options(ReiToRuntime PRIVATE 
+        -ggdb         # 生成GDB调试信息
+        -g            # 生成调试信息
+        -O0           # 禁用优化
+        -fsanitize=address 
+        -fno-omit-frame-pointer
+    )
+    target_link_options(ReiToRuntime PRIVATE 
+        -fsanitize=address
+    )
+else()
+    # GCC/Clang 编译选项
+    target_compile_options(ReiToRuntime PRIVATE 
+        -ggdb         # 生成GDB调试信息
+        -g            # 生成调试信息
+        -pg           # 生成性能分析信息（用于gprof）
+        -O0           # 禁用优化
+        -fsanitize=address 
+        -fno-omit-frame-pointer
+    )
+    target_link_options(ReiToRuntime PRIVATE 
+        -pg           # 链接时也需要添加性能分析选项
+        -fsanitize=address
+    )
+endif()
+
 target_compile_definitions(ReiToRuntime PRIVATE REITOENGINE_EXPORTS)
 target_include_directories(ReiToRuntime PRIVATE 
 ${CMAKE_CURRENT_SOURCE_DIR}
 ${CMAKE_CURRENT_SOURCE_DIR}/../../Thirdparty/stb/
+${CMAKE_CURRENT_SOURCE_DIR}/../../Thirdparty/Assimp/include
 )
 
 # 创建导出目标列表
