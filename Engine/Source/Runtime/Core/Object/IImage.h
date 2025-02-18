@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <memory>
+#include <cstring>
 namespace ReiToEngine
 {
 

@@ -38,7 +38,16 @@ int main()
     size_t RBO = r.CreateBuffer(w,h,channels);
     ReiToEngine::Image image(w,h,channels);
     r.SetBackColor(RBO, 0,0,0,255);
-    r.DrawTriangle(RBO, 20, 20, 20, 100,100, 20);
+
+    ReiToEngine::Vec3i v0, v1, v2;
+    v0.x = 20;
+    v0.y = 100;
+    v0.z = 0;
+    v1.y = 100;
+    v1.z = 0;   v1.x = 100;
+    v2.y = 20;
+    v2.z = 0;   v2.x = 20;
+    r.DrawTriangle(RBO, v0, v1,v2);
     uint8_t* data = r.GetBuffer(RBO);
     image.SetData(data);
     image.SetType(ReiToEngine::EImageType::IMAGE_PNG);
