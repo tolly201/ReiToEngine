@@ -1,10 +1,11 @@
 #ifndef CORE_MATH_IVECTOR_H
 #define CORE_MATH_IVECTOR_H
+#include "Core/HAL/Platform.h"
 
 namespace ReiToEngine
 {
 template <class impl, uint8_t DIM, typename T>
-class IVector
+class RTENGINE_API IVector
 {
 public:
     static constexpr uint8_t Dimension = DIM;

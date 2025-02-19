@@ -6,98 +6,85 @@
 
 namespace ReiToEngine
 {
-template <typename T, int DIM> // SVector is now templated with T and DIM
-class SVector : public IVector<SVector<T, DIM>, DIM, T> // CRTP inheritance: impl = SVector<T, DIM>
+template <typename T> // SVector is now templated with T and DIM
+class SVector3 : public IVector<SVector3<T>, 3, T> // CRTP inheritance: impl = SVector<T, DIM>
 {
 public:
     // Constructor
-    SVector() : data(DIM) {} // Initialize vector with DIM elements
-    SVector(std::initializer_list<T> list) : data(list) {
-        if (list.size() != DIM) {
-            throw std::invalid_argument("Initializer list size does not match vector dimension.");
-        }
-    }
+    SVector3() = default;
 
     // Implement virtual functions from IVector (CRTP style, returning SVector<T, DIM>& and SVector<T, DIM>)
-    SVector<T, DIM>& operator+=(const SVector<T, DIM>& other) override
+    SVector3<T>& operator+=(const SVector3<T>& other) override
     {
-        if (DIM != SVector<T, DIM>::Dimension || DIM != other.Dimension) {
-            throw std::invalid_argument("Vector dimensions must match for addition.");
-        }
-        for (int i = 0; i < DIM; ++i) {
-            data[i] += other.data[i];
-        }
+        x += other.x;
+        y += other.y;
+        z += other.z;
         return *this;
     }
 
-    SVector<T, DIM>& operator-=(const SVector<T, DIM>& other) override
+    SVector3<T>& operator-=(const SVector3<T>& other) override
     {
-        if (DIM != SVector<T, DIM>::Dimension || DIM != other.Dimension) {
-            throw std::invalid_argument("Vector dimensions must match for subtraction.");
-        }
-        for (int i = 0; i < DIM; ++i) {
-            data[i] -= other.data[i];
-        }
+        x -= other.x;
+        y -= other.y;
+        z -= other.z;
         return *this;
     }
 
-    SVector<T, DIM>& operator*=(T scalar) override
+    SVector3<T>& operator*=(T scalar) override
     {
-        for (int i = 0; i < DIM; ++i) {
-            data[i] *= scalar;
-        }
+        x *= scalar;
+        y *= scalar;
+        z *= scalar;
         return *this;
     }
 
-    SVector<T, DIM> operator+(const SVector<T, DIM>& other) const override
+    SVector3<T> operator+(const SVector3<T>& other) const override
     {
-        SVector<T, DIM> result = *this;
+        SVector3<T> result = *this;
         return result += other;
     }
 
-    SVector<T, DIM> operator-(const SVector<T, DIM>& other) const override
+    SVector3<T> operator-(const SVector3<T>& other) const override
     {
-        SVector<T, DIM> result = *this;
+        SVector3<T> result = *this;
         return result -= other;
     }
 
-    SVector<T, DIM> operator*(T scalar) const override
+    SVector3<T> operator*(T scalar) const override
     {
-        SVector<T, DIM> result = *this;
+        SVector3<T> result = *this;
         return result *= scalar;
     }
 
     T& operator[](int index) override {
-        if (index < 0 || index >= DIM) {
+        if (index < 0 || index >= 2) {
             throw std::out_of_range("Index out of bounds");
         }
-        return data[index];
+        if (index == 0) return x;
+        if (index == 1) return y;
+        if (index == 2) return z;
+        return x;
     }
 
     const T& operator[](int index) const override {
-        if (index < 0 || index >= DIM) {
+        if (index < 0 || index >= 2) {
             throw std::out_of_range("Index out of bounds");
         }
-        return data[index];
+        if (index == 0) return x;
+        if (index == 1) return y;
+        if (index == 2) return z;
+        return x;
     }
 
 
-private:
-    std::vector<T> data; // Use std::vector to store vector elements dynamically
-};
-
-template <typename T>
-class SVector3 : public SVector<T, 3> // SVector3 inherits from SVector<T, 3>
-{
 public:
-    // SVector3 specific code (if needed) can go here
     T x;
     T y;
     T z;
 };
 
 template <typename T>
-class SVector2 : public SVector<T, 2> // SVector2 inherits from SVector<T, 2>
+class SVector2 : public IVector<SVector2<T>, 2, T> // CRTP inheritance: impl = SVector<T, DIM>
 {
 public:
     ~SVector2() = default;
@@ -108,9 +95,6 @@ public:
 
 typedef SVector2<int> Vec2i;
 typedef SVector3<int> Vec3i;
-typedef SVector<float, 2> Vec2f;
-typedef SVector<float, 3> Vec3f;
-typedef SVector<double, 4> Vec4d; // Example of a 4D vector
 
 }
 
