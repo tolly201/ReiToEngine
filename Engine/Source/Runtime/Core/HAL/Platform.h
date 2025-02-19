@@ -1,8 +1,10 @@
-#ifndef CORE_PLATFORM_PLATFORM_H
+﻿#ifndef CORE_PLATFORM_PLATFORM_H
 #define CORE_PLATFORM_PLATFORM_H 
 #include <cstdint>
+#include <cstddef>
 namespace ReiToEngine
 {
+    #define RTENGINE_API __declspec(dllexport)
 #ifdef _WIN32
     #define RT_SYSTEM_WINDOWS
     #ifdef _WIN64
@@ -32,9 +34,9 @@ namespace ReiToEngine
     #ifdef RT_EXPORTS // 定义这个宏表示正在编译 DLL
         #define RTENGINE_API __declspec(dllexport)
     #else // 使用 DLL 的项目
-        #define RTENGINE_API __declspec(dllimport)
+        #define RTENGINE_API __declspec(dllexport)
     #endif
-    #define RT_FORCEINLINE __RT_FORCEINLINE
+    #define RT_FORCEINLINE __forceinline
 #elif defined(RT_SYSTEM_APPLE) // macOS
     #define RTENGINE_API __attribute__((visibility("default")))
     #define RT_FORCEINLINE inline __attribute__((always_inline))

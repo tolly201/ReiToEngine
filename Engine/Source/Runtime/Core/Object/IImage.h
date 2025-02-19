@@ -30,7 +30,7 @@ struct ImageInfo
     EImageType imageType;
     int w = 0;
     int h = 0;
-    int channels = 0;    //bytes per pixel
+    int channels = 0;
 };
 
 class RTENGINE_API IImage {
@@ -47,17 +47,15 @@ public:
     RT_FORCEINLINE int GetWidth() const
     {
         return imageInfo.w;
-    };
+    }
     RT_FORCEINLINE int GetHeight() const
     {
         return imageInfo.h;
-    };
+    }
 protected:
     ImageInfo imageInfo;
     uint8_t* _data = nullptr;
 };
-
-// 在类外提供析构函数的实现
 inline ReiToEngine::IImage::~IImage() = default;
 
 class RTENGINE_API Image : public IImage
@@ -76,11 +74,11 @@ public:
     {
         delete [] _data;
         _data = nullptr;
-    };
+    }
     bool SetData(uint8_t* data) override
     {
         if (_data) {
-            delete[] _data;  // 释放之前的数据
+            delete[] _data;
         }
     
         if (!data) {
@@ -88,30 +86,28 @@ public:
             return false;
         }
 
-        // 计算数据大小（假设imageInfo已经正确设置）
         size_t dataSize = imageInfo.w * imageInfo.h * imageInfo.channels;
-        printf("datasize%d\n", dataSize);
+        printf("datasize%zd\n", dataSize);
         _data = new uint8_t[dataSize];
-        memcpy(_data, data, dataSize);  // 深拷贝数据
+        memcpy(_data, data, dataSize);
         return true;
-    };
+    }
     void SetType(EImageType type)
     {
         imageInfo.imageType = type;
     }
     bool SetData(uint8_t* data, ImageInfo image_info) override
     {
-        // 更新imageInfo
         imageInfo = image_info;
         return SetData(data);
-    };
+    }
     const uint8_t* GetData() const override
     {
         return _data;
-    };
+    }
     const ImageInfo& GetConstImageInfo() const override{
         return imageInfo;
-    };
+    }
 
     void FlipHorizontally() override
     {
@@ -126,14 +122,13 @@ public:
             {
                 const int left = x * imageInfo.channels;
                 const int right = (imageInfo.w - 1 - x) * imageInfo.channels;
-                // 直接交换每个通道的值
                 for (int c = 0; c < imageInfo.channels; c++)
                 {
                     std::swap(row[left + c], row[right + c]);
                 }
             }
         }
-    };
+    }
 
     void FlipVertically() override
     {
@@ -148,7 +143,6 @@ public:
             uint8_t *topRow = _data + y * rowSize;
             uint8_t *bottomRow = _data + (imageInfo.h - 1 - y) * rowSize;
 
-            // 逐字节交换
             for (int x = 0; x < rowSize; x++)
             {
                 temp = topRow[x];
@@ -156,7 +150,7 @@ public:
                 bottomRow[x] = temp;
             }
         }
-    };
+    }
     IColor GetColor(const int w, const int h) const override
     {
         IColor color = {0, 0, 0, 255};
@@ -169,7 +163,7 @@ public:
         color.b = imageInfo.channels > 2 ? _data[offset + 2] : color.g;
         color.a = imageInfo.channels > 3 ? _data[offset + 3] : 255;
         return color;
-    };
+    }
     void SetColor(const int w, const int h, const IColor& c) override
     {
         if (!_data || w < 0 || w >= imageInfo.w || h < 0 || h >= imageInfo.h) 
@@ -180,7 +174,7 @@ public:
         if (imageInfo.channels > 1) _data[offset + 1] = c.g;
         if (imageInfo.channels > 2) _data[offset + 2] = c.b;
         if (imageInfo.channels > 3) _data[offset + 3] = c.a;
-    };
+    }
 };
 
 }

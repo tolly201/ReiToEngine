@@ -2,6 +2,8 @@
 #define CORE_PLATFORM_FILE_TGAIMAGE_H
 
 #include "IImage.h"
+#include <cstdint>
+#include <cstddef>
 namespace ReiToEngine
 {
 #pragma pack(push,1)

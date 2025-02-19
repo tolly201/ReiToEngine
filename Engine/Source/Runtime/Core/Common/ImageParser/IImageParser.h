@@ -4,7 +4,7 @@
 namespace ReiToEngine
 {
 template <typename T>
-class IImageParser
+class RTENGINE_API IImageParser
 {
 public:
     bool Read(const char* filename, Image& image)
@@ -17,7 +17,7 @@ public:
     }
 protected:
     virtual bool ReadImpl(const char* filename, Image& image) = 0;
-    virtual bool WriteImpl(const char* filename,const Image& image, const bool vflip, const bool rle) const = 0; 
+    virtual bool WriteImpl(const char* filename,const Image& image, const bool vflip, const bool rle) const = 0;
 };
 }
 #endif

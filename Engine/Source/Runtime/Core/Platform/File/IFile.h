@@ -101,7 +101,7 @@ protected:
 template <typename T>
 RTFile<T>::~RTFile()
 {
-    CloseImpl();
+    Close();
 };
 }
 #endif

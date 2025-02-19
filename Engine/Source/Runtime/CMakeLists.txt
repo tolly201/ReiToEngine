@@ -51,7 +51,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/../../Thirdparty/Assimp/include
 # 创建导出目标列表
 install(TARGETS ReiToRuntime
     EXPORT ReiToRuntimeTargets
-    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReiToRuntime # 导出到构建目录下的子目录
+    DESTINATION ${CMAKE_BINARY_DIR}/bin # 导出到构建目录下的子目录
 )
 
 # 创建并导出 CMake 配置文件

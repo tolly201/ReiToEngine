@@ -1,4 +1,4 @@
-#ifndef FUNCTION_RENDERER_IRENDERER_H
+﻿#ifndef FUNCTION_RENDERER_IRENDERER_H
 #define FUNCTION_RENDERER_IRENDERER_H
 
 #include "Core/HAL/Platform.h"
@@ -22,9 +22,9 @@ class RTENGINE_API SimpleRenderer : public IRenderer
 public:
     struct BufferInfo
     {
-        u_int32_t height;
-        u_int32_t width;
-        u_int8_t channels;
+        uint32_t height;
+        uint32_t width;
+        uint8_t channels;
     };
 
     ~SimpleRenderer()
@@ -39,8 +39,9 @@ public:
     size_t CreateBuffer() override
     {
         uint8_t* data = new uint8_t[1];
+        size_t index = datas.size();
         datas.push_back(data);
-
+        return index;
     };
     size_t CreateBuffer(uint32_t w, uint32_t h, uint8_t channels) override
     {
@@ -64,19 +65,19 @@ public:
         int x1 = v2.x; // 使用 Vec3i 的 x 分量
         int y1 = v2.y; // 使用 Vec3i 的 y 分量
         bool steep = false;
-        if (std::abs(x0-x1)<std::abs(y0-y1)) 
+        if (std::abs(x0-x1)<std::abs(y0-y1))
         {
             std::swap(x0, y0);
             std::swap(x1, y1);
             steep = true;
         }
-        
-        if (x0>x1) 
+
+        if (x0>x1)
         {
             std::swap(x0, x1);
             std::swap(y0, y1);
         }
-        
+
         int dx = x1-x0;
         int dy = y1-y0;
         int derror2 = std::abs(dy)*2;
@@ -84,11 +85,11 @@ public:
         int y = y0;
         for (int x=x0; x<=x1; x++)
         {
-            if (steep) 
+            if (steep)
             {
                 SetColor(data, bi, y, x);
-            } 
-            else 
+            }
+            else
             {
                 SetColor(data, bi, x, y);
             }
@@ -168,7 +169,7 @@ public:
 
     void SetColor(uint8_t* data, BufferInfo& buffer_info, int w, int h)
     {
-        if (!data || w < 0 || w >= buffer_info.width || h < 0 || h >= buffer_info.height) 
+        if (!data || w < 0 || w >= buffer_info.width || h < 0 || h >= buffer_info.height)
             return;
 
         const int offset = (h * buffer_info.width + w) * buffer_info.channels;

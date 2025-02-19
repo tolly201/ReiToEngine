@@ -3,7 +3,7 @@
 #include "IImageParser.h"
 namespace ReiToEngine
 {
-class STBImageParser : public IImageParser<STBImageParser>
+class RTENGINE_API STBImageParser : public IImageParser<STBImageParser>
 {
 friend class IImageParser<STBImageParser>;
 protected:
