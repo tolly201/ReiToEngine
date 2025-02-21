@@ -1,4 +1,4 @@
-﻿#include "IMemoryManager.h"
+#include "IMemoryManager.h"
 namespace ReiToEngine
 {
 template <typename T>
@@ -23,23 +23,23 @@ void RTCMemoryManager::deallocateImpl(void* addr, uint32_t alignment)
 RT_FORCEINLINE void* operator new(size_t uiSize)
 {
 	std::cout << "allocate1";
-    return ReiToEngine::RTCMemoryManager::GetInstance().Allocate(uiSize,4); 
+    return ReiToEngine::RTCMemoryManager::GetInstance().Allocate(uiSize,4);
 }
 RT_FORCEINLINE void* operator new[] (size_t uiSize)
 {
 	std::cout << "allocate2";
-	return ReiToEngine::RTCMemoryManager::GetInstance().Allocate(uiSize,4); 
+	return ReiToEngine::RTCMemoryManager::GetInstance().Allocate(uiSize,4);
 }
 
 RT_FORCEINLINE void operator delete (void* pvAddr)noexcept
 {
 	std::cout << "dallocate1";
-	return ReiToEngine::RTCMemoryManager::GetInstance().Deallocate(pvAddr, 4); 
+	return ReiToEngine::RTCMemoryManager::GetInstance().Deallocate(pvAddr, 4);
 }
 RT_FORCEINLINE void operator delete[] (void* pvAddr)noexcept
 {
 	std::cout << "dallocate2";
-	return ReiToEngine::RTCMemoryManager::GetInstance().Deallocate(pvAddr, 4); 
+	return ReiToEngine::RTCMemoryManager::GetInstance().Deallocate(pvAddr, 4);
 }
 
 // 重载 malloc 和 free

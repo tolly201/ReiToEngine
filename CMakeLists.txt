@@ -14,6 +14,21 @@ else()
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb -g -pg -O0")
 endif()
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/lib)  # 静态库
+set(CMAKE_OBJECT_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/obj)   # 中间文件
+if(MSVC)
+    # Windows: 所有运行时文件统一到bin
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/)  # exe/dll
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/lib)   # dll
+else()
+    # Unix-like: 分离可执行文件和库文件
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine)  # exe
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/lib)  # so/dylib
+endif()
+
+# 资源文件目录
+set(RESOURCE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/res)
+
 set(ENGINE_ROOT_DIR Engine)
 
 # set(ASSIMP_NO_EXPORT ON)           # 如果不需要导出功能，可以禁用
@@ -22,9 +37,6 @@ include_directories(
 ${ENGINE_ROOT_DIR}/Thirdparty/stb/
 # ${ENGINE_ROOT_DIR}Thirdparty/Assimp/include/
 )
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set (ENGINE_RUNTIME_DIR Engine/Source/Runtime)
 add_subdirectory(Engine/Source/Runtime)
 
 # 设置 Assimp 的构建选项
@@ -34,11 +46,10 @@ set(ASSIMP_BUILD_DOCS OFF)         # 禁用文档
 set(ASSIMP_WARNINGS_AS_ERRORS OFF)
 include(${CMAKE_SOURCE_DIR}/Engine/Scripts/modify_cmake.cmake)
 include_directories(
-# ${ENGINE_ROOT_DIR}Thirdparty/glad/include/
 # ${ENGINE_ROOT_DIR}Thirdparty/stb/
 ${ENGINE_ROOT_DIR}Thirdparty/Assimp/include/
 )
 add_subdirectory(Engine/Thirdparty/Assimp)
-
 add_subdirectory(Engine/Source/Editor)
+
 include(${CMAKE_SOURCE_DIR}/Engine/Scripts/remove_modify.cmake)
