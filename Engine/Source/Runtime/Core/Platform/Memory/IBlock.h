@@ -1,6 +1,6 @@
 #ifndef CORE_COMMON_MEMORYMANAGER_MEMORYMANAGER_H
 #define CORE_COMMON_MEMORYMANAGER_MEMORYMANAGER_H
-#include "Core/HAL/Platform.h"
+#include "Core/HAL/Macro/Macro.h"
 namespace ReiToEngine
 {
 enum EBlock

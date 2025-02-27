@@ -1,6 +1,6 @@
 #ifndef CORE_PLATFORM_FILE_IFILE_H
 #define CORE_PLATFORM_FILE_IFILE_H
-#include "Core/HAL/Platform.h"
+#include "Core/HAL/Macro/Macro.h"
 namespace ReiToEngine
 {
 enum EFileWrite

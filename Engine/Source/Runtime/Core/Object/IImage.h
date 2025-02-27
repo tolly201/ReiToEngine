@@ -1,6 +1,6 @@
 #ifndef CORE_OBJECT_IIMAGE_H
 #define CORE_OBJECT_IIMAGE_H
-#include "Core/HAL/Platform.h"
+#include "Core/HAL/Macro/Macro.h"
 #include <cstddef>
 #include <cstdio>
 #include <memory>
@@ -80,7 +80,7 @@ public:
         if (_data) {
             delete[] _data;
         }
-    
+
         if (!data) {
             _data = nullptr;
             return false;
@@ -154,7 +154,7 @@ public:
     IColor GetColor(const int w, const int h) const override
     {
         IColor color = {0, 0, 0, 255};
-        if (!_data || w < 0 || w >= imageInfo.w || h < 0 || h >= imageInfo.h) 
+        if (!_data || w < 0 || w >= imageInfo.w || h < 0 || h >= imageInfo.h)
             return color;
 
         const int offset = (h * imageInfo.w + w) * imageInfo.channels;
@@ -166,7 +166,7 @@ public:
     }
     void SetColor(const int w, const int h, const IColor& c) override
     {
-        if (!_data || w < 0 || w >= imageInfo.w || h < 0 || h >= imageInfo.h) 
+        if (!_data || w < 0 || w >= imageInfo.w || h < 0 || h >= imageInfo.h)
             return;
 
         const int offset = (h * imageInfo.w + w) * imageInfo.channels;

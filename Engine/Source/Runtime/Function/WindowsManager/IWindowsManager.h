@@ -1,7 +1,7 @@
 #ifndef FUNCTION_RENDERER_IWINDOWSMANAGER_H
 #define FUNCTION_RENDERER_IWINDOWSMANAGER_H
 
-#include "Core/HAL/Platform.h"
+#include "Core/HAL/Macro/Macro.h"
 #include <cstddef>
 #include <vector>
 namespace ReiToEngine

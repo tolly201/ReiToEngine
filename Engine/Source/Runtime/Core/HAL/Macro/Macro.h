@@ -1,7 +1,5 @@
-#ifndef CORE_PLATFORM_PLATFORM_H
-#define CORE_PLATFORM_PLATFORM_H
-#include <cstdint>
-#include <cstddef>
+#ifndef CORE_HAL_MACRO_MACRO_H
+#define CORE_HAL_MACRO_MACRO_H
 namespace ReiToEngine
 {
 #ifdef _WIN32

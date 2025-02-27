@@ -1,6 +1,6 @@
 #ifndef CORE_MATH_IVECTOR_H
 #define CORE_MATH_IVECTOR_H
-#include "Core/HAL/Platform.h"
+#include "Core/HAL/Macro/Macro.h"
 
 namespace ReiToEngine
 {

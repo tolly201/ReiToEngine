@@ -2,7 +2,7 @@
 #define CORE_COMMON_FILEMANAGER_IFILEMANAGER_H
 
 #include <iostream>
-#include "Core/HAL/Platform.h"
+#include "Core/HAL/Macro/Macro.h"
 #include "Core/Platform/File/CFile.h"
 namespace ReiToEngine
 {
