@@ -1,6 +1,7 @@
 #ifndef CORE_PLATFORM_FILE_IFILE_H
 #define CORE_PLATFORM_FILE_IFILE_H
 #include "Core/HAL/Macro/Macro.h"
+#include <cstdint>
 namespace ReiToEngine
 {
 enum EFileWrite
