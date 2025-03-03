@@ -39,15 +39,36 @@ int main()
     ReiToEngine::Image image(w,h,channels);
     r.SetBackColor(RBO, 0,0,0,255);
 
-    ReiToEngine::Vec3i v0, v1, v2;
+    ReiToEngine::Vec3i v0, v1, v2, color;
+
+    color.x = 255;
+    color.y = 0;
+    color.z = 0;
     v0.x = 20;
-    v0.y = 100;
-    v0.z = 0;
-    v1.y = 100;
-    v1.z = 0;   v1.x = 100;
+    v0.y = 200;
+    v0.z = 10;
+    v1.x = 200;
+    v1.y = 200;
+    v1.z = 30;
+    v2.x = 20;
     v2.y = 20;
-    v2.z = 0;   v2.x = 20;
-    r.DrawTriangle(RBO, v0, v1,v2);
+    v2.z = -10;
+    r.DrawTriangle(RBO, v0, v1,v2,color);
+
+    v0.x = 20;
+    v0.y = 200;
+    v0.z = 0;
+    v1.x = 200;
+    v1.y = 200;
+    v1.z = 70;
+    v2.x = 20;
+    v2.y = 20;
+    v2.z = 30;
+    color.x = 0;
+    color.y = 255;
+    color.z = 0;
+    r.DrawTriangle(RBO, v0, v1,v2, color);
+
     uint8_t* data = r.GetBuffer(RBO);
     image.SetData(data);
     image.SetType(ReiToEngine::EImageType::IMAGE_PNG);

@@ -13,7 +13,7 @@ public:
     virtual size_t CreateBuffer() = 0;
     virtual size_t CreateBuffer(uint32_t h, uint32_t w, uint8_t channels) = 0;
     virtual void DrawLine(size_t buffer_object, Vec3i v1, Vec3i v2) = 0;
-    virtual void DrawTriangle(size_t buffer_object, Vec3i v1, Vec3i v2, Vec3i v3) = 0;
+    virtual void DrawTriangle(size_t buffer_object, Vec3i v1, Vec3i v2, Vec3i v3, Vec3i color) = 0;
     virtual std::uint8_t* GetBuffer(size_t buffer_object) = 0;
 };
 
@@ -35,12 +35,21 @@ public:
             delete[] datas[i];
         }
         datas.clear();
+
+        size = zBuffers.size();
+
+        for (int i =0; i < size; ++i)
+        {
+            delete[] zBuffers[i];
+        }
+        zBuffers.clear();
     }
     size_t CreateBuffer() override
     {
         uint8_t* data = new uint8_t[1];
         size_t index = datas.size();
         datas.push_back(data);
+        CreateZBuffer(1);
         return index;
     };
     size_t CreateBuffer(uint32_t w, uint32_t h, uint8_t channels) override
@@ -54,8 +63,21 @@ public:
         };
         bufferInfos.push_back(bi);
         datas.push_back(data);
+        CreateZBuffer(h*w*channels);
         return index;
     };
+
+    size_t CreateZBuffer(uint32_t length)
+    {
+        double* buffer = new double[length];
+        for (uint32_t i = 0; i < length; ++i)
+        {
+            buffer[i] = std::numeric_limits<double>::max();
+        }
+        zBuffers.emplace_back(buffer);
+        return length;
+    }
+
     void DrawLine(size_t buffer_object, Vec3i v1, Vec3i v2) override
     {
         uint8_t* data = datas[buffer_object];
@@ -101,11 +123,38 @@ public:
         }
     }
 
-    void DrawTriangle(size_t buffer_object, Vec3i v0, Vec3i v1, Vec3i v2) override
+    float GetZ(int y, int x, Vec3i v0, Vec3i v1, Vec3i v2)
+    {
+        // 计算法向量
+        Vec3i l1 = v1 - v0;
+        Vec3i l2 = v2 - v0;
+        Vec3i n = Vec3i();
+        n.x = l1.y*l2.z - l1.z * l2.y;
+        n.y = l1.z*l2.x - l1.x * l2.z;
+        n.z = l1.x * l2.y - l1.y * l2.x;
+
+        // 计算平面方程的 D
+        int D = -(n.x * v0.x + n.y * v0.y + n.z * v0.z);
+
+        // 求解 z
+        if (n.z != 0)
+        {
+            // 使用浮点数避免整数除法问题
+            float z = (-D - n.x * x - n.y * y) / static_cast<float>(n.z);
+            // 返回或存储 z 值
+            return z;
+        }
+        else
+        {
+            return v0.z;
+        }
+    }
+
+    void DrawTriangle(size_t buffer_object, Vec3i v0, Vec3i v1, Vec3i v2, Vec3i color) override
     {
         uint8_t* data = datas[buffer_object];
         BufferInfo bi = bufferInfos[buffer_object];
-
+        double* zBuffer = zBuffers[buffer_object];
         Vec3i edge_A, edge_B, edge_C;
         edge_A.x = v1.y - v0.y; // 使用 Vec3i 的 y 分量
         edge_A.y = v1.x - v0.x; // 使用 Vec3i 的 x 分量
@@ -143,12 +192,24 @@ public:
             );
             if ((re1 >= 0 && re2 >=0 && re3 >=0) || (re1 <= 0 && re2 <=0 && re3 <=0))
             {
-                printf("draww\n");
+                float _z = GetZ(i, j, v0, v1, v2);
                 const int offset = (i * bi.width + j) * bi.channels;
-                data[offset] = 255;
-                if (bi.channels > 1) data[offset + 1] = 0;
-                if (bi.channels > 2) data[offset + 2] = 0;
-                if (bi.channels > 3) data[offset + 3] = 255;
+                if (_z > zBuffer[offset])
+                {
+                    printf("z test failed: %.3f, %.3f\n", _z, zBuffer[offset]);
+                }
+                else
+                {
+                    printf("z test passed: %.3f, %.3f\n", _z, zBuffer[offset]);
+                    zBuffer[offset] = _z;
+                    zBuffer[offset + 1] = _z;
+                    zBuffer[offset + 2] = _z;
+                    zBuffer[offset + 3] = _z;
+                    data[offset] = color.x;
+                    if (bi.channels > 1) data[offset + 1] = color.y;
+                    if (bi.channels > 2) data[offset + 2] = color.z;
+                    if (bi.channels > 3) data[offset + 3] = 255;
+                }
             }
         }
     }
@@ -186,6 +247,10 @@ public:
 private:
     std::vector<std::uint8_t*> datas;
     std::vector<BufferInfo> bufferInfos;
+    std::vector<double*> zBuffers;
+    bool zBufferEnableState;
+    bool zBuffer64Bit;
+
 };
 }
 #endif
