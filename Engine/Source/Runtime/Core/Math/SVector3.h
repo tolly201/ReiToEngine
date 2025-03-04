@@ -133,25 +133,23 @@ SVector3<T>& operator=(const SVector3<T>& other)
     }
 
     T cross2D(const SVector3<T>& other) const override {
-        return 0;
+        return x*other.y - y*other.x;
     }
 
     SVector3<T> cross4D(const SVector3<T>& other) const override {
-        return
+        return SVector3<T>(
         {
             y*other.z - z*other.y,
             z*other.x - x*other.z,
             x*other.y - y*other.x,
-        };
+        });
     }
 
     SVector3<T> cross3D(const SVector3<T>& other) const override {
-        return
-        {
+        return SVector3<T>(
             y*other.z - z*other.y,
             z*other.x - x*other.z,
-            x*other.y - y*other.x,
-        };
+            x*other.y - y*other.x);
     }
 
     SVector3<T> normalize() const override

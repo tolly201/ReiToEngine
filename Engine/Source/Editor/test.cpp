@@ -10,6 +10,8 @@
 auto testVectors = []()
 {
     ReiToEngine::Vec4d v1, v2;
+    v1 = {1,4,5,2};
+    v2 = {4,41,10, 3};
     ReiToEngine::Vec4d v3 = v1.cross3D(v2);
     std::cout << &v1<< std::endl << &v2<< std::endl <<&v3<< std::endl;
     std::cout << v3.x<< std::endl << v3.y<< std::endl <<v3.z<< std::endl<<v3.w<< std::endl;
