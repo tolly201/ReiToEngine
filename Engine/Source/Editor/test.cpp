@@ -4,76 +4,67 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
 #include <Function/Renderer/IRenderer.h>
+
+//[capture variable]
+//{accepted variable}
+auto testVectors = []()
+{
+    ReiToEngine::Vec4d v1, v2;
+    ReiToEngine::Vec4d v3 = v1.cross3D(v2);
+    std::cout << &v1<< std::endl << &v2<< std::endl <<&v3<< std::endl;
+    std::cout << v3.x<< std::endl << v3.y<< std::endl <<v3.z<< std::endl<<v3.w<< std::endl;
+    v3 = v1.normalize();
+    std::cout << v3;
+    std::cout << v1;
+    v1.normalizeSelf();
+    std::cout << v1;
+    v3 = v1.normalize();
+    std::cout << v3;
+    ReiToEngine::Vec4d v4({1,2,3,4});
+    ReiToEngine::Vec4d v5(1,2,3,4);
+    ReiToEngine::Vec4d v6(2);
+    std::cout << v4;
+    std::cout << v5;
+    std::cout << v6;
+    ReiToEngine::Vec4d v7(v4);
+    ReiToEngine::Vec4d v8(std::move(v4));
+    std::cout << v7;
+    std::cout << v8;
+    std::cout << v4;
+    v4 = {3,3,3,3};
+    std::cout << v4;
+};
+
+void testLamba()
+{
+    // 示例 1：简单的打印
+    auto a = []() {
+        std::cout << "Hello, Lambda!" << std::endl;
+    };
+    a();
+    // 示例 2：捕获外部变量
+    int x = 10;
+    [&x]() {
+        std::cout << "Captured x: " << x << std::endl;
+    }();
+
+    // 示例 3：带参数和返回值的 Lambda
+    int result = [](int a, int b) -> int {
+        return a + b;
+    }(5, 3);
+    std::cout << "Result: " << result << std::endl;
+
+    // 示例 4：修改捕获的变量
+    int y = 10;
+    [y]() mutable {
+        y = 20;
+        std::cout << "Modified y: " << y << std::endl;
+    }();
+    std::cout << "Original y: " << y << std::endl; // 仍然是 10，因
+}
 int main()
 {
-//     ReiToEngine::RTCFileManager m;
-//     ReiToEngine::RTFArchive* ac = m.CreateDebugFileWriter("./test.txt");
-//     bool result = ac->Seek(0,0);
-//     std::cout <<result;
-//     char* count = new char[4];
-//     ac->Read(count, 4);
-//     for (int i = 0; i < 4; ++i)
-//     {
-//         std::cout << count[i];
-//     }
-//     result = ac->Write("1234", 4);
-//     std::cout <<result;
-//     ac->Flush();
-//     std::string str = "hello";
-//     std::string other = std::move(str);
-//     // 不要使用 str 的值，因为它处于未指定状态
-//     std::cout << std::endl; // 输出 "world"
-//     std::cout << str << std::endl; // 输出 "world"
-//    std::cout << std::endl; // 输出 "world"
-//     std::cout << other << std::endl; // 输出 "world"
-//     str = "world"; // 现在 str 重新赋值，可以安全地使用
-//     std::cout << str << std::endl; // 输出 "world"
-
-//     str.clear(); // 清空 str，使其处于已知状态
-    int h = 1600;
-    int w = 2560;
-    int channels = 4;
-    ReiToEngine::STBImageParser imageParser;
-    ReiToEngine::SimpleRenderer r;
-    size_t RBO = r.CreateBuffer(w,h,channels);
-    ReiToEngine::Image image(w,h,channels);
-    r.SetBackColor(RBO, 0,0,0,255);
-
-    ReiToEngine::Vec3i v0, v1, v2, color;
-
-    color.x = 255;
-    color.y = 0;
-    color.z = 0;
-    v0.x = 20;
-    v0.y = 200;
-    v0.z = 10;
-    v1.x = 200;
-    v1.y = 200;
-    v1.z = 30;
-    v2.x = 20;
-    v2.y = 20;
-    v2.z = -10;
-    r.DrawTriangle(RBO, v0, v1,v2,color);
-
-    v0.x = 20;
-    v0.y = 200;
-    v0.z = 0;
-    v1.x = 200;
-    v1.y = 200;
-    v1.z = 70;
-    v2.x = 20;
-    v2.y = 20;
-    v2.z = 30;
-    color.x = 0;
-    color.y = 255;
-    color.z = 0;
-    r.DrawTriangle(RBO, v0, v1,v2, color);
-
-    uint8_t* data = r.GetBuffer(RBO);
-    image.SetData(data);
-    image.SetType(ReiToEngine::EImageType::IMAGE_PNG);
-
-    imageParser.Write("./test1.png",image);
-    int a;
+    testVectors();
+    testLamba();
     return 0;
 }

@@ -43,6 +43,9 @@ namespace ReiToEngine
 #else
     #error "Unsupported platform"
 #endif
+
+//math
+static const double RT_COMPARE_PRECISION = 1.0e-7;
 }
 
 #endif
