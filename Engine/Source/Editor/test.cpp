@@ -4,7 +4,7 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
 #include <Function/Renderer/IRenderer.h>
-
+#include "Core/Math/IMath.h"
 //[capture variable]
 //{accepted variable}
 auto testVectors = []()
@@ -64,9 +64,17 @@ void testLamba()
     }();
     std::cout << "Original y: " << y << std::endl; // 仍然是 10，因
 }
+
+void testMatrix()
+{
+    ReiToEngine::Matrix4x4d m4 = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+    std::cout << m4[2];
+    std::cout << m4[1][2];
+}
 int main()
 {
     testVectors();
     testLamba();
+    testMatrix();
     return 0;
 }

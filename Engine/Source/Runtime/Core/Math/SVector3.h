@@ -15,14 +15,17 @@ class SVector3 : public IVector<SVector3<T>, 3, T>
 public:
     SVector3(const std::initializer_list<T>& init)
     {
-        x = y = z = 0;
+        x = y = z = T{0};
         int list_size = init.size();
         list_size = list_size > 3? 3 : list_size;
         if (list_size > 0) x = init.begin()[0];
         if (list_size > 1) y = init.begin()[1];
         if (list_size > 2) z = init.begin()[2];
     }
-    SVector3() = default;
+    SVector3()
+    {
+        x = y = z = T{0};
+    }
     SVector3(T x, T y, T z):
         x(x), y(y), z(z) {};
     SVector3(T val):x(val), y(val), z(val) {};
@@ -156,7 +159,7 @@ SVector3<T>& operator=(const SVector3<T>& other)
     {
         T length = std::sqrt(x*x + y*y + z*z);
         if (length == static_cast<T>(0)) {
-            return {0, 0, 0};
+            return SVector3<T>();
         }
         SVector3<T> ret = {x / length, y / length, z/ length};
         return ret;
@@ -166,7 +169,7 @@ SVector3<T>& operator=(const SVector3<T>& other)
     {
         T length = std::sqrt(x*x + y*y + z*z);
         if (length == static_cast<T>(0)) {
-            x = y = z = 0;
+            x = y = z = T{0};
         }
         x = x / length;
         y = y / length;

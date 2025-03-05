@@ -15,13 +15,16 @@ class SVector2 : public IVector<SVector2<T>, 2, T>
 public:
     SVector2(const std::initializer_list<T>& init)
     {
-        x = y = 0;
+        x = y = T{0};
         int list_size = init.size();
         list_size = list_size > 2? 2 : list_size;
         if (list_size > 0) x = init.begin()[0];
         if (list_size > 1) y = init.begin()[1];
     }
-    SVector2() = default;
+    SVector2()
+    {
+        x = y = T{0};
+    }
     SVector2(T x, T y):
         x(x), y(y) {};
     SVector2(T val):x(val), y(val) {};
@@ -109,14 +112,14 @@ public:
         return os;
     }
 
-SVector2<T>& operator=(const SVector2<T>& other)
-{
-    if (this != &other) {
-        x = other.x;
-        y = other.y;
+    SVector2<T>& operator=(const SVector2<T>& other)
+    {
+        if (this != &other) {
+            x = other.x;
+            y = other.y;
+        }
+        return *this;
     }
-    return *this;
-}
 
     T dot(const SVector2<T>& other) const override
     {
@@ -129,18 +132,18 @@ SVector2<T>& operator=(const SVector2<T>& other)
     }
 
     SVector2<T> cross4D(const SVector2<T>& other) const override {
-        return SVector2<T>(0, 0);
+        return SVector2<T>();
     }
 
     SVector2<T> cross3D(const SVector2<T>& other) const override {
-        return SVector2<T>(x*other.y - y*other.x, 0);
+        return SVector2<T>(x*other.y - y*other.x, T{0});
     }
 
     SVector2<T> normalize() const override
     {
         T length = std::sqrt(x*x + y*y);
         if (length == static_cast<T>(0)) {
-            return {0, 0};
+            return SVector2<T>();
         }
         SVector2<T> ret = {x / length, y / length};
         return ret;
@@ -150,7 +153,7 @@ SVector2<T>& operator=(const SVector2<T>& other)
     {
         T length = std::sqrt(x*x + y*y);
         if (length == static_cast<T>(0)) {
-            x = y = 0;
+            x = y = T{0};
         }
         x = x / length;
         y = y / length;

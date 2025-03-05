@@ -15,7 +15,7 @@ class SVector4 : public IVector<SVector4<T>, 4, T>
 public:
     SVector4(const std::initializer_list<T>& init)
     {
-        x = y = z = w = 0;
+        x = y = z = w = T{0};
         int list_size = init.size();
         list_size = list_size > 4? 4 : list_size;
         if (list_size > 0) x = init.begin()[0];
@@ -23,7 +23,10 @@ public:
         if (list_size > 2) z = init.begin()[2];
         if (list_size > 3) w = init.begin()[3];
     }
-    SVector4() = default;
+    SVector4()
+    {
+        x=y=z=w= T{0};
+    }
     SVector4(T x, T y, T z, T w):
         x(x), y(y), z(z), w(w) {};
     SVector4(T val):x(val), y(val), z(val), w(val) {};
@@ -160,7 +163,7 @@ SVector4<T>& operator=(const SVector4<T>& other)
             y*other.z - z*other.y,
             z*other.x - x*other.z,
             x*other.y - y*other.x,
-            0
+            T{0}
         );
     }
 
@@ -168,7 +171,7 @@ SVector4<T>& operator=(const SVector4<T>& other)
     {
         T length = std::sqrt(x*x + y*y + z*z + w*w);
         if (length == static_cast<T>(0)) {
-            return {0, 0, 0, 0};
+            return SVector4<T>();
         }
         SVector4<T> ret = {x / length, y / length, z/ length, w/length};
         return ret;
@@ -178,7 +181,7 @@ SVector4<T>& operator=(const SVector4<T>& other)
     {
         T length = std::sqrt(x*x + y*y + z*z + w*w);
         if (length == static_cast<T>(0)) {
-            x = y = z = w = 0;
+            x = y = z = w = T{0};
         }
         x = x / length;
         y = y / length;
