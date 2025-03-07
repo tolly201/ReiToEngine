@@ -7,17 +7,17 @@
 
 namespace ReiToEngine
 {
-typedef SVector2<int> Vec2i;
-typedef SVector3<int> Vec3i;
-typedef SVector4<int> Vec4i;
+typedef SVector<2, int> Vec2i;
+typedef SVector<3, int> Vec3i;
+typedef SVector<4, int> Vec4i;
 
-typedef SVector2<double> Vec2d;
-typedef SVector3<double> Vec3d;
-typedef SVector4<double> Vec4d;
+typedef SVector<2, double> Vec2d;
+typedef SVector<3, double> Vec3d;
+typedef SVector<4, double> Vec4d;
 
-typedef SVector2<float> Vec2f;
-typedef SVector3<float> Vec3f;
-typedef SVector4<float> Vec4f;
+typedef SVector<2, float> Vec2f;
+typedef SVector<3, float> Vec3f;
+typedef SVector<4, float> Vec4f;
 
 template<uint8_t DIM, typename T>
 using Vector = SVector<DIM, T>;

@@ -13,6 +13,7 @@ public:
     virtual impl& operator+=(const impl& other) = 0;
     virtual impl& operator-=(const impl& other) = 0;
     virtual impl& operator*=(T scalar) = 0;
+    virtual impl& operator*=(const impl& other) = 0;
 
     virtual impl operator+(const impl& other) const = 0;
     virtual impl operator-(const impl& other) const = 0;
@@ -34,8 +35,8 @@ public:
     virtual impl Multiply(const impl& other) const = 0;
     virtual impl operator*(const impl& other) const = 0;
     virtual uint8_t Rank() const = 0;
-    // virtual impl Transform(const Vector<column, T>& vector) const = 0;
-    // virtual impl operator*(const Vector<column, T>& vector) const = 0;
+    virtual Vector<column, T> Transform(const Vector<column, T>& vector) const = 0;
+    virtual Vector<column, T> operator*(const Vector<column, T>& vector) const = 0;
     virtual impl GetRow(uint8_t rowIndex) const = 0;
     virtual impl GetColumn(uint8_t columnIndex) const = 0;
     virtual bool IsIdentity() const = 0;

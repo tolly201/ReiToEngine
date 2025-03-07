@@ -3,7 +3,7 @@
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
-#include <Function/Renderer/IRenderer.h>
+#include <Function/Renderer/SimpleRenderer.h>
 #include "Core/Math/IMath.h"
 //[capture variable]
 //{accepted variable}

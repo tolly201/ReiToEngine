@@ -79,6 +79,32 @@ public:
         return *this;
     }
 
+    SMatrix<column, row, T>& operator*=(const SMatrix<column, row, T>& other) override
+    {
+        // 检查 this 和 other 是否是同一个对象
+        if (this == &other) {
+            SMatrix<column, row, T> temp = *this;
+            return *this *= temp;
+        }
+
+        T* tempData = new T[column * row];
+        for (size_t i = 0; i < column * row; ++i) {
+            tempData[i] = data[i];
+        }
+
+        for (size_t i = 0; i < row; ++i) {
+            for (size_t j = 0; j < column; ++j) {
+                T sum = 0;
+                for (size_t k = 0; k < column; ++k) {
+                    sum += tempData[i * column + k] * other.data[k * row + j]; // 注意这里的索引
+                }
+                data[i * column + j] = sum; // 直接更新当前对象的数据
+            }
+        }
+        delete[] tempData;
+        return *this; // 返回当前对象的引用
+    }
+
     SMatrix<column, row, T> operator+(const SMatrix<column, row, T>& other) const override {
         SMatrix<column, row, T> result = *this;
         result += other;
@@ -340,8 +366,8 @@ public:
 
         return rank;
     }
-    // SMatrix<column, row, T> Transform(const SMatrix<column, row, T>& vector) const override {}
-    // SMatrix<column, row, T> operator*(const SMatrix<column, row, T>& vector) const override {}
+    Vector<column, T> Transform(const Vector<column, T>& vector) const override {}
+    Vector<column, T> operator*(const Vector<column, T>& vector) const override {}
     SMatrix<column, row, T> GetRow(uint8_t rowIndex) const override
     {
 

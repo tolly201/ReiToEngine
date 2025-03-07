@@ -32,6 +32,12 @@ public:
         {
             data[i] = T{0};
         }
+
+        x = y = z = w = *0;
+        if (DIM >= 1) x = *data[0];
+        if (DIM >= 2) x = *data[1];
+        if (DIM >= 3) x = *data[2];
+        if (DIM >= 4) x = *data[3];
     }
     SVector()
     {
@@ -41,6 +47,12 @@ public:
         {
             data[i] = T{0};
         }
+
+        x = y = z = w = *0;
+        if (DIM >= 1) x = *data[0];
+        if (DIM >= 2) x = *data[1];
+        if (DIM >= 3) x = *data[2];
+        if (DIM >= 4) x = *data[3];
     }
     SVector(T val)
     {
@@ -50,6 +62,12 @@ public:
         {
             data[i] = T{val};
         }
+
+        x = y = z = w = *0;
+        if (DIM >= 1) x = *data[0];
+        if (DIM >= 2) x = *data[1];
+        if (DIM >= 3) x = *data[2];
+        if (DIM >= 4) x = *data[3];
     }
     SVector(const SVector<DIM, T>& other)
     {
@@ -59,11 +77,23 @@ public:
         {
             data[i] = other.data[i];
         }
+
+        x = y = z = w = *0;
+        if (DIM >= 1) x = *data[0];
+        if (DIM >= 2) x = *data[1];
+        if (DIM >= 3) x = *data[2];
+        if (DIM >= 4) x = *data[3];
     }
     SVector(SVector<DIM, T>&& other)
     {
         data = other.data;
         other.data = nullptr;
+
+        x = y = z = w = *0;
+        if (DIM >= 1) x = *data[0];
+        if (DIM >= 2) x = *data[1];
+        if (DIM >= 3) x = *data[2];
+        if (DIM >= 4) x = *data[3];
     }
     // SVector<DIM, T>ement functions from IVector (CRTP style, returning SVector<T, DIM>& and SVector<T, DIM>)
     SVector<DIM, T>& operator+=(const SVector<DIM, T>& other) override
@@ -311,6 +341,10 @@ public:
     }
 public:
     T* data;
+    T& x;
+    T& y;
+    T& z;
+    T& w;
 };
 }
 
