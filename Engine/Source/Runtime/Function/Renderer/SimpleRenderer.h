@@ -10,64 +10,64 @@ namespace ReiToEngine
 class RTENGINE_API SimpleRenderer : public IRenderer
 {
 public:
-    ~SimpleRenderer()
-    {
-        int size = frameBuffers.size();
-        for (int i =0; i < size; ++i)
-        {
-            frameBuffers[i].~FrameBuffer();
-        }
-        frameBuffers.clear();
+    ~SimpleRenderer() = default;
+    // {
+        // int size = frameBuffers.size();
+        // for (int i =0; i < size; ++i)
+        // {
+        //     frameBuffers[i].~FrameBuffer();
+        // }
+        // frameBuffers.clear();
 
-        size = vertexBuffers.size();
-        for (int i =0; i < size; ++i)
-        {
-            vertexBuffers[i].~VertexBuffer();
-        }
-        vertexBuffers.clear();
+        // size = vertexBuffers.size();
+        // for (int i =0; i < size; ++i)
+        // {
+        //     vertexBuffers[i].~VertexBuffer();
+        // }
+        // vertexBuffers.clear();
 
-        size = indiceBuffers.size();
-        for (int i =0; i < size; ++i)
-        {
-            indiceBuffers[i].~IndiceBuffer();
-        }
-        indiceBuffers.clear();
+        // size = indiceBuffers.size();
+        // for (int i =0; i < size; ++i)
+        // {
+        //     indiceBuffers[i].~IndiceBuffer();
+        // }
+        // indiceBuffers.clear();
 
-        size = shaderRenderUnits.size();
-        for (int i =0; i < size; ++i)
-        {
-            shaderRenderUnits[i].~ShaderRenderUnit();
-        }
-        shaderRenderUnits.clear();
+        // size = shaderRenderUnits.size();
+        // for (int i =0; i < size; ++i)
+        // {
+        //     shaderRenderUnits[i].~ShaderRenderUnit();
+        // }
+        // shaderRenderUnits.clear();
 
-        size = textureRenderUnits.size();
-        for (int i =0; i < size; ++i)
-        {
-            textureRenderUnits[i].~TextureRenderUnit();
-        }
-        textureRenderUnits.clear();
+        // size = textureRenderUnits.size();
+        // for (int i =0; i < size; ++i)
+        // {
+        //     textureRenderUnits[i].~TextureRenderUnit();
+        // }
+        // textureRenderUnits.clear();
 
-        size = matrixesRenderUnits.size();
-        for (int i =0; i < size; ++i)
-        {
-            matrixesRenderUnits[i].~MatrixRenderUnit();
-        }
-        matrixesRenderUnits.clear();
+        // size = matrixesRenderUnits.size();
+        // for (int i =0; i < size; ++i)
+        // {
+        //     matrixesRenderUnits[i].~MatrixRenderUnit();
+        // }
+        // matrixesRenderUnits.clear();
 
-        size = materialRenderUnits.size();
-        for (int i =0; i < size; ++i)
-        {
-            materialRenderUnits[i].~MaterialRenderUnit();
-        }
-        materialRenderUnits.clear();
+        // size = materialRenderUnits.size();
+        // for (int i =0; i < size; ++i)
+        // {
+        //     materialRenderUnits[i].~MaterialRenderUnit();
+        // }
+        // materialRenderUnits.clear();
 
-        size = lightingRenderUnits.size();
-        for (int i =0; i < size; ++i)
-        {
-            lightingRenderUnits[i].~LightingRenderUnit();
-        }
-        lightingRenderUnits.clear();
-    }
+        // size = lightingRenderUnits.size();
+        // for (int i =0; i < size; ++i)
+        // {
+        //     lightingRenderUnits[i].~LightingRenderUnit();
+        // }
+        // lightingRenderUnits.clear();
+    // }
 
     size_t CreateSceneInfo() override
     {
@@ -91,17 +91,20 @@ public:
     }
     size_t CreateShaderRenderUnit(std::string& shadercode) override
     {
-        shaderRenderUnits.emplace_back(shadercode);
+        // shaderRenderUnits.emplace_back(shadercode);
+        shaderRenderUnits.emplace_back();
         return shaderRenderUnits.size() - 1;
     }
     size_t CreateTextureRenderUnit(uint32_t w, uint32_t h, uint32_t channels, uint8_t* data) override
     {
-        textureRenderUnits.emplace_back(w, h, channels, data);
+        // textureRenderUnits.emplace_back(w, h, channels, data);
+        textureRenderUnits.emplace_back();
         return textureRenderUnits.size() - 1;
     }
     size_t CreateMaterialRenderUnit(Vec3d ambientColor, Vec3d diffuseColor, Vec3d specularColor, float shininess) override
     {
-        materialRenderUnits.emplace_back(ambientColor, diffuseColor, specularColor, shininess);
+        // materialRenderUnits.emplace_back(ambientColor, diffuseColor, specularColor, shininess);
+        materialRenderUnits.emplace_back();
         return materialRenderUnits.size() - 1;
     }
     size_t CreateMatrixRenderUnit() override
@@ -123,6 +126,7 @@ public:
     void BindFrameBuffer(size_t scene_index, size_t frame_buffer_index) override
     {
         sceneInfos[scene_index].targetFrames.push_back(&frameBuffers[frame_buffer_index]);
+        frameBuffers[frame_buffer_index].scene = &sceneInfos[scene_index];
     }
 
     void BindObject(size_t scene_index, size_t vertex_buffer_index, size_t indice_buffer_index, size_t material_index) override
@@ -132,6 +136,14 @@ public:
         info.usingIndices.push_back(&indiceBuffers[indice_buffer_index]);
         info.usingMaterials.push_back(&materialRenderUnits[material_index]);
     }
+
+    void BindObject(size_t scene_index, size_t vertex_buffer_index, size_t indice_buffer_index) override
+    {
+        SceneInfo& info = sceneInfos[scene_index];
+        info.usingVertexs.push_back(&vertexBuffers[vertex_buffer_index]);
+        info.usingIndices.push_back(&indiceBuffers[indice_buffer_index]);
+    }
+
     void BindShader(size_t scene_index, std::string name, size_t shader_index) override
     {
         sceneInfos[scene_index].usingShaders[name] = &shaderRenderUnits[shader_index];
@@ -152,12 +164,24 @@ public:
         matrixesRenderUnits[matrix_index].result *= matrix;
     }
 
-    void DrawFrame(size_t frame_index, uint8_t* data, size_t size) override
+    size_t GetFrameSize(size_t frame_index) const
+    {
+        return frameBuffers[frame_index].height * frameBuffers[frame_index].width * frameBuffers[frame_index].channels;
+    }
+
+    void DrawFrame(size_t frame_index, uint8_t*& data, size_t& buffer_size) override
     {
         FrameBuffer& currentFrame = frameBuffers[frame_index];
         SceneInfo& currentScene = *currentFrame.scene;
         size_t object_count = currentScene.usingVertexs.size();
         Matrix4x4d transform_matrix = currentScene.usingMatrixes[0]->result;
+
+        size_t frame_size = currentFrame.height * currentFrame.width * currentFrame.channels;
+        for(size_t i =0; i < frame_size; ++i)
+        {
+            currentFrame.buffer[i] = 0;
+            currentFrame.zBuffer[i] = std::numeric_limits<double>::max();
+        }
 
     for (size_t i = 0; i < object_count; ++i)
     {
@@ -192,39 +216,47 @@ public:
             }
         }
     }
-        std::memcpy(data, currentFrame.buffer, size);
+
+    delete[] data;
+    buffer_size = GetFrameSize(frame_index);
+    data = new uint8_t[buffer_size];
+    std::memcpy(data, currentFrame.buffer, buffer_size);
     }
 
     void DrawLine(uint8_t* frame_buffer, double_t* z_buffer, Vec3d v1, Vec3d v2, Vec4d color1, Vec4d color2,
     const Matrix4x4d& transform, uint32_t w, uint32_t h)
     {
-        Vec4d transformed_v1 = Vec4d({v1.x ,v1.y, v1.z, 0});
-        Vec4d transformed_v2 = Vec4d({v2.x ,v2.y, v2.z, 0});
+        Vec4d transformed_v1 = Vec4d({v1.x ,v1.y, v1.z, 1});
+        Vec4d transformed_v2 = Vec4d({v2.x ,v2.y, v2.z, 1});
         transformed_v1 = transform * transformed_v1;
         transformed_v2 = transform * transformed_v2;
 
-        int64_t x0 = transformed_v1.x * w; // 使用 Vec3i 的 x 分量
-        int64_t y0 = transformed_v1.y * h; // 使用 Vec3i 的 x 分量
+
+        std::cout << transformed_v1 << std::endl;
+        std::cout << transformed_v2 << std::endl;
+        int64_t x0 = transformed_v1.x ; // 使用 Vec3i 的 x 分量
+        int64_t y0 = transformed_v1.y; // 使用 Vec3i 的 x 分量
         int64_t x1 = transformed_v2.x; // 使用 Vec3i 的 x 分量
         int64_t y1 = transformed_v2.y; // 使用 Vec3i 的 y 分量
-
         double z0 = transformed_v1.z;
         double z1 = transformed_v2.z;
         bool steep = false;
         if (std::abs(x0-x1)<std::abs(y0-y1))
         {
             std::swap(x0, y0);
-            std::swap(y0, y1);
-            std::swap(z0, z1);
+            std::swap(x1, y1);
             steep = true;
         }
+
+        printf("x0 : %d, x1 : %d, y0 : %d, y1 : %d\n", x0, x1, y0, y1);
+        printf("steep : %d\n", steep);
 
         if (x0>x1)
         {
             std::swap(x0, x1);
             std::swap(y0, y1);
             std::swap(z0, z1);
-            std::swap(color1, color2);
+            // std::swap(color1, color2);
         }
 
         int dx = x1-x0;
@@ -254,7 +286,6 @@ public:
             if (z < z_buffer[offset])
             {
                 z_buffer[offset] = z; // 更新 Z-buffer
-
                 if (steep)
                 {
                     SetColor(frame_buffer, frameBuffers[0], y, x, color);
@@ -275,12 +306,12 @@ public:
         }
     }
 
-    float GetZ(int y, int x, Vec3i v0, Vec3i v1, Vec3i v2)
+    float GetZ(int y, int x, Vec3d v0, Vec3d v1, Vec3d v2)
     {
         // 计算法向量
-        Vec3i l1 = v1 - v0;
-        Vec3i l2 = v2 - v0;
-        Vec3i n = Vec3i();
+        Vec3d l1 = v1 - v0;
+        Vec3d l2 = v2 - v0;
+        Vec3d n = Vec3d();
         n.x = l1.y*l2.z - l1.z * l2.y;
         n.y = l1.z*l2.x - l1.x * l2.z;
         n.z = l1.x * l2.y - l1.y * l2.x;
@@ -292,7 +323,7 @@ public:
         if (n.z != 0)
         {
             // 使用浮点数避免整数除法问题
-            float z = (-D - n.x * x - n.y * y) / static_cast<float>(n.z);
+            double z = (-D - n.x * x - n.y * y) / static_cast<double>(n.z);
             // 返回或存储 z 值
             return z;
         }
@@ -371,13 +402,20 @@ void DrawTriangle(size_t buffer_object, Vec3d v0, Vec3d v1, Vec3d v2, Vec4d colo
             return;
 
         const int offset = (h * buffer_info.width + w) * buffer_info.channels;
-        data[offset] = static_cast<uint8_t>(color.x * 255); // 假设颜色值范围是 [0, 1]
-        if (buffer_info.channels > 1) data[offset + 1] = static_cast<uint8_t>(color.y * 255);
-        if (buffer_info.channels > 2) data[offset + 2] = static_cast<uint8_t>(color.z * 255);
-        if (buffer_info.channels > 3) data[offset + 3] = static_cast<uint8_t>(color.w * 255); // Alpha 通道
+        printf("render,w: %d, h: %d, offset: %d", w, h, offset);
+        std::cout << color << std::endl;
+        data[offset] = color.x; // 假设颜色值范围是 [0, 1]
+        if (buffer_info.channels > 1) data[offset + 1] = color.y;
+        if (buffer_info.channels > 2) data[offset + 2] = color.z;
+        if (buffer_info.channels > 3) data[offset + 3] = color.w;
     }
-    void GetSceneFrameCopy(size_t, uint8_t*, size_t) const override
-    {}
+    void GetSceneFrameCopy(size_t frame_index, uint8_t*& data, size_t& buffer_size) const override
+    {
+        buffer_size = GetFrameSize(frame_index);
+        delete[] data;
+        data = new uint8_t[buffer_size];
+        std::memcpy(data, frameBuffers[frame_index].buffer, buffer_size);
+    }
 
 private:
     std::vector<SceneInfo> sceneInfos;

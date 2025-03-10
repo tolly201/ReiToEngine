@@ -24,38 +24,9 @@ struct LightingRenderUnit
     float innerConeAngle; // 对于聚光灯 (弧度)
     float outerConeAngle; // 对于聚光灯 (弧度)
 
-    LightingRenderUnit() : type(Type::Directional), position(0.0f, 0.0f, 0.0f), direction(0.0f, -1.0f, 0.0f),
-                           color(1.0f, 1.0f, 1.0f), intensity(1.0f), range(10.0f),
+    LightingRenderUnit() : type(Type::Directional), position(0.0f), direction({0.0f, -1.0f, 0.0f}),
+                           color(1.0f), intensity(1.0f), range(10.0f),
                            innerConeAngle(0.0f), outerConeAngle(0.0f) {}
-};
-
-//
-struct SceneInfo {
-    bool isActived;
-    std::unordered_map<std::string, ShaderRenderUnit*> usingShaders;
-    std::vector<FrameBuffer*> targetFrames;
-
-    //one group with same index.
-    std::vector<VertexBuffer*> usingVertexs;
-    std::vector<IndiceBuffer*> usingIndices;
-    std::vector<MaterialRenderUnit*> usingMaterials;
-
-    std::unordered_map<std::string, TextureRenderUnit*> usingTextures;
-    std::vector<MatrixRenderUnit*> usingMatrixes;
-};
-
-// 帧缓冲区信息
-struct FrameBuffer
-{
-    uint32_t width;
-    uint32_t height;
-    uint8_t channels; // 通道数 (例如，RGBA 为 4)
-    uint8_t* buffer;
-    double* zBuffer;
-    SceneInfo* scene;
-
-    FrameBuffer() : width(0), height(0), channels(0) {}
-    FrameBuffer(uint32_t w, uint32_t h, uint8_t c) : width(w), height(h), channels(c) {}
 };
 
 // 顶点数据
@@ -67,6 +38,9 @@ struct VertexBuffer
     Vec4d* colors;
     size_t size;
     VertexBuffer(){}
+    VertexBuffer(Vec3d* _positions,Vec3d* _normals, Vec2d* _texCoords, Vec4d* _colors, size_t _size):
+    positions(_positions), normals(_normals), texCoords(_texCoords), colors(_colors), size(_size)
+    {}
 };
 
 // 索引数据 (通常用 uint32_t, 但也可以用 uint16_t 来节省内存)
@@ -75,7 +49,11 @@ struct VertexBuffer
 struct IndiceBuffer {
     uint32_t* indices;
     size_t size;
-    bool isLine = false;
+    bool isLine = true;
+
+    IndiceBuffer(uint32_t* _indices, size_t _size):
+    indices(_indices), size(_size), isLine(true)
+    {}
 };
 
 // 着色器信息 (这里只是一个占位符，实际的着色器数据会更复杂)
@@ -91,6 +69,7 @@ struct TextureRenderUnit
     uint32_t height;
     uint8_t channels;
     uint8_t* data; // 像素数据, 不应该在这里
+    TextureRenderUnit() = default;
 };
 
 // 材质信息
@@ -101,8 +80,8 @@ struct MaterialRenderUnit
     Vec3d specularColor;
     float shininess;
 
-    MaterialRenderUnit() : ambientColor(0.2f, 0.2f, 0.2f), diffuseColor(0.8f, 0.8f, 0.8f),
-                         specularColor(0.5f, 0.5f, 0.5f), shininess(32.0f) {}
+    MaterialRenderUnit() : ambientColor({0.2f, 0.2f, 0.2f}), diffuseColor({0.8f, 0.8f, 0.8f}),
+                         specularColor({0.5f, 0.5f, 0.5f}), shininess(32.0f) {}
 };
 
 // 材质信息
@@ -110,6 +89,47 @@ struct MatrixRenderUnit
 {
     std::vector<Matrix4x4d> matrixes;
     Matrix4x4d result;
+
+    MatrixRenderUnit()
+    {
+        matrixes = std::vector<Matrix4x4d>();
+        result = Matrix4x4d({1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1});
+    }
+};
+
+struct FrameBuffer;
+struct SceneInfo {
+    bool isActived;
+    std::unordered_map<std::string, ShaderRenderUnit*> usingShaders;
+    std::vector<FrameBuffer*> targetFrames;
+
+    //one group with same index.
+    std::vector<VertexBuffer*> usingVertexs;
+    std::vector<IndiceBuffer*> usingIndices;
+    std::vector<MaterialRenderUnit*> usingMaterials;
+
+    std::unordered_map<std::string, TextureRenderUnit*> usingTextures;
+    std::vector<MatrixRenderUnit*> usingMatrixes;
+    SceneInfo() = default;
+};
+
+// 帧缓冲区信息
+struct FrameBuffer
+{
+    uint32_t width;
+    uint32_t height;
+    uint8_t channels; // 通道数 (例如，RGBA 为 4)
+    uint8_t* buffer;
+    double* zBuffer;
+    SceneInfo* scene;
+
+    FrameBuffer() = delete;
+    FrameBuffer(uint32_t w, uint32_t h, uint8_t c) : width(w), height(h), channels(c)
+    {
+        buffer = new uint8_t[w*h*c];
+        zBuffer = new double[w*h*c];
+        scene = nullptr;
+    }
 };
 
 class RTENGINE_API IRenderer
@@ -127,13 +147,14 @@ public:
     virtual void BindFrameBuffer(size_t scene_index, size_t frame_buffer_index) = 0;
 
     virtual void BindObject(size_t scene_index, size_t vertex_buffer_index, size_t indice_buffer_index, size_t material_index) = 0;
+    virtual void BindObject(size_t scene_index, size_t vertex_buffer_index, size_t indice_buffer_index) = 0;
     virtual void BindShader(size_t scene_index, std::string name, size_t shader_index) = 0;
     virtual void BindMatrix(size_t scene_index, size_t matrix_index) = 0;
     virtual void AppendMatrix(size_t matrix_index, Matrix4x4d&& matrix) = 0;
     virtual void AppendMatrix(size_t matrix_index, Matrix4x4d& matrix) = 0;
-    virtual void DrawFrame(size_t, uint8_t*, size_t) = 0;
+    virtual void DrawFrame(size_t frame_index, uint8_t*& data, size_t& buffer_size) = 0;
 
-    virtual void GetSceneFrameCopy(size_t, uint8_t*, size_t) const = 0;
+    virtual void GetSceneFrameCopy(size_t, uint8_t*& data, size_t& buffer_size) const = 0;
 };
 }
 #endif

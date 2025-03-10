@@ -18,9 +18,12 @@ public:
     {
         delete[] data;
     }
-    SVector(const std::initializer_list<T>& init)
+    SVector(const std::initializer_list<T>& init) : data(new T[DIM]),
+        x(data[0]),
+        y(DIM >= 2 ? data[1] : data[0]),
+        z(DIM >= 3 ? data[2] : data[0]),
+        w(DIM >= 4 ? data[3] : data[0])
     {
-        data = new T[DIM];
         size_t list_size = init.size();
         list_size = list_size > DIM ? DIM : list_size;
         size_t i = 0;
@@ -32,68 +35,50 @@ public:
         {
             data[i] = T{0};
         }
-
-        x = y = z = w = *0;
-        if (DIM >= 1) x = *data[0];
-        if (DIM >= 2) x = *data[1];
-        if (DIM >= 3) x = *data[2];
-        if (DIM >= 4) x = *data[3];
     }
-    SVector()
+    SVector() : data(new T[DIM]),
+        x(data[0]),
+        y(DIM >= 2 ? data[1] : data[0]),
+        z(DIM >= 3 ? data[2] : data[0]),
+        w(DIM >= 4 ? data[3] : data[0])
     {
-        data = new T[DIM];
         size_t i = 0;
         for(; i < DIM; ++ i)
         {
             data[i] = T{0};
         }
-
-        x = y = z = w = *0;
-        if (DIM >= 1) x = *data[0];
-        if (DIM >= 2) x = *data[1];
-        if (DIM >= 3) x = *data[2];
-        if (DIM >= 4) x = *data[3];
     }
-    SVector(T val)
+    SVector(T val) : data(new T[DIM]),
+        x(data[0]),
+        y(DIM >= 2 ? data[1] : data[0]),
+        z(DIM >= 3 ? data[2] : data[0]),
+        w(DIM >= 4 ? data[3] : data[0])
     {
-        data = new T[DIM];
         size_t i = 0;
         for(; i < DIM; ++ i)
         {
             data[i] = T{val};
         }
-
-        x = y = z = w = *0;
-        if (DIM >= 1) x = *data[0];
-        if (DIM >= 2) x = *data[1];
-        if (DIM >= 3) x = *data[2];
-        if (DIM >= 4) x = *data[3];
     }
-    SVector(const SVector<DIM, T>& other)
+    SVector(const SVector<DIM, T>& other) : data(new T[DIM]),
+        x(data[0]),
+        y(DIM >= 2 ? data[1] : data[0]),
+        z(DIM >= 3 ? data[2] : data[0]),
+        w(DIM >= 4 ? data[3] : data[0])
     {
-        data = new T[DIM];
         size_t i = 0;
-        for(; i < DIM; ++ i)
+        for(; i < DIM; ++i)
         {
             data[i] = other.data[i];
         }
-
-        x = y = z = w = *0;
-        if (DIM >= 1) x = *data[0];
-        if (DIM >= 2) x = *data[1];
-        if (DIM >= 3) x = *data[2];
-        if (DIM >= 4) x = *data[3];
     }
-    SVector(SVector<DIM, T>&& other)
+    SVector(SVector<DIM, T>&& other) : data(new T[DIM]),
+        x(data[0]),
+        y(DIM >= 2 ? data[1] : data[0]),
+        z(DIM >= 3 ? data[2] : data[0]),
+        w(DIM >= 4 ? data[3] : data[0])
     {
-        data = other.data;
         other.data = nullptr;
-
-        x = y = z = w = *0;
-        if (DIM >= 1) x = *data[0];
-        if (DIM >= 2) x = *data[1];
-        if (DIM >= 3) x = *data[2];
-        if (DIM >= 4) x = *data[3];
     }
     // SVector<DIM, T>ement functions from IVector (CRTP style, returning SVector<T, DIM>& and SVector<T, DIM>)
     SVector<DIM, T>& operator+=(const SVector<DIM, T>& other) override

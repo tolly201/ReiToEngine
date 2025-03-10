@@ -11,30 +11,21 @@ auto testVectors = []()
 {
     ReiToEngine::Vec4d v1, v2;
     v1 = {1,4,5,2};
-    v2 = {4,41,10, 3};
+    v2 = {4,41,10,3};
+    std::cout << v2;
+
     ReiToEngine::Vec4d v3 = v1.cross3D(v2);
-    std::cout << &v1<< std::endl << &v2<< std::endl <<&v3<< std::endl;
-    std::cout << v3.x<< std::endl << v3.y<< std::endl <<v3.z<< std::endl<<v3.w<< std::endl;
     v3 = v1.normalize();
-    std::cout << v3;
-    std::cout << v1;
     v1.normalizeSelf();
-    std::cout << v1;
     v3 = v1.normalize();
-    std::cout << v3;
     ReiToEngine::Vec4d v4({1,2,3,4});
-    ReiToEngine::Vec4d v5(1,2,3,4);
+    ReiToEngine::Vec4d v5({1,2,3,4});
     ReiToEngine::Vec4d v6(2);
-    std::cout << v4;
-    std::cout << v5;
-    std::cout << v6;
     ReiToEngine::Vec4d v7(v4);
+    std::cout << v7;
     ReiToEngine::Vec4d v8(std::move(v4));
     std::cout << v7;
     std::cout << v8;
-    std::cout << v4;
-    v4 = {3,3,3,3};
-    std::cout << v4;
 };
 
 void testLamba()
@@ -71,10 +62,53 @@ void testMatrix()
     std::cout << m4[2];
     std::cout << m4[1][2];
 }
+
+void testRender()
+{
+    ReiToEngine::SimpleRenderer render;
+
+    size_t SBO = render.CreateSceneInfo();
+    size_t FBO = render.CreateFrameBuffer(64, 64, 4);
+    ReiToEngine::Vec3d* triangle = new ReiToEngine::Vec3d[3];
+    ReiToEngine::Vec4d *colors = new ReiToEngine::Vec4d[3];
+    uint32_t* line = new uint32_t[6];
+    triangle[0] = ReiToEngine::Vec3d({32, 32, 0});
+    triangle[1] = ReiToEngine::Vec3d({40, 32, 0});
+    triangle[2] = ReiToEngine::Vec3d({32, 40, 0});
+
+    colors[0] = ReiToEngine::Vec4d({255, 0, 0, 255});
+    colors[1] = ReiToEngine::Vec4d({0, 255, 0, 255});
+    colors[2] = ReiToEngine::Vec4d({0, 0, 255, 255});
+    line[0] = 0;
+    line[1] = 1;
+    line[2] = 0;
+    line[3] = 2;
+    line[4] = 1;
+    line[5] = 2;
+    ReiToEngine::Matrix4x4d transform = ReiToEngine::Matrix4x4d({1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1});
+    size_t VBO = render.CreateVertexBuffer(triangle, nullptr, nullptr, colors, 3);
+    size_t IBO = render.CreateIndiceBuffer(line, 6);
+    size_t MBO = render.CreateMatrixRenderUnit();
+    render.AppendMatrix(MBO, transform);
+    render.BindFrameBuffer(SBO, FBO);
+    render.BindObject(SBO, VBO, IBO);
+    render.BindMatrix(SBO, MBO);
+    uint8_t* data;
+    size_t size;
+    render.DrawFrame(SBO, data, size);
+    ReiToEngine::STBImageParser imageParser;
+    ReiToEngine::Image image(64,64,4);
+    image.SetData(data);
+    image.SetType(ReiToEngine::EImageType::IMAGE_PNG);
+
+    imageParser.Write("./test1.png",image);
+}
+
 int main()
 {
-    testVectors();
-    testLamba();
-    testMatrix();
+    // testVectors();
+    // testLamba();
+    // testMatrix();
+    testRender();
     return 0;
 }

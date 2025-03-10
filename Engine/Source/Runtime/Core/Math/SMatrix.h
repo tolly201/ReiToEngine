@@ -366,8 +366,23 @@ public:
 
         return rank;
     }
-    Vector<column, T> Transform(const Vector<column, T>& vector) const override {}
-    Vector<column, T> operator*(const Vector<column, T>& vector) const override {}
+    Vector<column, T> Transform(const Vector<column, T>& vector) const override
+    {
+        Vector<column, T> result;
+        for (size_t i = 0; i < row; ++i) {
+            T sum = T{0};
+            for (size_t j = 0; j < column; ++j) {
+                sum += data[i * column + j] * vector[j];
+            }
+            result[i] = sum;
+        }
+        return result;
+    }
+
+    Vector<column, T> operator*(const Vector<column, T>& vector) const override
+    {
+        return Transform(vector);
+    }
     SMatrix<column, row, T> GetRow(uint8_t rowIndex) const override
     {
 
