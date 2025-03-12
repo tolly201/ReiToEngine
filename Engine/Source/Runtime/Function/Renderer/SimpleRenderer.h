@@ -84,9 +84,9 @@ public:
         vertexBuffers.emplace_back(positions, normals, texCoords, colors, size);
         return vertexBuffers.size() - 1;
     }
-    size_t CreateIndiceBuffer(uint32_t* indices, size_t size) override
+    size_t CreateIndiceBuffer(uint32_t* indices, size_t size, bool isLine) override
     {
-        indiceBuffers.emplace_back(indices, size);
+        indiceBuffers.emplace_back(indices, size, isLine);
         return indiceBuffers.size() - 1;
     }
     size_t CreateShaderRenderUnit(std::string& shadercode) override
@@ -151,6 +151,7 @@ public:
     void BindMatrix(size_t scene_index, size_t matrix_index) override
     {
         sceneInfos[scene_index].usingMatrixes.push_back(&matrixesRenderUnits[matrix_index]);
+        std::cout << "matrix binded:\n" << matrixesRenderUnits[matrix_index].result << sceneInfos[scene_index].usingMatrixes[0]->result;
     }
 
     void AppendMatrix(size_t matrix_index, Matrix4x4d&& matrix) override
@@ -161,7 +162,8 @@ public:
     void AppendMatrix(size_t matrix_index, Matrix4x4d& matrix) override
     {
         matrixesRenderUnits[matrix_index].matrixes.emplace_back(matrix);
-        matrixesRenderUnits[matrix_index].result *= matrix;
+        matrixesRenderUnits[matrix_index].result = matrix * matrixesRenderUnits[matrix_index].result;
+        std::cout << "after append: \n" << matrixesRenderUnits[matrix_index].result;
     }
 
     size_t GetFrameSize(size_t frame_index) const
@@ -205,19 +207,19 @@ public:
             for (size_t j = 0; j < indices.size / 3; ++j)
             {
                 // 注意：这里需要传入顶点的原始坐标 (Vec3d) 和颜色
-                DrawTriangle(frame_index,
+                DrawTriangle(currentFrame.buffer, currentFrame.zBuffer,
                     currentScene.usingVertexs[i]->positions[indices.indices[j * 3]],
                     currentScene.usingVertexs[i]->positions[indices.indices[j * 3 + 1]],
                     currentScene.usingVertexs[i]->positions[indices.indices[j * 3 + 2]],
                     currentScene.usingVertexs[i]->colors[indices.indices[j * 3]],
                     currentScene.usingVertexs[i]->colors[indices.indices[j * 3 + 1]],
-                    currentScene.usingVertexs[i]->colors[indices.indices[j * 3 + 2]]
+                    currentScene.usingVertexs[i]->colors[indices.indices[j * 3 + 2]],
+                    transform_matrix, currentFrame.width, currentFrame.height
                 );
             }
         }
     }
 
-    delete[] data;
     buffer_size = GetFrameSize(frame_index);
     data = new uint8_t[buffer_size];
     std::memcpy(data, currentFrame.buffer, buffer_size);
@@ -332,25 +334,79 @@ public:
             return v0.z;
         }
     }
-void DrawTriangle(size_t buffer_object, Vec3d v0, Vec3d v1, Vec3d v2, Vec4d color0, Vec4d color1, Vec4d color2)
+void DrawTriangle(uint8_t* data, double* zBuffer, Vec3d v0, Vec3d v1, Vec3d v2, Vec4d color0, Vec4d color1, Vec4d color2,Matrix4x4d transform, uint32_t width, uint32_t height)
 {
-    FrameBuffer& frameBuffer = frameBuffers[buffer_object]; // 使用引用
-    uint8_t* data = frameBuffer.buffer;
-    double_t* zBuffer = frameBuffer.zBuffer;
+    Vec4d transformed_v0 = Vec4d({v0.x ,v0.y, v0.z, 1});
+    Vec4d transformed_v1 = Vec4d({v1.x ,v1.y, v1.z, 1});
+    Vec4d transformed_v2 = Vec4d({v2.x ,v2.y, v2.z, 1});
 
-    // 计算包围盒
-    int minX = std::max(0, (int)std::min({v0.x, v1.x, v2.x}));
-    int minY = std::max(0, (int)std::min({v0.y, v1.y, v2.y}));
-    int maxX = std::min((int)frameBuffer.width - 1,  (int)std::max({v0.x, v1.x, v2.x}));
-    int maxY = std::min((int)frameBuffer.height - 1, (int)std::max({v0.y, v1.y, v2.y}));
+    std::cout << "Draw Triangle\n";
+    std::cout << "Draw Triangle tansformed_v0:\n";
+    std::cout << transformed_v0;
+    std::cout << transformed_v1;
+    std::cout << transformed_v2;
+
+    std::cout << "Draw Triangle tansform:\n";
+    std::cout << transform;
+
+    transformed_v0 = transform * transformed_v0;
+    transformed_v1 = transform * transformed_v1;
+    transformed_v2 = transform * transformed_v2;
+
+    std::cout << transformed_v0;
+    std::cout << transformed_v1;
+    std::cout << transformed_v2;
+
+    transformed_v0 /= transformed_v0.w;
+    transformed_v1 /= transformed_v1.w;
+    transformed_v2 /= transformed_v2.w;
+
+    std::cout << transformed_v0;
+    std::cout << transformed_v1;
+    std::cout << transformed_v2;
+
+    transformed_v0.x = (transformed_v0.x + 1.0) * 0.5 * width;
+    transformed_v0.y = (1.0 - transformed_v0.y) * 0.5 * height;
+    transformed_v1.x = (transformed_v1.x + 1.0) * 0.5 * width;
+    transformed_v1.y = (1.0 - transformed_v1.y) * 0.5 * height;
+    transformed_v2.x = (transformed_v2.x + 1.0) * 0.5 * width;
+    transformed_v2.y = (1.0 - transformed_v2.y) * 0.5 * height;
+
+    std::cout << transformed_v0;
+    std::cout << transformed_v1;
+    std::cout << transformed_v2;
+
+    // box
+    int minX = std::max(0, (int)std::min({transformed_v0.x, transformed_v1.x, transformed_v2.x}));
+    int minY = std::max(0, (int)std::min({transformed_v0.y, transformed_v1.y, transformed_v2.y}));
+    int maxX = std::min((int)width - 1,  (int)std::max({transformed_v0.x, transformed_v1.x, transformed_v2.x}));
+    int maxY = std::min((int)height - 1, (int)std::max({transformed_v0.y, transformed_v1.y, transformed_v2.y}));
+
+    std::cout << "minX" << minX << std::endl;
+    std::cout << "minY" << minY << std::endl;
+    std::cout << "maxX" << maxX << std::endl;
+    std::cout << "maxY" << maxY << std::endl;
+
 
     // 计算三角形的边向量
-    Vec3d edge0 = v1 - v0;
-    Vec3d edge1 = v2 - v1;
-    Vec3d edge2 = v0 - v2;
+    Vec4d _edge0 = transformed_v1 - transformed_v0;
+    Vec4d _edge1 = transformed_v2 - transformed_v1;
+    Vec4d _edge2 = transformed_v0 - transformed_v2;
+
+    Vec3d edge0 = {_edge0.x,_edge0.y,_edge0.z};
+    Vec3d edge1 = {_edge1.x,_edge1.y,_edge1.z};
+    Vec3d edge2 = {_edge2.x,_edge2.y,_edge2.z};
+
+    std::cout << "edge0" << edge0 << std::endl;
+    std::cout << "edge1" << edge1 << std::endl;
+    std::cout << "edge2" << edge2 << std::endl;
 
     // 计算面积相关的常量 (优化：只计算一次)
-    double area = edge0.cross2D(edge1); // 叉乘，注意这里假设顶点顺序是逆时针, 使用 cross2D
+    double area = std::abs(edge0.cross2D(edge1)); // 叉乘，注意这里假设顶点顺序是逆时针, 使用 cross2D
+    std::cout << "area" << area << std::endl;
+    int a;
+    std::cin >> a;
+
     if (std::abs(area) < 1e-6) return; // 退化三角形，直接返回, 避免浮点数精度问题
 
     // 遍历包围盒
@@ -360,9 +416,9 @@ void DrawTriangle(size_t buffer_object, Vec3d v0, Vec3d v1, Vec3d v2, Vec4d colo
         {
             // 计算重心坐标
             Vec3d p = {static_cast<double>(x), static_cast<double>(y), 0.0}; // 当前像素点, 使用 double
-            Vec3d w0 = p - v0;
-            Vec3d w1 = p - v1;
-            Vec3d w2 = p - v2;
+            Vec3d w0 = p - Vec3d({transformed_v0.x, transformed_v0.y, 0});
+            Vec3d w1 = p - Vec3d({transformed_v1.x, transformed_v1.y, 0});
+            Vec3d w2 = p - Vec3d({transformed_v2.x, transformed_v2.y, 0});
 
             // 计算子三角形面积
             double a0 = w1.cross2D(edge1); // 使用 cross2D
@@ -372,24 +428,39 @@ void DrawTriangle(size_t buffer_object, Vec3d v0, Vec3d v1, Vec3d v2, Vec4d colo
             // 检查像素是否在三角形内
             if ((a0 >= 0 && a1 >= 0 && a2 >= 0) || (a0 <= 0 && a1 <= 0 && a2 <= 0))
             {
+                // 统一符号，确保 alpha, beta, gamma 为正
+                double sign = (a0 >= 0 && a1 >= 0 && a2 >= 0) ? 1.0 : -1.0;
+                double abs_a0 = sign * a0;
+                double abs_a1 = sign * a1;
+                double abs_a2 = sign * a2;
+
                 // 计算重心坐标
-                double alpha = a0 / area;
-                double beta = a1 / area;
-                double gamma = a2 / area;
+                double alpha = abs_a0 / area;
+                double beta = abs_a1 / area;
+                double gamma = abs_a2 / area;
 
                 // 计算插值后的 z 值
-                double z = alpha * v0.z + beta * v1.z + gamma * v2.z;
+                double z = 1.0 / (alpha / transformed_v0.w + beta / transformed_v1.w + gamma / transformed_v2.w);
+                double interpolated_z = alpha * transformed_v0.z + beta * transformed_v1.z + gamma * transformed_v2.z;
 
-                // Z-buffer 测试
-                int offset = (y * frameBuffer.width + x); // zBuffer 偏移
-                if (z < zBuffer[offset]) //z值越小，离观察者越近
+                int offset = y * width + x;
+                if (interpolated_z < zBuffer[offset]) //z值越小，离观察者越近
                 {
+                    printf("interpolated_color, color0: ");
+                    std::cout<< color0 << std::endl;
+                    printf("interpolated_color, color1: ");
+                    std::cout<< color1 << std::endl;
+                    printf("interpolated_color, color2: ");
+                    std::cout<< color2 << std::endl;
+
+                    printf("alpha: %f, beta: %f, gamma: %f\n", alpha, beta, gamma);
+
                     // 插值颜色
                     Vec4d interpolated_color = color0 * alpha + color1 * beta + color2 * gamma;
 
                     // 写入像素
-                    SetColor(data, frameBuffer, x, y, interpolated_color);
-                    zBuffer[offset] = z; // 更新 Z-buffer
+                    SetColor(data, frameBuffers[0], x, y, interpolated_color);
+                    zBuffer[offset] = interpolated_z; // 更新 Z-buffer
                 }
             }
         }

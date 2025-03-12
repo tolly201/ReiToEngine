@@ -5,6 +5,7 @@
 #include <assimp/postprocess.h>     // Post processing flags
 #include <Function/Renderer/SimpleRenderer.h>
 #include "Core/Math/IMath.h"
+#include "Camera.h"
 //[capture variable]
 //{accepted variable}
 auto testVectors = []()
@@ -65,31 +66,43 @@ void testMatrix()
 
 void testRender()
 {
+    ReiToEngine::Camera camera = ReiToEngine::Camera(ReiToEngine::Vec3d({0,0, 10}));
+    int a;
     ReiToEngine::SimpleRenderer render;
+    size_t width = 400;
+    size_t height = 300;
 
     size_t SBO = render.CreateSceneInfo();
-    size_t FBO = render.CreateFrameBuffer(64, 64, 4);
+    size_t FBO = render.CreateFrameBuffer(width, height, 4);
     ReiToEngine::Vec3d* triangle = new ReiToEngine::Vec3d[3];
     ReiToEngine::Vec4d *colors = new ReiToEngine::Vec4d[3];
-    uint32_t* line = new uint32_t[6];
-    triangle[0] = ReiToEngine::Vec3d({32, 32, 0});
-    triangle[1] = ReiToEngine::Vec3d({40, 32, 0});
-    triangle[2] = ReiToEngine::Vec3d({32, 40, 0});
+    uint32_t* line = new uint32_t[3];
+    triangle[0] = ReiToEngine::Vec3d({0, 0, 0});
+    triangle[1] = ReiToEngine::Vec3d({0, 100, 0});
+    triangle[2] = ReiToEngine::Vec3d({100, 0, 0});
 
     colors[0] = ReiToEngine::Vec4d({255, 0, 0, 255});
     colors[1] = ReiToEngine::Vec4d({0, 255, 0, 255});
     colors[2] = ReiToEngine::Vec4d({0, 0, 255, 255});
     line[0] = 0;
     line[1] = 1;
-    line[2] = 0;
-    line[3] = 2;
-    line[4] = 1;
-    line[5] = 2;
-    ReiToEngine::Matrix4x4d transform = ReiToEngine::Matrix4x4d({1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1});
+    line[2] = 2;
+    ReiToEngine::Matrix4x4d model = ReiToEngine::Matrix4x4d({1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1});
+    ReiToEngine::Matrix4x4d View = camera.GetViewMatrix();
+    ReiToEngine::Matrix4x4d Projection = camera.GetProjectionMatrix();
+    ReiToEngine::Matrix4x4d NDC = camera.GetNDCMatrix(width, height);
+    std::cout << "transform: \n" << model;
+    std::cout << "View: \n" << View;
+    std::cout << "Projection: \n" << Projection;
+
     size_t VBO = render.CreateVertexBuffer(triangle, nullptr, nullptr, colors, 3);
-    size_t IBO = render.CreateIndiceBuffer(line, 6);
+    size_t IBO = render.CreateIndiceBuffer(line, 3, false);
     size_t MBO = render.CreateMatrixRenderUnit();
-    render.AppendMatrix(MBO, transform);
+    render.AppendMatrix(MBO, model);
+    render.AppendMatrix(MBO, View);
+    render.AppendMatrix(MBO, Projection);
+    render.AppendMatrix(MBO, NDC);
+
     render.BindFrameBuffer(SBO, FBO);
     render.BindObject(SBO, VBO, IBO);
     render.BindMatrix(SBO, MBO);
@@ -97,11 +110,121 @@ void testRender()
     size_t size;
     render.DrawFrame(SBO, data, size);
     ReiToEngine::STBImageParser imageParser;
-    ReiToEngine::Image image(64,64,4);
+    ReiToEngine::Image image(width,height,4);
     image.SetData(data);
     image.SetType(ReiToEngine::EImageType::IMAGE_PNG);
 
     imageParser.Write("./test1.png",image);
+}
+
+void testCamera()
+{
+    ReiToEngine::Camera camera = ReiToEngine::Camera(ReiToEngine::Vec3d({0,0, 10}));
+    int a;
+    int width = 800;
+    int height = 600;
+    uint32_t* line = new uint32_t[3];
+    ReiToEngine::Vec4d* triangle = new ReiToEngine::Vec4d[3];
+    triangle[0] = ReiToEngine::Vec4d({0, 0, 0, 1});
+    triangle[1] = ReiToEngine::Vec4d({0, 5, 0, 1});
+    triangle[2] = ReiToEngine::Vec4d({5, 0, 0, 1});
+    ReiToEngine::Matrix4x4d View = camera.GetViewMatrix();
+    ReiToEngine::Matrix4x4d Projection = camera.GetProjectionMatrix();
+    ReiToEngine::Matrix4x4d trans = View * Projection;
+    ReiToEngine::Matrix4x4d NDC = camera.GetNDCMatrix(width, height);
+    ReiToEngine::Matrix4x4d screen = camera.GetScreenMatrix(width, height);
+    std::cout << "start computing:\n";
+    std::cout << View * Projection;
+
+    ReiToEngine::Matrix4x4d trans1 = Projection * View;
+    ReiToEngine::Vec4d transformed_v0,transformed_v1,transformed_v2;
+
+    std::cout << "View computing:\n";
+    std::cout << View;
+    std::cout << std::endl;
+
+    std::cout << triangle[0];
+    std::cout << triangle[1];
+    std::cout << triangle[2];
+    std::cout << std::endl;
+
+    transformed_v0 = View * triangle[0] ;
+    transformed_v1 = View * triangle[1] ;
+    transformed_v2 = View * triangle[2] ;
+
+    std::cout << transformed_v0;
+    std::cout << transformed_v1;
+    std::cout << transformed_v2;
+    std::cout << "View computing end:\n";
+
+    std::cout << "Projection computing:\n";
+    std::cout << Projection;
+    std::cout << std::endl;
+    std::cout << transformed_v0;
+    std::cout << transformed_v1;
+    std::cout << transformed_v2;
+    std::cout << std::endl;
+
+    transformed_v0 = Projection * transformed_v0;
+    transformed_v1 = Projection * transformed_v1 ;
+    transformed_v2 = Projection * transformed_v2 ;
+
+    std::cout << transformed_v0;
+    std::cout << transformed_v1;
+    std::cout << transformed_v2;
+    std::cout << std::endl;
+
+    std::cout << "Projection computing end:\n";
+
+    std::cout << "NDC computing:\n";
+    std::cout << NDC;
+    std::cout << std::endl;
+    std::cout << transformed_v0;
+    std::cout << transformed_v1;
+    std::cout << transformed_v2;
+    std::cout << std::endl;
+
+    transformed_v0 = NDC * transformed_v0 ;
+    transformed_v1 = NDC * transformed_v1 ;
+    transformed_v2 = NDC * transformed_v2 ;
+
+    std::cout << transformed_v0;
+    std::cout << transformed_v1;
+    std::cout << transformed_v2;
+    std::cout << std::endl;
+
+
+    std::cout << "NDC computing end:\n";
+
+    transformed_v0 = transformed_v0 / transformed_v0.w;
+    transformed_v1 = transformed_v1 / transformed_v1.w;
+    transformed_v2 = transformed_v2 / transformed_v2.w;
+
+    std::cout << transformed_v0;
+    std::cout << transformed_v1;
+    std::cout << transformed_v2;
+    std::cout << std::endl;
+
+    std::cout << screen * transformed_v0;
+    std::cout << screen * transformed_v1;
+    std::cout << screen * transformed_v2;
+    std::cout << std::endl;
+
+    ReiToEngine::Matrix4x4d m = NDC * Projection * View;
+
+
+    transformed_v0 = m * triangle[0] ;
+    transformed_v1 = m * triangle[1] ;
+    transformed_v2 = m * triangle[2] ;
+
+    transformed_v0 = transformed_v0 / transformed_v0.w;
+    transformed_v1 = transformed_v1 / transformed_v1.w;
+    transformed_v2 = transformed_v2 / transformed_v2.w;
+
+    std::cout << screen * transformed_v0;
+    std::cout << screen * transformed_v1;
+    std::cout << screen * transformed_v2;
+    std::cout << std::endl;
 }
 
 int main()
@@ -110,5 +233,6 @@ int main()
     // testLamba();
     // testMatrix();
     testRender();
+    // testCamera();
     return 0;
 }

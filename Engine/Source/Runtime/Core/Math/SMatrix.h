@@ -143,6 +143,19 @@ public:
         return *this;
     }
 
+    friend std::ostream& operator<<(std::ostream& os, const SMatrix<column, row, T>& vec)
+    {
+        for(uint8_t r = 0; r < column; ++r)
+        {
+            os << "(";
+            for(uint8_t c = 0; c < column - 1; ++c)
+                os << vec.data[r * column + c] << ", ";
+            os << vec.data[r * column + column - 1] <<")" << std::endl;;
+        }
+        return os;
+    }
+
+
     Vector<column, T> operator[](int index) override
     {
         assert(index >= 0 && index < row && "Illegal row index when indexing matrix.\n");

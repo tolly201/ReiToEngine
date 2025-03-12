@@ -51,8 +51,8 @@ struct IndiceBuffer {
     size_t size;
     bool isLine = true;
 
-    IndiceBuffer(uint32_t* _indices, size_t _size):
-    indices(_indices), size(_size), isLine(true)
+    IndiceBuffer(uint32_t* _indices, size_t _size, bool _isLine):
+    indices(_indices), size(_size), isLine(_isLine)
     {}
 };
 
@@ -138,7 +138,7 @@ public:
     virtual size_t CreateSceneInfo() = 0;
     virtual size_t CreateFrameBuffer(uint32_t w, uint32_t h, uint8_t channels) = 0;
     virtual size_t CreateVertexBuffer(Vec3d*, Vec3d*, Vec2d*, Vec4d*, size_t) = 0;
-    virtual size_t CreateIndiceBuffer(uint32_t*, size_t) = 0;
+    virtual size_t CreateIndiceBuffer(uint32_t*, size_t, bool) = 0;
     virtual size_t CreateShaderRenderUnit(std::string&) = 0;
     virtual size_t CreateTextureRenderUnit(uint32_t w, uint32_t h, uint32_t channels, uint8_t*) = 0;
     virtual size_t CreateMaterialRenderUnit(Vec3d, Vec3d, Vec3d, float) = 0;
