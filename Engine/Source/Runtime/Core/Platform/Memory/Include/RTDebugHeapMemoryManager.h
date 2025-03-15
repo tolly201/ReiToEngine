@@ -33,6 +33,8 @@ private:
     size_t TotalAllocatedMemory;
     size_t PeakAllocatedMemory;
 
+    const static size_t alignedRTBlockSize = (sizeof(RTBlock) + 7) & ~7;
+
     std::mutex MemoryMutex;
 public:
 };

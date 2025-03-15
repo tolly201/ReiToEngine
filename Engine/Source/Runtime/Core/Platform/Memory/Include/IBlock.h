@@ -4,7 +4,7 @@
 #include <cstdint>
 namespace ReiToEngine
 {
-enum EBlock : uint32_t
+enum EBlock : uint64_t
 {
 	BEGIN_MASK = 0xDEADC0DE,
 	END_MASK = 0xC0DEDEAD,

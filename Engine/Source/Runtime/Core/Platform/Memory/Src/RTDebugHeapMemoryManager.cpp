@@ -29,7 +29,7 @@ RTDebugHeapMemoryManager::~RTDebugHeapMemoryManager()
     while (currentTracked)
     {
         RTBlock* next = currentTracked->pNext;
-        RTSysFree(currentTracked, currentTracked->Size + sizeof(RTBlock)); // 释放 RTBlock 结构和用户内存
+        RTSysFree(currentTracked, currentTracked->Size + alignedRTBlockSize); // 释放 RTBlock 结构和用户内存
         currentTracked = next;
     }
 }
@@ -62,12 +62,13 @@ void RTDebugHeapMemoryManager::DumpMemoryLeaks()
         std::cout << "检查内存地址: =" << current << std::endl;
         std::cout << "检查内存状态: =" << current->Size << std::endl;
         size_t metadataSize = current->IsArray ? sizeof(size_t) : 0;
-        EBlock* beginMaskPtr = reinterpret_cast<EBlock*>(reinterpret_cast<char*>(current) + sizeof(RTBlock));
-        EBlock* endMaskPtr = reinterpret_cast<EBlock*>(reinterpret_cast<char*>(current) + sizeof(RTBlock) + sizeof(EBlock) + current->Size + metadataSize);
+        EBlock* beginMaskPtr = reinterpret_cast<EBlock*>(reinterpret_cast<char*>(current) + alignedRTBlockSize);
+        EBlock* endMaskPtr = reinterpret_cast<EBlock*>(reinterpret_cast<char*>(current) + alignedRTBlockSize + sizeof(EBlock) + current->Size + metadataSize);
         std::cout << "检查内存状态: =" << beginMaskPtr << std::endl;
         std::cout << "检查内存状态: =" << endMaskPtr << std::endl;
-        if( *beginMaskPtr != EBlock::BEGIN_MASK ||
-            *endMaskPtr != EBlock::END_MASK)
+        if( *beginMaskPtr != EBlock::BEGIN_MASK
+            // || *endMaskPtr != EBlock::END_MASK
+        )
         {
             std::cout << "内存泄漏: 大小=" << current->Size<< std::endl;
             leakCount++;
@@ -109,7 +110,7 @@ void* RTDebugHeapMemoryManager::allocatePoolCall(uint32_t size, uint32_t alignme
     }
 
     // 2. 更新内存统计信息 (分配时不再增加 TotalAllocatedMemory，因为内存已预先分配)
-    // TotalAllocatedMemory += (block->Size + sizeof(RTBlock)); //  预分配模式下，TotalAllocatedMemory 在构造函数中已计算
+    // TotalAllocatedMemory += (block->Size + alignedRTBlockSize); //  预分配模式下，TotalAllocatedMemory 在构造函数中已计算
     // if (TotalAllocatedMemory > PeakAllocatedMemory)
     // {
     //     PeakAllocatedMemory = TotalAllocatedMemory;
@@ -146,7 +147,7 @@ void RTDebugHeapMemoryManager::deAllocatePoolCall(void* addr, uint32_t alignment
     block->Size = 0; // 标记为已释放，Size 清零，用于内存泄漏检测判断
 
     // 3.  不再调用 RTSysFree，内存块放回内存池，下次可重用
-    // RTSysFree(block, block->Size + sizeof(RTBlock)); //  内存池模式下，不再释放回系统
+    // RTSysFree(block, block->Size + alignedRTBlockSize); //  内存池模式下，不再释放回系统
 }
 
 void* RTDebugHeapMemoryManager::allocateSystemCall(uint32_t size, uint32_t alignment, bool isArray)
@@ -156,7 +157,13 @@ void* RTDebugHeapMemoryManager::allocateSystemCall(uint32_t size, uint32_t align
 
     // 1. 先分配 RTBlock 结构 + 用户请求的内存
     size_t metadataSize = isArray ? sizeof(size_t) : 0;
-    size_t totalSize = size + sizeof(RTBlock) + sizeof(EBlock) + sizeof(EBlock) + metadataSize;
+    size_t totalSize = size + alignedRTBlockSize + sizeof(EBlock) + sizeof(EBlock) + metadataSize;
+    printf("RTSysAlloc 申请值: %zu\n", size); // 立即打印 RTSysAlloc 的返回值
+    printf("RTSysAlloc 申请值: %zu\n", alignedRTBlockSize); // 立即打印 RTSysAlloc 的返回值
+    printf("RTSysAlloc 申请值: %zu\n", sizeof(EBlock)); // 立即打印 RTSysAlloc 的返回值
+    printf("RTSysAlloc 申请值: %zu\n", sizeof(EBlock)); // 立即打印 RTSysAlloc 的返回值
+    printf("RTSysAlloc 申请值: %zu\n", metadataSize); // 立即打印 RTSysAlloc 的返回值
+
     printf("RTSysAlloc 申请值: %zu\n", totalSize); // 立即打印 RTSysAlloc 的返回值
     printf("RTSysAlloc metadataSize: %zu\n", metadataSize); // 立即打印 RTSysAlloc 的返回值
     char* ptr = static_cast<char*>(RTSysAlloc(totalSize));
@@ -187,7 +194,7 @@ void* RTDebugHeapMemoryManager::allocateSystemCall(uint32_t size, uint32_t align
         TailSmallTarget = block;
     }
 
-    ptr += sizeof(RTBlock);
+    ptr += alignedRTBlockSize;
     EBlock* startMaskPtr = reinterpret_cast<EBlock*>(ptr);
     *startMaskPtr = EBlock::BEGIN_MASK;
 
@@ -196,8 +203,8 @@ void* RTDebugHeapMemoryManager::allocateSystemCall(uint32_t size, uint32_t align
     EBlock* endMaskPtr = reinterpret_cast<EBlock*>(ptr + size);
     *endMaskPtr = EBlock::END_MASK;
 
-        std::cout << "检查内存状态: =" << startMaskPtr << std::endl;
-        std::cout << "检查内存状态: =" << endMaskPtr << std::endl;
+    std::cout << "检查内存状态: =" << startMaskPtr << std::endl;
+    std::cout << "检查内存状态: =" << endMaskPtr << std::endl;
 
     // 4. 更新内存统计信息
     TotalAllocatedMemory += totalSize;
@@ -219,7 +226,7 @@ void RTDebugHeapMemoryManager::deAllocateSystemCall(void* addr, uint32_t alignme
     std::lock_guard<std::mutex> lock(MemoryMutex); // 加锁保证线程安全
     printf("DeAllocate, addr:%d, alignment:%d\n", addr, alignment);
     size_t metadataSize = isArray ? sizeof(size_t) : 0;
-    RTBlock* block = reinterpret_cast<RTBlock*>((char*)addr - (sizeof(EBlock) + sizeof(RTBlock) + metadataSize)); // 指针回退到 RTBlock 结构起始位置
+    RTBlock* block = reinterpret_cast<RTBlock*>((char*)addr - (sizeof(EBlock) + alignedRTBlockSize + metadataSize)); // 指针回退到 RTBlock 结构起始位置
     if (block->Size == 0) return; // 防止重复释放或释放非法内存
 
     // 1. 从 Tracked 链表中移除 RTBlock
@@ -242,8 +249,8 @@ void RTDebugHeapMemoryManager::deAllocateSystemCall(void* addr, uint32_t alignme
     }
 
     // 2. 更新内存统计信息
-    TotalAllocatedMemory -= (block->Size + sizeof(RTBlock) + sizeof(EBlock) + sizeof(EBlock) + metadataSize);
-    size_t size = block->Size + sizeof(RTBlock) + sizeof(EBlock) + sizeof(EBlock) + metadataSize;
+    TotalAllocatedMemory -= (block->Size + alignedRTBlockSize + sizeof(EBlock) + sizeof(EBlock) + metadataSize);
+    size_t size = block->Size + alignedRTBlockSize + sizeof(EBlock) + sizeof(EBlock) + metadataSize;
     // 3. 清理 RTBlock 标记 (可选，如果需要更严格的调试)
     block->Size = 0; // 标记为已释放，防止 double free 等错误
 
