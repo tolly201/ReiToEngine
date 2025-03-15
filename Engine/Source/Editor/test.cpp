@@ -6,6 +6,7 @@
 #include <Function/Renderer/SimpleRenderer.h>
 #include "Core/Math/IMath.h"
 #include "Camera.h"
+
 //[capture variable]
 //{accepted variable}
 auto testVectors = []()
@@ -124,7 +125,7 @@ void testCamera()
     int width = 800;
     int height = 600;
     uint32_t* line = new uint32_t[3];
-    ReiToEngine::Vec4d* triangle = new ReiToEngine::Vec4d[3];
+    ReiToEngine::Vec4d* triangle = new ReiToEngine::Vec4d[4];
     triangle[0] = ReiToEngine::Vec4d({0, 0, 0, 1});
     triangle[1] = ReiToEngine::Vec4d({0, 5, 0, 1});
     triangle[2] = ReiToEngine::Vec4d({5, 0, 0, 1});
@@ -226,6 +227,24 @@ void testCamera()
     std::cout << screen * transformed_v2;
     std::cout << std::endl;
 }
+    class testClass
+    {
+    public:
+        ~testClass() {};
+        testClass()
+        {
+            std::cout << "默认初始化, this 指针: " << this << std::endl;
+        }
+    };
+
+    class testClass1
+    {
+    public:
+        testClass1()
+        {
+            std::cout << "默认初始化, this 指针: " << this << std::endl;
+        }
+    };
 
 int main()
 {
@@ -234,5 +253,16 @@ int main()
     // testMatrix();
     testRender();
     // testCamera();
+    // ReiToEngine::Vec4d* triangle = new ReiToEngine::Vec4d[1];
+    // testClass<4, double>* triangle = new testClass<4, double>[1];
+    // testClass* triangle = new testClass[1];
+    // testClass* triangle1 = new testClass();
+    // testClass1* triangle2 = new testClass1();
+    // testClass1* triangle3 = new testClass1[1];
+    // std::cout << "对象实例地址:"<< triangle << std::endl;
+    // testClass<4, double>* a = new testClass<4, double>[1];
+
+    memManager.DumpMemoryLeaks();
+    // double* triangle = new double[1];
     return 0;
 }

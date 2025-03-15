@@ -16,6 +16,7 @@ class SVector : public IVector<SVector<DIM, T>, DIM, T>
 public:
     ~SVector()
     {
+        std::cout << "默认析构"<< std::endl;
         delete[] data;
     }
     SVector(const std::initializer_list<T>& init) : data(new T[DIM]),
@@ -42,6 +43,7 @@ public:
         z(DIM >= 3 ? data[2] : data[0]),
         w(DIM >= 4 ? data[3] : data[0])
     {
+        std::cout << "默认初始化"<< std::endl;
         size_t i = 0;
         for(; i < DIM; ++ i)
         {
@@ -66,6 +68,8 @@ public:
         z(DIM >= 3 ? data[2] : data[0]),
         w(DIM >= 4 ? data[3] : data[0])
     {
+        std::cout << "拷贝构造"<< std::endl;
+
         size_t i = 0;
         for(; i < DIM; ++i)
         {
@@ -78,6 +82,7 @@ public:
         z(DIM >= 3 ? data[2] : data[0]),
         w(DIM >= 4 ? data[3] : data[0])
     {
+        std::cout << "移动构造"<< std::endl;
         data = other.data;
         other.data = nullptr;
     }
@@ -190,6 +195,7 @@ public:
 
     SVector<DIM, T>& operator=(const SVector<DIM, T>& other)
     {
+        std::cout << "赋值运算符"<< std::endl;
         size_t i = 0;
         for(; i < DIM; ++ i)
         {
