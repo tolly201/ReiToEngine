@@ -1,5 +1,7 @@
 #include "../Include/RTReleaseHeapMemoryManager.h"
 #include "Core/HAL/System/System.h"
+#include <cassert>
+
 namespace ReiToEngine
 {
 template< class T > inline T Align(const T Ptr, uint32_t Alignment )

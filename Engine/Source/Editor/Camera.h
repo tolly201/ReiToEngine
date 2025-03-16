@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 #include "Core/Math/IMath.h"
-
+#include <numbers>
 //left-handed cartesian coordinates
 //default z(0,0,1) points at outside screen
 namespace ReiToEngine
@@ -98,7 +98,7 @@ public:
     float zFar = 100.0f; // 远裁剪面
 
     // 计算透视投影矩阵
-    float tanHalfFovY = tan(fovY / 2.0f * M_PI / 180.0f);
+    float tanHalfFovY = tan(fovY / 2.0f * std::numbers::pi / 180.0f);
     printf("tan:%f, %f\n", tanHalfFovY, sqrt(3)/3);
     double ylen = 2 * tanHalfFovY * (zFar - zNear);
     double xlen = ylen * aspect;
@@ -120,7 +120,7 @@ public:
     float zNear = 0.1f; // 近裁剪面
     float zFar = 100.0f; // 远裁剪面
     // 计算透视投影矩阵
-    float tanHalfFovY = tan(fovY / 2.0f * M_PI / 180.0f);
+    float tanHalfFovY = tan(fovY / 2.0f * std::numbers::pi / 180.0f);
     double ylen = 2 * tanHalfFovY * zFar;
     double xlen = ylen * aspect;
 
@@ -201,9 +201,9 @@ private:
         Vec3d front;
         std::cout << "Yaw:" << Yaw << std::endl;
         std::cout << "Pitch:" << Pitch << std::endl;
-        front.x = sin(Yaw * M_PI / 180.0) * cos(Pitch * M_PI / 180.0);
-        front.y = sin(Pitch * M_PI / 180.0);
-        front.z = cos(Yaw * M_PI / 180.0) * cos(Pitch * M_PI / 180.0);
+        front.x = sin(Yaw * std::numbers::pi / 180.0) * cos(Pitch * std::numbers::pi / 180.0);
+        front.y = sin(Pitch * std::numbers::pi / 180.0);
+        front.z = cos(Yaw * std::numbers::pi / 180.0) * cos(Pitch * std::numbers::pi / 180.0);
         std::cout << "front:" << front << std::endl;
 
         Front = front.normalize();

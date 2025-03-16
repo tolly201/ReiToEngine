@@ -76,14 +76,13 @@ public:
             data[i] = other.data[i];
         }
     }
-    SVector(SVector<DIM, T>&& other) : data(new T[DIM]),
+    SVector(SVector<DIM, T>&& other) : data(other.data),
         x(data[0]),
         y(DIM >= 2 ? data[1] : data[0]),
         z(DIM >= 3 ? data[2] : data[0]),
         w(DIM >= 4 ? data[3] : data[0])
     {
         std::cout << "移动构造"<< std::endl;
-        data = other.data;
         other.data = nullptr;
     }
     // SVector<DIM, T>ement functions from IVector (CRTP style, returning SVector<T, DIM>& and SVector<T, DIM>)

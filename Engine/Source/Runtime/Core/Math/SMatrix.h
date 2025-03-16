@@ -398,10 +398,12 @@ public:
     }
     SMatrix<column, row, T> GetRow(uint8_t rowIndex) const override
     {
-
+        return SMatrix<column, row, T>();
     }
     SMatrix<column, row, T> GetColumn(uint8_t columnIndex) const override
-    {}
+    {
+        return SMatrix<column, row, T>();
+    }
     bool IsIdentity() const override
     {
         for (uint8_t i = 0; i < row; ++i) {

@@ -1,10 +1,11 @@
-#ifndef FUNCTION_RENDERER_IRENDERER_H
+﻿#ifndef FUNCTION_RENDERER_IRENDERER_H
 #define FUNCTION_RENDERER_IRENDERER_H
 
 #include "Core/HAL/Macro/Macro.h"
 #include "Core/Math/IMath.h"
 #include <cstddef>
 #include <vector>
+#include <unordered_map>
 namespace ReiToEngine
 {
 // 光照信息

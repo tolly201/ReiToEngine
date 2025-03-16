@@ -219,7 +219,7 @@ void RTDebugStackMemoryManager::deAllocateSystemCall(void* addr, uint32_t alignm
 
 void* RTDebugStackMemoryManager::allocateImpl(size_t, uint8_t, bool)
 {
-
+    return nullptr;
 }
 void RTDebugStackMemoryManager::deallocateImpl(void*, uint8_t, bool)
 {
