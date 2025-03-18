@@ -251,7 +251,7 @@ int main()
     // testVectors();
     // testLamba();
     // testMatrix();
-    testRender();
+    // testRender();
     // testCamera();
     // ReiToEngine::Vec4d* triangle = new ReiToEngine::Vec4d[1];
     // testClass* triangle1 = new testClass();
@@ -259,12 +259,12 @@ int main()
     // testClass1* triangle3 = new testClass1[1];
     // std::cout << "对象实例地址:"<< triangle << std::endl;
     // testClass<4, double>* a = new testClass<4, double>[1];
-
+    int *a = new int();
+    std::cout << ReiToEngine::SystemInfo::Instance().Is64BitSystem() << std::endl;
     // std::vector<int> test;
     // test.emplace_back();
     // std::cout << "vector: " << &test << std::endl;
     // std::cout << "vector[0]: " << &test[0] << std::endl;
-    memManager.DumpMemoryLeaks();
     // double* triangle = new double[1];
     return 0;
 }

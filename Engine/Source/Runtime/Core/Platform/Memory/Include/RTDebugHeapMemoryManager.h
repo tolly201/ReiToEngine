@@ -7,9 +7,11 @@
 
 namespace ReiToEngine
 {
-class RTENGINE_API RTDebugHeapMemoryManager : public RTMemoryManager<RTDebugHeapMemoryManager>
+class RTENGINE_API RTDebugHeapMemoryManager : public RTMemoryManager<RTDebugHeapMemoryManager>, public Singleton<RTDebugHeapMemoryManager>
+
 {
     friend class RTMemoryManager<RTDebugHeapMemoryManager>;
+    friend class Singleton<RTDebugHeapMemoryManager>;
 public:
     RTDebugHeapMemoryManager();
     ~RTDebugHeapMemoryManager();
@@ -20,10 +22,10 @@ protected:
     void* allocateImpl(size_t, uint8_t, bool) override;
     void deallocateImpl(void*, uint8_t, bool) override;
 private:
-
+    // RTDebugHeapMemoryManager(const RTDebugHeapMemoryManager&) = delete;
+    // RTDebugHeapMemoryManager& operator=(const RTDebugHeapMemoryManager&) = delete;
     void* allocatePoolCall(uint32_t, uint32_t, bool isArray);
     void deAllocatePoolCall(void*, uint32_t, bool isArray);
-
     void* allocateSystemCall(uint32_t, uint32_t, bool isArray);
     void deAllocateSystemCall(void*, uint32_t, bool isArray);
     //Memory For Small Object, new and delete often
@@ -32,12 +34,13 @@ private:
 
     size_t TotalAllocatedMemory;
     size_t PeakAllocatedMemory;
-
     const static size_t alignedRTBlockSize = (sizeof(RTBlock) + 7) & ~7;
 
     std::mutex MemoryMutex;
 public:
 };
+template <>
+bool Singleton<RTDebugHeapMemoryManager>::IndependentConstruct = true;
 }
 
 #endif

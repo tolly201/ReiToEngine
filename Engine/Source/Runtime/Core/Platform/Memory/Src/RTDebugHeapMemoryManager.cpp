@@ -9,15 +9,21 @@ RTDebugHeapMemoryManager::RTDebugHeapMemoryManager() :
     TotalAllocatedMemory(0),
     PeakAllocatedMemory(0)
 {
-    // void* memory = allocateSystemCall(sizeof(RTDebugHeapMemoryManager), alignof(RTDebugHeapMemoryManager));
-    // if (!memory)
-    // {
-    //     std::cerr << "RTDebugHeapMemoryManager: 初始化内存分配失败!" << std::endl;
-    //     return;
-    // }
-    // std::cout << "RTDebugHeapMemoryManager: 初始化." << std::endl;
-    // // 将分配的内存用于初始化单例实例
-    // new (memory) RTDebugHeapMemoryManager();
+}
+template <>
+RTDebugHeapMemoryManager* Singleton<RTDebugHeapMemoryManager>::IndependentConstructor()
+{
+    std::cout << "private constructor\n";
+    void* memory = RTSysAlloc(sizeof(RTDebugHeapMemoryManager));
+    if (!memory)
+    {
+        std::cerr << "RTDebugHeapMemoryManager: 初始化内存分配失败!" << std::endl;
+        return nullptr;
+    }
+    std::cout << "RTDebugHeapMemoryManager: 初始化." << std::endl;
+
+    RTDebugHeapMemoryManager* instance = new(memory) RTDebugHeapMemoryManager();
+    return instance;
 }
 
 RTDebugHeapMemoryManager::~RTDebugHeapMemoryManager()

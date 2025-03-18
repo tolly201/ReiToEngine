@@ -3,13 +3,12 @@
 #include <cstdint>
 #include <cstddef>
 #include "Core/HAL/Macro/Macro.h"
-#include "Core/HAL/Singleton/Singleton.h"
+#include "Core/HAL/Singleton/Singleton_new.h"
 namespace ReiToEngine
 {
 template <typename T>
 class RTENGINE_API RTMemoryManager
 {
-// friend class RTSingleton<RTMemoryManager<T>>;
 public:
     RTMemoryManager() = default;
     virtual ~RTMemoryManager() = 0;
