@@ -47,6 +47,7 @@ RT_FORCEINLINE void RTSysFree(void* pMem, size_t uiSize)
         size_t pageSize = sysconf(_SC_PAGE_SIZE); // 获取系统页大小
         size_t freeSize = (uiSize + pageSize - 1) / pageSize * pageSize; // 页对齐释放大小 (需要和分配时大小一致)
         printf("sysfree\n");
+        std::cout <<"指针值:"<< pMem << std::endl;
         munmap(pMem, freeSize);
     }
 #endif

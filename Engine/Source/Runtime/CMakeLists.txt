@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 project(ReiToRuntime)
 
-file(GLOB_RECURSE RUNTIME_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/**.cpp)
+file(GLOB_RECURSE RUNTIME_SOURCES
+${CMAKE_CURRENT_SOURCE_DIR}/**.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/**.mm
+)
 file(GLOB_RECURSE RUNTIME_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/**.h)
 # 构建 DLL
 add_library(ReiToRuntime SHARED)
@@ -13,6 +16,9 @@ target_sources(ReiToRuntime PRIVATE
 
 if(MSVC)
     target_compile_options(ReiToRuntime PRIVATE /RTC1 /sdl)
+    target_compile_options(ReiToRuntime PRIVATE
+    -ObjC++
+    )
 elseif(APPLE)
     # GCC/Clang 编译选项
     target_compile_options(ReiToRuntime PRIVATE
@@ -24,6 +30,9 @@ elseif(APPLE)
     )
     target_link_options(ReiToRuntime PRIVATE
         -fsanitize=address
+    )
+    target_compile_options(ReiToRuntime PRIVATE
+    -ObjC++
     )
 else()
     # GCC/Clang 编译选项
@@ -39,7 +48,15 @@ else()
         -pg           # 链接时也需要添加性能分析选项
         -fsanitize=address
     )
+    target_compile_options(ReiToRuntime PRIVATE
+    -ObjC++
+    )
 endif()
+
+target_link_libraries(ReiToRuntime
+"-framework Foundation"
+"-framework Cocoa"
+)
 
 target_compile_definitions(ReiToRuntime PRIVATE REITOENGINE_EXPORTS)
 target_include_directories(ReiToRuntime PRIVATE

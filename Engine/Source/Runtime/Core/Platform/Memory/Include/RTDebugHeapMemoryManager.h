@@ -7,11 +7,10 @@
 
 namespace ReiToEngine
 {
-class RTENGINE_API RTDebugHeapMemoryManager : public RTMemoryManager<RTDebugHeapMemoryManager>, public Singleton<RTDebugHeapMemoryManager>
+class RTENGINE_API RTDebugHeapMemoryManager : public RTMemoryManager<RTDebugHeapMemoryManager>
 
 {
     friend class RTMemoryManager<RTDebugHeapMemoryManager>;
-    friend class Singleton<RTDebugHeapMemoryManager>;
 public:
     RTDebugHeapMemoryManager();
     ~RTDebugHeapMemoryManager();
@@ -39,8 +38,6 @@ private:
     std::mutex MemoryMutex;
 public:
 };
-template <>
-bool Singleton<RTDebugHeapMemoryManager>::IndependentConstruct = true;
 }
 
 #endif

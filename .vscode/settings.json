@@ -24,4 +24,5 @@
     "editor.tabSize": 4,
     "editor.autoIndent": "keep"
     }
+    "clang-format.executable": "/usr/local/bin/clang-format"
 }

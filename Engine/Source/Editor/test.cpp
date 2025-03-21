@@ -1,27 +1,33 @@
+#include <_types/_uint32_t.h>
+#include <assimp/postprocess.h>  // Post processing flags
+#include <assimp/scene.h>        // Output data structure
+
+#include <assimp/Importer.hpp>  // C++ importer interface
+#include <cstddef>
 #include <iostream>
-#include "Core/Core.h"
-#include <assimp/Importer.hpp>      // C++ importer interface
-#include <assimp/scene.h>           // Output data structure
-#include <assimp/postprocess.h>     // Post processing flags
-#include <Function/Renderer/SimpleRenderer.h>
-#include "Core/Math/IMath.h"
+
 #include "Camera.h"
+#include "Core/Core.h"
+#include "Core/HAL/Window/Include/IWindow.h"
+#include "Core/Math/IMath.h"
+
+#include "Function/Renderer/SimpleRenderer.h"
+#include "Core/HAL/Window/Include/MACOSX/MacOSXWindow.h"
 
 //[capture variable]
 //{accepted variable}
-auto testVectors = []()
-{
+auto testVectors = []() {
     ReiToEngine::Vec4d v1, v2;
-    v1 = {1,4,5,2};
-    v2 = {4,41,10,3};
+    v1 = {1, 4, 5, 2};
+    v2 = {4, 41, 10, 3};
     std::cout << v2;
 
     ReiToEngine::Vec4d v3 = v1.cross3D(v2);
     v3 = v1.normalize();
     v1.normalizeSelf();
     v3 = v1.normalize();
-    ReiToEngine::Vec4d v4({1,2,3,4});
-    ReiToEngine::Vec4d v5({1,2,3,4});
+    ReiToEngine::Vec4d v4({1, 2, 3, 4});
+    ReiToEngine::Vec4d v5({1, 2, 3, 4});
     ReiToEngine::Vec4d v6(2);
     ReiToEngine::Vec4d v7(v4);
     std::cout << v7;
@@ -30,23 +36,16 @@ auto testVectors = []()
     std::cout << v8;
 };
 
-void testLamba()
-{
+void testLamba() {
     // 示例 1：简单的打印
-    auto a = []() {
-        std::cout << "Hello, Lambda!" << std::endl;
-    };
+    auto a = []() { std::cout << "Hello, Lambda!" << std::endl; };
     a();
     // 示例 2：捕获外部变量
     int x = 10;
-    [&x]() {
-        std::cout << "Captured x: " << x << std::endl;
-    }();
+    [&x]() { std::cout << "Captured x: " << x << std::endl; }();
 
     // 示例 3：带参数和返回值的 Lambda
-    int result = [](int a, int b) -> int {
-        return a + b;
-    }(5, 3);
+    int result = [](int a, int b) -> int { return a + b; }(5, 3);
     std::cout << "Result: " << result << std::endl;
 
     // 示例 4：修改捕获的变量
@@ -55,19 +54,17 @@ void testLamba()
         y = 20;
         std::cout << "Modified y: " << y << std::endl;
     }();
-    std::cout << "Original y: " << y << std::endl; // 仍然是 10，因
+    std::cout << "Original y: " << y << std::endl;  // 仍然是 10，因
 }
 
-void testMatrix()
-{
-    ReiToEngine::Matrix4x4d m4 = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+void testMatrix() {
+    ReiToEngine::Matrix4x4d m4 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
     std::cout << m4[2];
     std::cout << m4[1][2];
 }
 
-void testRender()
-{
-    ReiToEngine::Camera camera = ReiToEngine::Camera(ReiToEngine::Vec3d({0,0, 10}));
+void testRender() {
+    ReiToEngine::Camera camera = ReiToEngine::Camera(ReiToEngine::Vec3d({0, 0, 10}));
     int a;
     ReiToEngine::SimpleRenderer render;
     size_t width = 400;
@@ -76,7 +73,7 @@ void testRender()
     size_t SBO = render.CreateSceneInfo();
     size_t FBO = render.CreateFrameBuffer(width, height, 4);
     ReiToEngine::Vec3d* triangle = new ReiToEngine::Vec3d[3];
-    ReiToEngine::Vec4d *colors = new ReiToEngine::Vec4d[3];
+    ReiToEngine::Vec4d* colors = new ReiToEngine::Vec4d[3];
     uint32_t* line = new uint32_t[3];
     triangle[0] = ReiToEngine::Vec3d({0, 0, 0});
     triangle[1] = ReiToEngine::Vec3d({0, 100, 0});
@@ -88,7 +85,7 @@ void testRender()
     line[0] = 0;
     line[1] = 1;
     line[2] = 2;
-    ReiToEngine::Matrix4x4d model = ReiToEngine::Matrix4x4d({1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1});
+    ReiToEngine::Matrix4x4d model = ReiToEngine::Matrix4x4d({1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1});
     ReiToEngine::Matrix4x4d View = camera.GetViewMatrix();
     ReiToEngine::Matrix4x4d Projection = camera.GetProjectionMatrix();
     ReiToEngine::Matrix4x4d NDC = camera.GetNDCMatrix(width, height);
@@ -111,16 +108,15 @@ void testRender()
     size_t size;
     render.DrawFrame(SBO, data, size);
     ReiToEngine::STBImageParser imageParser;
-    ReiToEngine::Image image(width,height,4);
+    ReiToEngine::Image image(width, height, 4);
     image.SetData(data);
     image.SetType(ReiToEngine::EImageType::IMAGE_PNG);
 
-    imageParser.Write("./test1.png",image);
+    imageParser.Write("./test1.png", image);
 }
 
-void testCamera()
-{
-    ReiToEngine::Camera camera = ReiToEngine::Camera(ReiToEngine::Vec3d({0,0, 10}));
+void testCamera() {
+    ReiToEngine::Camera camera = ReiToEngine::Camera(ReiToEngine::Vec3d({0, 0, 10}));
     int a;
     int width = 800;
     int height = 600;
@@ -138,7 +134,7 @@ void testCamera()
     std::cout << View * Projection;
 
     ReiToEngine::Matrix4x4d trans1 = Projection * View;
-    ReiToEngine::Vec4d transformed_v0,transformed_v1,transformed_v2;
+    ReiToEngine::Vec4d transformed_v0, transformed_v1, transformed_v2;
 
     std::cout << "View computing:\n";
     std::cout << View;
@@ -149,9 +145,9 @@ void testCamera()
     std::cout << triangle[2];
     std::cout << std::endl;
 
-    transformed_v0 = View * triangle[0] ;
-    transformed_v1 = View * triangle[1] ;
-    transformed_v2 = View * triangle[2] ;
+    transformed_v0 = View * triangle[0];
+    transformed_v1 = View * triangle[1];
+    transformed_v2 = View * triangle[2];
 
     std::cout << transformed_v0;
     std::cout << transformed_v1;
@@ -167,8 +163,8 @@ void testCamera()
     std::cout << std::endl;
 
     transformed_v0 = Projection * transformed_v0;
-    transformed_v1 = Projection * transformed_v1 ;
-    transformed_v2 = Projection * transformed_v2 ;
+    transformed_v1 = Projection * transformed_v1;
+    transformed_v2 = Projection * transformed_v2;
 
     std::cout << transformed_v0;
     std::cout << transformed_v1;
@@ -185,15 +181,14 @@ void testCamera()
     std::cout << transformed_v2;
     std::cout << std::endl;
 
-    transformed_v0 = NDC * transformed_v0 ;
-    transformed_v1 = NDC * transformed_v1 ;
-    transformed_v2 = NDC * transformed_v2 ;
+    transformed_v0 = NDC * transformed_v0;
+    transformed_v1 = NDC * transformed_v1;
+    transformed_v2 = NDC * transformed_v2;
 
     std::cout << transformed_v0;
     std::cout << transformed_v1;
     std::cout << transformed_v2;
     std::cout << std::endl;
-
 
     std::cout << "NDC computing end:\n";
 
@@ -213,10 +208,9 @@ void testCamera()
 
     ReiToEngine::Matrix4x4d m = NDC * Projection * View;
 
-
-    transformed_v0 = m * triangle[0] ;
-    transformed_v1 = m * triangle[1] ;
-    transformed_v2 = m * triangle[2] ;
+    transformed_v0 = m * triangle[0];
+    transformed_v1 = m * triangle[1];
+    transformed_v2 = m * triangle[2];
 
     transformed_v0 = transformed_v0 / transformed_v0.w;
     transformed_v1 = transformed_v1 / transformed_v1.w;
@@ -227,44 +221,56 @@ void testCamera()
     std::cout << screen * transformed_v2;
     std::cout << std::endl;
 }
-    class testClass
-    {
-    public:
-        ~testClass() {};
-        testClass()
-        {
-            std::cout << "默认初始化, this 指针: " << this << std::endl;
-        }
-    };
 
-    class testClass1
-    {
-    public:
-        testClass1()
+void testWindow() {
+        // 1. 创建 NSApplication 实例
+        MacOSXWindow* window = new MacOSXWindow();
+        uint32_t width = 80;
+        uint32_t height = 60;
+        uint8_t channel = 4;
+        uint8_t* buffer = new uint8[
+            width * height * channel
+        ];
+        for(size_t i = 0; i < width * height * channel; ++i)
         {
-            std::cout << "默认初始化, this 指针: " << this << std::endl;
+            buffer[i] = 0;
+            if ((i + 1) % 4 == 0) buffer[i] = 255;
         }
-    };
+        window->Create("test", width, height);
+        window->cocoaView->SetHeight(height);
+        window->cocoaView->SetWidth(width);
+        window->cocoaView->SetChannel(channel);
+        window->cocoaView->SetBuffer(buffer);
+        window->ShowWindow();
+        window->Update(nullptr, 20,20);
+        // 4. 运行应用程序事件循环
 
-int main()
-{
-    // testVectors();
-    // testLamba();
-    // testMatrix();
-    // testRender();
-    // testCamera();
-    // ReiToEngine::Vec4d* triangle = new ReiToEngine::Vec4d[1];
-    // testClass* triangle1 = new testClass();
-    // testClass1* triangle2 = new testClass1();
-    // testClass1* triangle3 = new testClass1[1];
-    // std::cout << "对象实例地址:"<< triangle << std::endl;
-    // testClass<4, double>* a = new testClass<4, double>[1];
-    int *a = new int();
-    std::cout << ReiToEngine::SystemInfo::Instance().Is64BitSystem() << std::endl;
-    // std::vector<int> test;
-    // test.emplace_back();
-    // std::cout << "vector: " << &test << std::endl;
-    // std::cout << "vector[0]: " << &test[0] << std::endl;
-    // double* triangle = new double[1];
+}
+
+
+
+int main(int argc, const char * argv[]){
+        // // 1. 创建 NSApplication 实例
+        // MacOSXWindow* window = new MacOSXWindow();
+        // uint32_t width = 80;
+        // uint32_t height = 60;
+        // uint8_t channel = 4;
+        // uint8_t* buffer = new uint8[
+        //     width * height * channel
+        // ];
+        // for(size_t i = 0; i < width * height * channel; ++i)
+        // {
+        //     buffer[i] = 0;
+        //     if ((i + 1) % 4 == 0) buffer[i] = 255;
+        // }
+        // window->Create("test", width, height);
+        // window->cocoaView->SetHeight(height);
+        // window->cocoaView->SetWidth(width);
+        // window->cocoaView->SetChannel(channel);
+        // window->cocoaView->SetBuffer(buffer);
+        // window->ShowWindow();
+        // window->Update(nullptr, 20,20);
+        // // 4. 运行应用程序事件循环
+    testWindow();
     return 0;
 }

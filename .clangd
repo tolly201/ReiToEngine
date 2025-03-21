@@ -1,0 +1,4 @@
+If:
+  PathMatch: Engine/Source/Runtime/Core/HAL/Window/Include/MACOSX/.*\.h$
+CompileFlags:
+  Add: ["-x", "objective-c++"]

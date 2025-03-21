@@ -3,14 +3,14 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-// Enums
-typedef enum {
-    STATE_OK             =  0,
-    STATE_EXIT           = -1,
-    STATE_INVALID_WINDOW = -2,
-    STATE_INVALID_BUFFER = -3,
-    STATE_INTERNAL_ERROR = -4,
-} mfb_update_state;
+enum EWINDOW_UPDATE_STATE
+{
+    WINDOW_UPDATE_STATE_OK             =  0,
+    WINDOW_UPDATE_STATE_EXIT           = -1,
+    WINDOW_UPDATE_STATE_INVALID_WINDOW = -2,
+    WINDOW_UPDATE_STATE_INVALID_BUFFER = -3,
+    WINDOW_UPDATE_STATE_INTERNAL_ERROR = -4,
+};
 
 typedef enum {
     MOUSE_BTN_0, // No mouse button
@@ -173,6 +173,20 @@ typedef enum {
 // Opaque pointer
 struct mfb_window;
 struct mfb_timer;
+
+
+#ifndef __ANDROID__
+#define MFB_RGB(r, g, b)        (((uint32_t) r) << 16) | (((uint32_t) g) << 8) | ((uint32_t) b)
+#define MFB_ARGB(a, r, g, b)    (((uint32_t) a) << 24) | (((uint32_t) r) << 16) | (((uint32_t) g) << 8) | ((uint32_t) b)
+#else
+    #ifdef HOST_WORDS_BIGENDIAN
+    #define MFB_RGB(r, g, b)     (((uint32_t) r) << 16) | (((uint32_t) g) << 8) | ((uint32_t) b)
+    #define MFB_ARGB(a, r, g, b) (((uint32_t) a) << 24) | (((uint32_t) r) << 16) | (((uint32_t) g) << 8) | ((uint32_t) b)
+    #else
+    #define MFB_ARGB(r, g, b)    (((uint32_t) a) << 24) | (((uint32_t) b) << 16) | (((uint32_t) g) << 8) | ((uint32_t) r)
+    #define MFB_RGB(r, g, b)     (((uint32_t) b) << 16) | (((uint32_t) g) << 8) | ((uint32_t) r)
+    #endif
+#endif
 
 // Event callbacks
 typedef void(*mfb_active_func)(struct mfb_window *window, bool isActive);

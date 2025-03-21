@@ -9,19 +9,29 @@
 
 namespace ReiToEngine
 {
-
+struct SingletonWrapper
+{
+    void* instance_ptr;
+    void(*destructor_ptr)(void*);
+    bool by_pass;
+    SingletonWrapper* pNext;
+};
 class  SingletonManager {
 private:
-    std::vector<void*> instances;
-    std::vector<void(*)(void*)> destructors;
+    SingletonWrapper* instances;
     std::mutex mutex;
 
     SingletonManager() = default;
     ~SingletonManager() {
         std::lock_guard<std::mutex> lock(mutex);
-        for (size_t i = 0; i < instances.size();++i)
+        while (instances)
         {
-            destructors[i](instances[i]);
+            SingletonWrapper* raw = instances;
+            instances = instances->pNext;
+            void* instance = raw->instance_ptr;
+            void(*destructor)(void*) = raw->destructor_ptr;
+            if (!raw->by_pass) delete raw;
+            destructor(instance);
         }
     }
 
@@ -34,9 +44,26 @@ public:
         return manager;
     }
 
-    void register_instance(void* ptr, void(*destroy)(void*)) {
-        std::cout << "register\n";
+    void register_instance(SingletonWrapper* pass)
+    {
         std::lock_guard<std::mutex> lock(mutex);
+        std::cout << "register\n";
+        pass->pNext = instances;
+        instances = pass;
+        pass->by_pass = true;
+        std::cout << "register down\n";
+    }
+
+    void register_instance(void* ptr, void(*destroy)(void*))
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        std::cout << "register\n";
+        SingletonWrapper* wrapper = new SingletonWrapper();
+        wrapper->destructor_ptr = destroy;
+        wrapper->instance_ptr = ptr;
+        wrapper->pNext = instances;
+        instances = wrapper;
+        wrapper->by_pass = false;
         std::cout << "register down\n";
     }
 };
@@ -53,15 +80,23 @@ private:
         std::cout << Singleton<T>::IndependentConstruct << std::endl;
         if (IndependentConstruct)
         {
-            instance_ptr = Singleton<T>::IndependentConstructor(); // 调用虚函数
+            SingletonWrapper* wrapper = Singleton<T>::IndependentConstructor();
+            instance_ptr = static_cast<T*>(wrapper->instance_ptr);
+            wrapper->destructor_ptr = Singleton::destroy_instance;
+            SingletonManager::instance().register_instance(
+                wrapper
+            );
             std::cout << instance_ptr << std::endl;
         }
-        else instance_ptr = new T();
-        std::cout << instance_ptr << std::endl;
-        SingletonManager::instance().register_instance(
-            instance_ptr,
-            Singleton::destroy_instance
-        );
+        else
+        {
+            instance_ptr = new T();
+            std::cout << instance_ptr << std::endl;
+            SingletonManager::instance().register_instance(
+                instance_ptr,
+                Singleton::destroy_instance
+            );
+        }
         std::cout << instance_ptr << std::endl;
         std::cout << "finish_inner_create_instance" << std::endl;
     }
@@ -72,7 +107,7 @@ private:
         delete static_cast<T*>(ptr);
     }
 
-    static T* IndependentConstructor();
+    static SingletonWrapper* IndependentConstructor();
     static bool IndependentConstruct;
 protected:
     Singleton() = default;
@@ -92,7 +127,7 @@ template <typename T>
 bool Singleton<T>::IndependentConstruct = false;
 
 template <typename T>
-T* Singleton<T>::IndependentConstructor() {
+SingletonWrapper* Singleton<T>::IndependentConstructor() {
     std::cout << "default nullptr\n";
     return nullptr;
     }
