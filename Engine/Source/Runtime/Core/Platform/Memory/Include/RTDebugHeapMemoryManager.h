@@ -7,7 +7,7 @@
 
 namespace ReiToEngine
 {
-class RTENGINE_API RTDebugHeapMemoryManager : public RTMemoryManager<RTDebugHeapMemoryManager>
+class RTDebugHeapMemoryManager : public RTMemoryManager<RTDebugHeapMemoryManager>
 
 {
     friend class RTMemoryManager<RTDebugHeapMemoryManager>;

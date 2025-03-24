@@ -1,8 +1,9 @@
 #ifndef CORE_HAL_SYSTEM_SYSTEMINFO_H
 #define CORE_HAL_SYSTEM_SYSTEMINFO_H
 #include "Core/HAL/Macro/Macro.h"
-#include "Core/HAL/Singleton/Singleton_new.h"
+#include "Core/Platform/Singleton/SingleonFactory.h"
 #include <cstdint>
+
 namespace ReiToEngine
 {
 class RTENGINE_API SystemInfo : public Singleton<SystemInfo>

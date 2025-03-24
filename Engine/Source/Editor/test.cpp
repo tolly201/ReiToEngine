@@ -7,7 +7,9 @@
 #include <iostream>
 
 #include "Camera.h"
-#include "Core/Core.h"
+#include "Core/Application/Include/RTApplication.h"
+#include "Core/Core.cpp"
+#include "Core/HAL/System/Include/SystemInfo.h"
 #include "Core/HAL/Window/Include/IWindow.h"
 #include "Core/Math/IMath.h"
 
@@ -250,27 +252,13 @@ void testWindow() {
 
 
 int main(int argc, const char * argv[]){
-        // // 1. 创建 NSApplication 实例
-        // MacOSXWindow* window = new MacOSXWindow();
-        // uint32_t width = 80;
-        // uint32_t height = 60;
-        // uint8_t channel = 4;
-        // uint8_t* buffer = new uint8[
-        //     width * height * channel
-        // ];
-        // for(size_t i = 0; i < width * height * channel; ++i)
-        // {
-        //     buffer[i] = 0;
-        //     if ((i + 1) % 4 == 0) buffer[i] = 255;
-        // }
-        // window->Create("test", width, height);
-        // window->cocoaView->SetHeight(height);
-        // window->cocoaView->SetWidth(width);
-        // window->cocoaView->SetChannel(channel);
-        // window->cocoaView->SetBuffer(buffer);
-        // window->ShowWindow();
-        // window->Update(nullptr, 20,20);
-        // // 4. 运行应用程序事件循环
-    testWindow();
+    std::cout << "init\n";
+    ReiToEngine::RTApplication::Instance().Initialize();
+    ReiToEngine::RTApplication::Instance().Run();
+    ReiToEngine::RTApplication::Instance().Tick();
+    std::cout << "end\n";
+    std::cout << ReiToEngine::SystemInfo::Instance().GetSystemBitWidth();;
+
+    // testWindow();
     return 0;
 }

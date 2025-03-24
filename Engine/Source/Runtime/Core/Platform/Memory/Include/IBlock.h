@@ -11,7 +11,7 @@ enum EBlock : uint64_t
 	RECORD_NUM = 32,
 	CALLSTACK_NUM = 32
 };
-class RTENGINE_API RTBlock
+class RTBlock
 {
 public:
     RTBlock()
