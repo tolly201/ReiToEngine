@@ -7,14 +7,14 @@
 #include <iostream>
 
 #include "Camera.h"
-#include "Core/Application/Include/RTApplication.h"
+#include "Platform/Application/Include/RTApplication.h"
 #include "Core/Core.cpp"
-#include "Core/HAL/System/Include/SystemInfo.h"
-#include "Core/HAL/Window/Include/IWindow.h"
+#include "Platform/HAL/System/Include/SystemInfo.h"
+#include "Platform/HAL/Window/Include/IWindow.h"
 #include "Core/Math/IMath.h"
 
 #include "Function/Renderer/SimpleRenderer.h"
-#include "Core/HAL/Window/Include/MACOSX/MacOSXWindow.h"
+#include "Platform/HAL/Window/Include/MACOSX/MacOSXWindow.h"
 
 //[capture variable]
 //{accepted variable}

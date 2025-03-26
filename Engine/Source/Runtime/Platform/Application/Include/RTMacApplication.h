@@ -1,0 +1,17 @@
+#ifndef CORE_APPLICATION_RT_MAC_APPLICATION_H
+#define CORE_APPLICATION_RT_MAC_APPLICATION_H
+#include "RTApplication.h"
+
+namespace ReiToEngine{
+class RTMacApplication : public RTApplication
+{
+    friend RTApplication;
+    void Initialize() override;
+    // void Run() override;
+    // void Tick() override;
+protected:
+    static RTMacApplication instance;
+};
+
+}
+#endif

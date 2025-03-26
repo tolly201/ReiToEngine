@@ -1,6 +1,6 @@
 #ifndef CORE_OBJECT_IIMAGE_H
 #define CORE_OBJECT_IIMAGE_H
-#include "Core/HAL/Macro/Macro.h"
+#include "Core/Macro/Macro.h"
 #include <cstddef>
 #include <cstdio>
 #include <memory>
