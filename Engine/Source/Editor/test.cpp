@@ -259,6 +259,6 @@ int main(int argc, const char * argv[]){
     std::cout << "end\n";
     std::cout << ReiToEngine::SystemInfo::Instance().GetSystemBitWidth();;
 
-    // testWindow();
+    testWindow();
     return 0;
 }
