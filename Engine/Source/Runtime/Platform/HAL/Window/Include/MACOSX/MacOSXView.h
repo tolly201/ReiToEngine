@@ -1,9 +1,15 @@
+#ifndef PLATFORM_HAL_WINDOW_MACOSX_VIEW_H
+#define PLATFORM_HAL_WINDOW_MACOSX_VIEW_H
+
 #import <Cocoa/Cocoa.h>
 #include "../WindowData.h"
 #include "../IWindowView.h"
 
+class MacOSXWindow;
+
 @interface OSXView : NSView<NSTextInputClient>
 {
+    @public MacOSXWindow *ownerWindow;
     // @public SWindowData     *window_data;
     @private NSTrackingArea *tracking_area;
     @private NSImage *currentImage; // 用于存储要显示的 NSImage
@@ -11,6 +17,8 @@
 - (void)displayBuffer:(const void*)buffer width:(uint32_t)width height:(uint32_t)height channel:(uint8_t)channel;
 
 - (void)drawRect:(NSRect)dirtyRect; // 声明 drawRect: 方法
+
+- (void)bindWindow:(MacOSXWindow*) window_ptr;
 @end
 
 class RTENGINE_API MacOSXView: public IWindowView
@@ -38,3 +46,4 @@ public:
 private:
     OSXView* osxView;
 };
+#endif

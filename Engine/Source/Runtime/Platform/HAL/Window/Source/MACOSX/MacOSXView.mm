@@ -1,7 +1,10 @@
 #include "../../Include/MACOSX/MacOSXView.h"
 #import <AppKit/AppKit.h>
+#include "Platform/HAL/Window/Include/WindowEnums.h"
+#include "../../Include/MACOSX/MacOSXWindow.h"
 
 @implementation OSXView {
+
 }
 - (void)displayBuffer:(const void*)buffer width:(uint32_t)width height:(uint32_t)height channel:(uint8_t)channel {
     NSLog(@"start render\n");
@@ -43,6 +46,22 @@
     NSRect imageRect = NSMakeRect(0, 0, self->currentImage.size.width, self->currentImage.size.height);
     [self->currentImage drawInRect:self.bounds fromRect:imageRect operation:NSCompositingOperationSourceOver fraction:1.0]; // 绘制 NSImage 缩放到视图 bounds
     [super drawRect:dirtyRect]; // 调用父类的 drawRect: 实现
+}
+
+- (void)keyDown:(NSEvent *)event {
+    NSLog(@"catch key down\n");
+    NSLog(@"key: %d\n", event.keyCode);
+
+    if(self->ownerWindow && ![event isARepeat]) { // 忽略按键重复
+        self->ownerWindow->HandleKeyDown(event.keyCode, event.modifierFlags);
+
+    } else {
+        [super keyDown:event]; // 传递给父类处理
+    }
+}
+
+- (void)bindWindow:(MacOSXWindow*) window_ptr{
+    self->ownerWindow = window_ptr;
 }
 @end
 

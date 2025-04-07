@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PLATFORM_HAL_WINDOW_WINDOW_ENUMS_H
+#define PLATFORM_HAL_WINDOW_WINDOW_ENUMS_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -12,21 +13,18 @@ enum EWINDOW_UPDATE_STATE
     WINDOW_UPDATE_STATE_INTERNAL_ERROR = -4,
 };
 
-typedef enum {
-    MOUSE_BTN_0, // No mouse button
+enum EWINDOW_MOUSE_BTN {
+    MOUSE_BTN_NULL, // No mouse button
+    MOUSE_BTN_0,
     MOUSE_BTN_1,
     MOUSE_BTN_2,
     MOUSE_BTN_3,
     MOUSE_BTN_4,
     MOUSE_BTN_5,
     MOUSE_BTN_6,
-    MOUSE_BTN_7,
-} mfb_mouse_button;
-#define MOUSE_LEFT   MOUSE_BTN_1
-#define MOUSE_RIGHT  MOUSE_BTN_2
-#define MOUSE_MIDDLE MOUSE_BTN_3
+};
 
-typedef enum {
+enum EWINDOW_KEYBOARD_KEY {
     KB_KEY_UNKNOWN       = -1,
 
     KB_KEY_SPACE         = 32,
@@ -150,25 +148,24 @@ typedef enum {
     KB_KEY_RIGHT_ALT     = 346,
     KB_KEY_RIGHT_SUPER   = 347,
     KB_KEY_MENU          = 348
-} mfb_key;
-#define KB_KEY_LAST     KB_KEY_MENU
+};
 
-typedef enum {
+enum EWINDOW_KEYBOARD_MOD {
     KB_MOD_SHIFT        = 0x0001,
     KB_MOD_CONTROL      = 0x0002,
     KB_MOD_ALT          = 0x0004,
     KB_MOD_SUPER        = 0x0008,
     KB_MOD_CAPS_LOCK    = 0x0010,
     KB_MOD_NUM_LOCK     = 0x0020
-} mfb_key_mod;
+};
 
-typedef enum {
+enum EWINDOW_WINDOW_FLAGS {
     WF_RESIZABLE          = 0x01,
     WF_FULLSCREEN         = 0x02,
     WF_FULLSCREEN_DESKTOP = 0x04,
     WF_BORDERLESS         = 0x08,
     WF_ALWAYS_ON_TOP      = 0x10,
-} mfb_window_flags;
+};
 
 // Opaque pointer
 struct mfb_window;
@@ -188,12 +185,17 @@ struct mfb_timer;
     #endif
 #endif
 
-// Event callbacks
-typedef void(*mfb_active_func)(struct mfb_window *window, bool isActive);
-typedef void(*mfb_resize_func)(struct mfb_window *window, int width, int height);
-typedef bool(*mfb_close_func)(struct mfb_window* window);
-typedef void(*mfb_keyboard_func)(struct mfb_window *window, mfb_key key, mfb_key_mod mod, bool isPressed);
-typedef void(*mfb_char_input_func)(struct mfb_window *window, unsigned int code);
-typedef void(*mfb_mouse_button_func)(struct mfb_window *window, mfb_mouse_button button, mfb_key_mod mod, bool isPressed);
-typedef void(*mfb_mouse_move_func)(struct mfb_window *window, int x, int y);
-typedef void(*mfb_mouse_scroll_func)(struct mfb_window *window, mfb_key_mod mod, float deltaX, float deltaY);
+#endif
+
+#include <functional>
+class IWindow;
+
+using KeyDownCallback = std::function<void(IWindow* window, EWINDOW_KEYBOARD_KEY key, EWINDOW_KEYBOARD_MOD mods)>;
+using KeyUpCallback = std::function<void(IWindow* window, EWINDOW_KEYBOARD_KEY key, EWINDOW_KEYBOARD_MOD mods)>;
+using CharInputCallback = std::function<void(IWindow* window, unsigned int codepoint)>;
+using MouseButtonDownCallback = std::function<void(IWindow* window, EWINDOW_MOUSE_BTN button, int x, int y, EWINDOW_KEYBOARD_MOD mods)>;
+using MouseButtonUpCallback = std::function<void(IWindow* window, EWINDOW_MOUSE_BTN button, int x, int y, EWINDOW_KEYBOARD_MOD mods)>;
+using MouseMoveCallback = std::function<void(IWindow* window, int x, int y)>;
+using MouseScrollCallback = std::function<void(IWindow* window, float scrollX, float scrollY)>;
+using MouseEnterCallback = std::function<void(IWindow* window, bool entered)>;
+using WindowFocusCallback = std::function<void(IWindow* window, bool focused)>;

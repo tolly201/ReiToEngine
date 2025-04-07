@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "Core/Macro/Macro.h"
 #include "Platform/File/Include/CFile.h"
+#include "IWindow.h"
 class RTENGINE_API IWindowView
 {
 public:
@@ -22,6 +23,7 @@ public:
 
     virtual void SetChannel(uint8_t channel) = 0;
     virtual uint8_t GetChannel() const = 0;
+    IWindow* ownerWindow;
 protected:
     uint8_t* buffer;
     uint32_t width;
