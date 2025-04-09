@@ -3,6 +3,14 @@
 #include "Platform/WindowsManager/Include/WindowsManager.h"
 
 namespace ReiToEngine{
+
+    void RTApplication::testKeyDown(IWindow* window, EWINDOW_KEYBOARD_KEY key, EWINDOW_KEYBOARD_MOD mods) {
+    printf("KeyDown: %d\n", key);
+    if (key == EWINDOW_KEYBOARD_KEY::KB_KEY_ESCAPE) {
+            RTApplication::Instance().shouldQuit = true;
+        }
+    }
+
     RTApplication::RTApplication() = default;
     RTApplication::~RTApplication() = default;
     RTDebugHeapMemoryManager& RTApplication::GetMemoryManager()
@@ -22,14 +30,20 @@ namespace ReiToEngine{
         systemInfo_ptr = &SystemInfo::Instance();
         windowsManager_ptr = &WindowsManager::Instance();
         windowsManager_ptr->Initialize();
+        shouldQuit = false;
     }
     void RTApplication::Run()
     {
-
+        uint32_t main_window_index = windowsManager_ptr->CreateWindow();
+        windowsManager_ptr->AddKeyDownCallback(main_window_index, testKeyDown);
     }
     void RTApplication::Tick()
     {
         windowsManager_ptr->Tick();
+    }
+    void RTApplication::Terminate()
+    {
+        windowsManager_ptr->Terminate();
     }
 }
 

@@ -7,8 +7,9 @@ class RTMacApplication : public RTApplication
 {
     friend RTApplication;
     void Initialize() override;
-    // void Run() override;
-    // void Tick() override;
+    void Run() override;
+    void Tick() override;
+    void Terminate() override;
 protected:
     static RTMacApplication instance;
 };

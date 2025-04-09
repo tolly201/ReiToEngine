@@ -1,4 +1,5 @@
 #include "Core/Macro/Macro.h"
+#include "Platform/Application/Include/RTApplication.h"
 
 #ifdef RT_SYSTEM_WINDOWS
 
@@ -18,7 +19,14 @@ ReiToEngine::RTApplication* ReiToEngine::RTApplication::instance_ptr = &ReiToEng
 int RuntimeMainLoopEntry(int argc, const char* argv[])
 {
     ReiToEngine::RTApplication::Instance().Initialize();
-    // ReiToEngine::RTApplication::Instance().Run();
-    // ReiToEngine::RTApplication::Instance().Tick();
+    printf("init\n");
+    ReiToEngine::RTApplication::Instance().Run();
+    printf("run \n");
+    while (!ReiToEngine::RTApplication::Instance().shouldQuit) {
+        ReiToEngine::RTApplication::Instance().Tick();
+        printf("keep\n");
+    }
+    printf("terminate\n");
+    ReiToEngine::RTApplication::Instance().Terminate();
     return 0;
 }

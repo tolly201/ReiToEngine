@@ -1,17 +1,22 @@
 #ifndef CORE_PLATFORM_INCLUDE_WINDOWS_MANAGER_H
 #define CORE_PLATFORM_INCLUDE_WINDOWS_MANAGER_H
 #include "Platform/Singleton/RuntimeSingleton.h"
-
+#include <vector>
+#include <cstdint>
+#include "Platform/HAL/Window/Include/IWindow.h"
 namespace ReiToEngine{
 
 class WindowsManager : public Runtime_Singleton<WindowsManager>
 {
 public:
-    WindowsManager() = default;
-    void Initialize() override {};
-    void Terminate() override {};
-    void Tick() override {};
-    void CreateWindow();
+    WindowsManager();
+    void Initialize() override;
+    void Terminate() override;
+    void Tick() override;
+    uint32_t CreateWindow(uint32_t width = 100, uint32_t height = 100, uint8_t channel = 4);
+    void AddKeyDownCallback(uint32_t index, KeyDownCallback callback);
+private:
+    std::vector<IWindow*> windows;
 };
 }
 

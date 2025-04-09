@@ -172,7 +172,6 @@ void MacOSXWindow::CloseWindow()
         [cocoaWindow close];
         [cocoaWindow release];
         cocoaWindow = nil;
-        delete this; // Self-delete in CloseWindow, consider alternatives for memory management
     }
 }
 
@@ -189,9 +188,8 @@ void MacOSXWindow::Update(const void* buffer, uint32_t width, uint32_t height)
         // You will need to implement the platform-specific rendering here,
         // potentially using Core Graphics, Metal, or OpenGL with the buffer data.
 
-        cocoaView->Draw();
+        // cocoaView->Draw();
         NSLog(@"MacOSXWindow::Update - Buffer display logic needs implementation.");
-        [NSApp run];
 }
 
 // --- 实现 Add 回调方法 ---

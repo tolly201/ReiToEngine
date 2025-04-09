@@ -34,12 +34,17 @@
         return;
     }
     self->currentImage = [[NSImage alloc] initWithCGImage:cgImage size:NSMakeSize(width, height)];
-    NSLog(@"Error creating CGImage in displayBuffer"); // 打印错误信息
+    NSLog(@"Pass Render"); // 打印错误信息
     [self setNeedsDisplay:YES]; // 标记视图需要重绘，触发 drawRect:
+    NSLog(@"Pass Set Display"); // 打印错误信息
+
     //  Release resources
     CGImageRelease(cgImage);
+    NSLog(@"Release Image"); // 打印错误信息
     CGContextRelease(context);
+    NSLog(@"Release Context"); // 打印错误信息
     CGColorSpaceRelease(colorSpace);
+    NSLog(@"Release Space"); // 打印错误信息
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -62,6 +67,50 @@
 
 - (void)bindWindow:(MacOSXWindow*) window_ptr{
     self->ownerWindow = window_ptr;
+}
+
+// NSTextInputClient 协议必需的方法
+- (NSArray<NSAttributedStringKey> *)validAttributesForMarkedText {
+    return @[];
+}
+
+- (NSAttributedString *)attributedSubstringForProposedRange:(NSRange)range
+                                               actualRange:(NSRangePointer)actualRange {
+    return nil;
+}
+
+- (void)insertText:(id)string replacementRange:(NSRange)replacementRange {
+    // 处理文本输入
+}
+
+- (void)setMarkedText:(id)string selectedRange:(NSRange)selectedRange
+                               replacementRange:(NSRange)replacementRange {
+    // 处理输入法编辑
+}
+
+- (void)unmarkText {
+    // 清除输入法编辑标记
+}
+
+- (NSRange)selectedRange {
+    return NSMakeRange(0, 0);
+}
+
+- (NSRange)markedRange {
+    return NSMakeRange(NSNotFound, 0);
+}
+
+- (BOOL)hasMarkedText {
+    return NO;
+}
+
+- (NSRect)firstRectForCharacterRange:(NSRange)range
+                         actualRange:(NSRangePointer)actualRange {
+    return NSZeroRect;
+}
+
+- (NSUInteger)characterIndexForPoint:(NSPoint)point {
+    return 0;
 }
 @end
 

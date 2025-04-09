@@ -1,5 +1,5 @@
-#ifndef CORE_HAL_RUNTIME_SINGLETON_H
-#define CORE_HAL_RUNTIME_SINGLETON_H
+#ifndef PLATFORM_HAL_RUNTIME_SINGLETON_H
+#define PLATFORM_HAL_RUNTIME_SINGLETON_H
 #include "SingletonFactory.h"
 namespace ReiToEngine {
 template <typename T>

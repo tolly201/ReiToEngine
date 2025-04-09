@@ -19,6 +19,9 @@ public:
     virtual void Initialize();
     virtual void Run();
     virtual void Tick();
+    virtual void Terminate();
+    bool shouldQuit;
+    static void testKeyDown(IWindow* window, EWINDOW_KEYBOARD_KEY key, EWINDOW_KEYBOARD_MOD mods);
 protected:
     static RTApplication* instance_ptr;
     SystemInfo* systemInfo_ptr;
