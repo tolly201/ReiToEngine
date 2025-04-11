@@ -25,27 +25,6 @@ public:
     virtual void ProcessEvents() = 0; // 处理窗口事件
 
     virtual void Update(const void* buffer, uint32_t width, uint32_t height) = 0; // 更新显示 buffer
-
-    virtual void AddKeyDownCallback(KeyDownCallback callback) = 0;
-    virtual void AddKeyUpCallback(KeyUpCallback callback) = 0;
-    virtual void AddCharInputCallback(CharInputCallback callback) = 0;
-    virtual void AddMouseButtonDownCallback(MouseButtonDownCallback callback) = 0;
-    virtual void AddMouseButtonUpCallback(MouseButtonUpCallback callback) = 0;
-    virtual void AddMouseMoveCallback(MouseMoveCallback callback) = 0;
-    virtual void AddMouseScrollCallback(MouseScrollCallback callback) = 0;
-    virtual void AddMouseEnterCallback(MouseEnterCallback callback) = 0;
-    virtual void AddWindowFocusCallback(WindowFocusCallback callback) = 0;
-
-    virtual void ClearKeyDownCallbacks() = 0;
-    virtual void ClearKeyUpCallbacks() = 0;
-    virtual void ClearCharInputCallbacks() = 0;
-    virtual void ClearMouseButtonDownCallbacks() = 0;
-    virtual void ClearMouseButtonUpCallbacks() = 0;
-    virtual void ClearMouseMoveCallbacks() = 0;
-    virtual void ClearMouseScrollCallbacks() = 0;
-    virtual void ClearMouseEnterCallbacks() = 0;
-    virtual void ClearWindowFocusCallbacks() = 0;
-    virtual void ClearAllCallbacks() = 0; // 清空所有类型的回调
 protected:
     char* title;
     uint32_t width;

@@ -53,17 +53,6 @@
     [super drawRect:dirtyRect]; // 调用父类的 drawRect: 实现
 }
 
-- (void)keyDown:(NSEvent *)event {
-    NSLog(@"catch key down\n");
-    NSLog(@"key: %d\n", event.keyCode);
-
-    if(self->ownerWindow && ![event isARepeat]) { // 忽略按键重复
-        self->ownerWindow->HandleKeyDown(event.keyCode, event.modifierFlags);
-
-    } else {
-        [super keyDown:event]; // 传递给父类处理
-    }
-}
 
 - (void)bindWindow:(MacOSXWindow*) window_ptr{
     self->ownerWindow = window_ptr;

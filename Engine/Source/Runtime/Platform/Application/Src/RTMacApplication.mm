@@ -1,13 +1,23 @@
 #include "../Include/RTMacApplication.h"
+#include <AppKit/AppKit.h>
 #include "Platform/Application/Include/RTApplication.h"
+#include "Platform/HAL/Input/Include/InputEnums.h"
 #include "Platform/HAL/Window/Include/MACOSX/MacOSXWindow.h"
 #include "Platform/HAL/Window/Include/WindowEnums.h"
 
-
-
+    void testKeyDown(const ReiToEngine::InputEvent& event) {
+    printf("KeyDown: %hu\n", event.inputCode);
+    printf("KeyDown: %d\n", event.codepoint);
+    printf("KeyDown: %hu\n", ReiToEngine::EINPUT_KEY_CODE::INPUT_KEYBOARD_ESCAPE);
+    printf("KeyDown: %d\n",event.inputCode == ReiToEngine::EINPUT_KEY_CODE::INPUT_KEYBOARD_ESCAPE);
+    if (event.inputCode == ReiToEngine::EINPUT_KEY_CODE::INPUT_KEYBOARD_5) {
+            ReiToEngine::RTApplication::Instance().shouldQuit = true;
+        }
+    }
 namespace ReiToEngine {
 void RTMacApplication::Initialize() {
     RTApplication::Initialize();
+
     // macOS 特定初始化
     [NSApplication sharedApplication];
     [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
@@ -33,10 +43,10 @@ void RTMacApplication::Initialize() {
     [appMenu addItem:quitMenuItem];
 
     [NSApp activateIgnoringOtherApps:YES];
+    printf("mac init\n");
 }
 
 void RTMacApplication::Tick() {
-    RTApplication::Tick();
     NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                         untilDate:[NSDate distantPast]
                                            inMode:NSDefaultRunLoopMode
@@ -44,11 +54,16 @@ void RTMacApplication::Tick() {
     if (event) {
         [NSApp sendEvent:event];  // 分发事件
     }
+    RTApplication::Tick();
 }
 
 void RTMacApplication::Run() {
-    RTApplication::Run();
-    // [NSApp run];
+    inputSystem_ptr->AddInputCallback(EINPUT_EVENT_TYPE::EVENT_KEY_PRESS,
+    testKeyDown);
+
+    windowsManager_ptr->CreateWindow();
+
+    printf("mac run\n");
 }
 
 void RTMacApplication::Terminate() {

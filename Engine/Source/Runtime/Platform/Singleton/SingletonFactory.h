@@ -41,23 +41,19 @@ class SingletonManager {
     }
     void register_instance(SingletonWrapper* pass) {
         std::lock_guard<std::mutex> lock(mutex);
-        std::cout << "register\n";
         pass->pNext = instances;
         instances = pass;
         pass->by_pass = true;
-        std::cout << "register down\n";
     }
 
     void register_instance(void* ptr, void (*destroy)(void*)) {
         std::lock_guard<std::mutex> lock(mutex);
-        std::cout << "register\n";
         SingletonWrapper* wrapper = new SingletonWrapper();
         wrapper->destructor_ptr = destroy;
         wrapper->instance_ptr = ptr;
         wrapper->pNext = instances;
         instances = wrapper;
         wrapper->by_pass = false;
-        std::cout << "register down\n";
     }
 };
 
@@ -80,26 +76,18 @@ class RTENGINE_API Singleton {
     static T* instance_ptr;
 
     static void create_instance() {
-        std::cout << "inner_create_instance" << std::endl;
-        std::cout << IndependentConstruct << std::endl;
-        std::cout << Singleton<T>::IndependentConstruct << std::endl;
         if (IndependentConstruct) {
             SingletonWrapper* wrapper = Singleton<T>::IndependentConstructor();
             instance_ptr = static_cast<T*>(wrapper->instance_ptr);
             wrapper->destructor_ptr = Singleton::destroy_instance;
             SingletonFactory::GetSingletonManager().register_instance(wrapper);
-            std::cout << instance_ptr << std::endl;
         } else {
             instance_ptr = new T();
-            std::cout << instance_ptr << std::endl;
             SingletonFactory::GetSingletonManager().register_instance(instance_ptr, Singleton::destroy_instance);
         }
-        std::cout << instance_ptr << std::endl;
-        std::cout << "finish_inner_create_instance" << std::endl;
     }
 
     static void destroy_instance(void* ptr) {
-        std::cout << "inner_destroy_instance" << std::endl;
         delete static_cast<T*>(ptr);
     }
 
@@ -115,7 +103,6 @@ class RTENGINE_API Singleton {
     Singleton& operator=(const Singleton&) = delete;
 
     static T& Instance() {
-        std::cout << "try get a instance()" << std::endl;
         std::call_once(once_flag, create_instance);
         return *instance_ptr;
     }
@@ -126,7 +113,6 @@ bool Singleton<T>::IndependentConstruct = false;
 
 template <typename T>
 SingletonWrapper* Singleton<T>::IndependentConstructor() {
-    std::cout << "default nullptr\n";
     return nullptr;
 }
 

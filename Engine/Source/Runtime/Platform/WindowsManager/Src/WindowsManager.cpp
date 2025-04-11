@@ -54,11 +54,4 @@ uint32_t WindowsManager::CreateWindow(uint32_t width, uint32_t height, uint8_t c
     windows.push_back(instance);
     return index;
 }
-
-void WindowsManager::AddKeyDownCallback(uint32_t index, KeyDownCallback callback)
-{
-    IWindow* ptr= windows[index];
-    ptr->AddKeyDownCallback(callback);
-}
-
 }  // namespace ReiToEngine

@@ -24,7 +24,7 @@ int RuntimeMainLoopEntry(int argc, const char* argv[])
     printf("run \n");
     while (!ReiToEngine::RTApplication::Instance().shouldQuit) {
         ReiToEngine::RTApplication::Instance().Tick();
-        printf("keep\n");
+        // printf("keep\n");
     }
     printf("terminate\n");
     ReiToEngine::RTApplication::Instance().Terminate();

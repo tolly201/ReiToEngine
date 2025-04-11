@@ -6,6 +6,7 @@
 #include "Platform/HAL/System/System.h"
 #include "Platform/WindowsManager/Include/WindowsManager.h"
 #include "Platform/WindowsManager/WindowsManager.h"
+#include "Platform/InputSystem/Include/InputSystem.h"
 
 namespace ReiToEngine{
 class RTApplication : public SingletonFactory
@@ -21,11 +22,11 @@ public:
     virtual void Tick();
     virtual void Terminate();
     bool shouldQuit;
-    static void testKeyDown(IWindow* window, EWINDOW_KEYBOARD_KEY key, EWINDOW_KEYBOARD_MOD mods);
 protected:
     static RTApplication* instance_ptr;
     SystemInfo* systemInfo_ptr;
     WindowsManager* windowsManager_ptr;
+    InputSystem* inputSystem_ptr;
 };
 }
 #endif
