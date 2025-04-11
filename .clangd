@@ -1,4 +1,4 @@
-If:
-  PathMatch: Engine/Source/Runtime/Core/HAL/Window/Include/MACOSX/.*\.h$
 CompileFlags:
-  Add: ["-x", "objective-c++"]
+  # 通用编译选项（C++ 和 Objective-C++ 共用
+  CompilationDatabase: build
+  Add: [-std=c++2b]

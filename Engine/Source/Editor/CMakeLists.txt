@@ -30,6 +30,15 @@ elseif(APPLE)
     target_compile_options(ReiToEditor PRIVATE
     -ObjC++
     )
+
+    set(INFO_PLIST_FILE ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist)
+
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+    MACOSX_BUNDLE TRUE
+    MACOSX_BUNDLE_INFO_PLIST ${INFO_PLIST_FILE}
+    RESOURCE "${EDITOR_SOURCES}"
+)
+
 else()
     # GCC/Clang 编译选项
     target_compile_options(ReiToEditor PRIVATE
