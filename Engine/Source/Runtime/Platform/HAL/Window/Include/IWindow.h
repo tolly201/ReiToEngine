@@ -24,7 +24,7 @@ public:
 
     virtual void ProcessEvents() = 0; // 处理窗口事件
 
-    virtual void Update(const void* buffer, uint32_t width, uint32_t height) = 0; // 更新显示 buffer
+    virtual void Update(const uint8_t* buffer, uint32_t width, uint32_t height) = 0; // 更新显示 buffer
 protected:
     char* title;
     uint32_t width;

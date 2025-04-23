@@ -9,9 +9,10 @@ template <uint8_t column, uint8_t row, typename T>
 class RTENGINE_API SMatrix : public IMatrix<SMatrix<column, row, T>, column, row, T>
 {
 public:
+    T data[column * row]; // 改为固定大小数组而不是动态分配
+
     SMatrix()
     {
-        data = new T[column * row];
         for (int i = 0; i < column * row; ++i) {
             data[i] = T{};
         }
@@ -19,7 +20,6 @@ public:
 
     SMatrix(const SMatrix& other)
     {
-        data = new T[column * row];
         for (int i = 0; i < column * row; ++i) {
             data[i] = other.data[i];
         }
@@ -27,14 +27,14 @@ public:
 
     SMatrix(SMatrix&& other) noexcept
     {
-        data = other.data;
-        other.data = nullptr;
+        for (int i = 0; i < column * row; ++i) {
+            data[i] = other.data[i];
+        }
     }
 
     SMatrix(const std::initializer_list<T>& init)
     {
         int size = column * row;
-        data = new T[column * row];
         int list_size = init.size();
         list_size = list_size > size ? size : list_size;
         int i = 0;
@@ -49,16 +49,12 @@ public:
 
     SMatrix(T val)
     {
-        data = new T[column * row];
         for (int i = 0; i < column * row; ++i) {
             data[i] = val;
         }
     }
 
-    ~SMatrix()
-    {
-        delete[] data;
-    }
+    ~SMatrix() = default; // 不再需要析构函数
 
     SMatrix<column, row, T>& operator+=(const SMatrix<column, row, T>& other) override {
         for (int i = 0; i < column * row; ++i) {
@@ -87,7 +83,7 @@ public:
             return *this *= temp;
         }
 
-        T* tempData = new T[column * row];
+        T tempData[column * row];
         for (size_t i = 0; i < column * row; ++i) {
             tempData[i] = data[i];
         }
@@ -101,7 +97,6 @@ public:
                 data[i * column + j] = sum; // 直接更新当前对象的数据
             }
         }
-        delete[] tempData;
         return *this; // 返回当前对象的引用
     }
 
@@ -187,7 +182,7 @@ public:
         }
         return result;
     }
-    void transposeSelf() const override
+    void transposeSelf() override
     {
         for (uint8_t i = 0; i < row; ++i) {
             for (uint8_t j = 0; j < column - row; ++j) {
@@ -268,7 +263,7 @@ public:
 
         return inverse;
     }
-    void Invert() const override
+    void Invert() override
     {
         SMatrix<column, row, T> inv = this->Inverse();
         for(size_t i = 0; i < column * row; ++i)
@@ -474,7 +469,6 @@ public:
         return std::make_pair(lower, upper);
     }
 private:
-    T* data;
 };
 }
 

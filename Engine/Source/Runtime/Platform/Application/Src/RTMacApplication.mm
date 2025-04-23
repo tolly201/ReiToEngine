@@ -8,9 +8,7 @@
     void testKeyDown(const ReiToEngine::InputEvent& event) {
     printf("KeyDown: %hu\n", event.inputCode);
     printf("KeyDown: %d\n", event.codepoint);
-    printf("KeyDown: %hu\n", ReiToEngine::EINPUT_KEY_CODE::INPUT_KEYBOARD_ESCAPE);
-    printf("KeyDown: %d\n",event.inputCode == ReiToEngine::EINPUT_KEY_CODE::INPUT_KEYBOARD_ESCAPE);
-    if (event.inputCode == ReiToEngine::EINPUT_KEY_CODE::INPUT_KEYBOARD_5) {
+    if (event.inputCode == ReiToEngine::EINPUT_KEY_CODE::INPUT_KEYBOARD_ESCAPE) {
             ReiToEngine::RTApplication::Instance().shouldQuit = true;
         }
     }
@@ -58,10 +56,11 @@ void RTMacApplication::Tick() {
 }
 
 void RTMacApplication::Run() {
+    RTApplication::Run();
+
     inputSystem_ptr->AddInputCallback(EINPUT_EVENT_TYPE::EVENT_KEY_PRESS,
     testKeyDown);
-
-    windowsManager_ptr->CreateWindow();
+    // windowsManager_ptr->CreateWindow(800, 600, 4);
 
     printf("mac run\n");
 }

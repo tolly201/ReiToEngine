@@ -1,6 +1,8 @@
 #include "../Include/WindowsManager.h"
 #include <Security/Security.h>
 #include <_types/_uint32_t.h>
+#include <_types/_uint8_t.h>
+#include <cstring>
 
 #include "Platform/HAL/Window/Include/IWindow.h"
 #include "Platform/HAL/Window/Include/IWindowView.h"
@@ -21,10 +23,11 @@ void WindowsManager::Terminate() {
     windows.clear();
 }
 void WindowsManager::Tick() {
-    // for (IWindow*& window_ptr:windows)
-    // {
-    //     window_ptr->Update(nullptr, 0, 0);
-    // }
+    for (IWindow*& window_ptr:windows)
+    {
+        window_ptr->ShowWindow();
+        window_ptr->Update(data, width, height);
+    }
 }
 
 #ifdef RT_SYSTEM_APPLE
@@ -53,5 +56,14 @@ uint32_t WindowsManager::CreateWindow(uint32_t width, uint32_t height, uint8_t c
 #endif
     windows.push_back(instance);
     return index;
+}
+
+void WindowsManager::PassViewData(uint8_t* _data, size_t _size, size_t _width, size_t _height)
+{
+    delete[] data;
+    data = new uint8_t[_size];
+    std::memcpy(data, _data, _size);
+    width = _width;
+    height = _height;
 }
 }  // namespace ReiToEngine

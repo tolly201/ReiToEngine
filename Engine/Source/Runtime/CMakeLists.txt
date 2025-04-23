@@ -34,6 +34,11 @@ elseif(APPLE)
     target_compile_options(ReiToRuntime PRIVATE
     -ObjC++
     )
+
+    target_link_libraries(ReiToRuntime
+        "-framework Foundation"
+        "-framework Cocoa"
+    )
 else()
     # GCC/Clang 编译选项
     target_compile_options(ReiToRuntime PRIVATE
@@ -52,11 +57,6 @@ else()
     -ObjC++
     )
 endif()
-
-target_link_libraries(ReiToRuntime
-"-framework Foundation"
-"-framework Cocoa"
-)
 
 target_compile_definitions(ReiToRuntime PRIVATE REITOENGINE_EXPORTS)
 target_include_directories(ReiToRuntime PRIVATE

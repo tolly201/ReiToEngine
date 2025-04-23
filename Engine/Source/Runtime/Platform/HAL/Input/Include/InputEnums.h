@@ -192,17 +192,15 @@ struct InputEvent
         float x;
         float y;
     } ;
-
-    struct scroll {
-        float x;
-        float y;
-    } ;
-
     // Text input
     uint32_t codepoint;
 
     // Timestamp
     uint64_t timestamp;
+    float scrollDeltaX;
+    float scrollDeltaY;
+    float positionX;
+    float positionY;
 };
 
 class IWindow;

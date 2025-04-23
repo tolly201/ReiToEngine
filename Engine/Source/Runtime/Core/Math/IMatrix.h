@@ -26,9 +26,9 @@ public:
     virtual const Vector<column, T> operator[](int index) const = 0;
 
     virtual impl transpose() const = 0;
-    virtual void transposeSelf() const = 0;
+    virtual void transposeSelf() = 0;
     virtual impl Inverse() const = 0;
-    virtual void Invert() const = 0;
+    virtual void Invert() = 0;
     virtual T Determinant() const = 0;
     // virtual static impl Identity() = 0;
     // virtual static impl Zero() = 0;

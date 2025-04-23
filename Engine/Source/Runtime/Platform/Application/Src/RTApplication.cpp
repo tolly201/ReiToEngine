@@ -1,7 +1,11 @@
 #include "../Include/RTApplication.h"
+#include <_types/_uint8_t.h>
 #include <functional>
+#include "Function/RenderManager/Include/RenderManager.h"
+#include "Platform/HAL/Input/Include/InputEnums.h"
 #include "Platform/HAL/System/Include/SystemInfo.h"
 #include "Platform/WindowsManager/Include/WindowsManager.h"
+#include "test.h"
 
 namespace ReiToEngine{
     RTApplication::RTApplication() = default;
@@ -23,19 +27,33 @@ namespace ReiToEngine{
         systemInfo_ptr = &SystemInfo::Instance();
         windowsManager_ptr = &WindowsManager::Instance();
         inputSystem_ptr = &InputSystem::Instance();
+        renderManager_ptr = &RenderManager::Instance();
+
+
         inputSystem_ptr->Initialize();
         windowsManager_ptr->Initialize();
+        renderManager_ptr->Initialize();
+
         shouldQuit = false;
         printf("base init\n");
+        test::InitTestSpace(&renderManager_ptr->softRenderer);
     }
     void RTApplication::Run()
     {
         printf("base run\n");
+        // inputSystem_ptr->AddInputCallback(EINPUT_EVENT_TYPE::EVENT_KEY_PRESS, test::MoveCamera);
+        // inputSystem_ptr->AddInputCallback(EINPUT_EVENT_TYPE::EVENT_POINTER_MOVE, test::MoveCameraMouse);
     }
     void RTApplication::Tick()
     {
         inputSystem_ptr->Tick();
+
+        uint8_t* data;
+        size_t size;
+        test::tick(data, size);
+        windowsManager_ptr->PassViewData(test::image->buffer(), 800*600*4, test::width, test::height);
         windowsManager_ptr->Tick();
+        // delete[] data;
     }
     void RTApplication::Terminate()
     {

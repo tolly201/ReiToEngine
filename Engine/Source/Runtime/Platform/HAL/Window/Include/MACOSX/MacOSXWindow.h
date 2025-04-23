@@ -37,7 +37,7 @@ public:
     void HideWindow() override;
     void CloseWindow() override;
     void ProcessEvents() override;
-    void Update(const void* buffer, uint32_t width, uint32_t height) override;
+    void Update(const uint8_t* buffer, uint32_t width, uint32_t height) override;
 
     MacOSXView* cocoaView;
 protected:

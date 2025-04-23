@@ -60,10 +60,6 @@ void InputSystem::Tick()
 {
     for (auto& event : eventList)
     {
-        printf("input system tick, eventList: %lu\n", eventList.size());
-        printf("eventType: %hhu\n", event.eventType);
-        printf("event Code: %u\n", event.codepoint);
-        printf("event num: %hu\n", event.inputCode);
         for (auto& callback : callbacks[event.eventType])
         {
             callback(event);
@@ -78,6 +74,11 @@ void InputSystem::Tick()
             device->Update();
         }
     }
+}
+
+std::vector<InputEvent> InputSystem::GetInputEvents()
+{
+    return eventList;
 }
 
 }  // namespace ReiToEngine

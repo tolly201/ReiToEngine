@@ -8,6 +8,8 @@
 #include "Platform/WindowsManager/WindowsManager.h"
 #include "Platform/InputSystem/Include/InputSystem.h"
 
+#include "Function/RenderManager/Include/RenderManager.h"
+
 namespace ReiToEngine{
 class RTApplication : public SingletonFactory
 {
@@ -27,6 +29,7 @@ protected:
     SystemInfo* systemInfo_ptr;
     WindowsManager* windowsManager_ptr;
     InputSystem* inputSystem_ptr;
+    RenderManager* renderManager_ptr;
 };
 }
 #endif

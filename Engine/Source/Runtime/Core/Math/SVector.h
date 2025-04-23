@@ -1,5 +1,6 @@
 #ifndef CORE_MATH_SVector_H
 #define CORE_MATH_SVector_H
+
 #include "IVector.h"
 #include <stdexcept> // For std::out_of_range
 #include <vector>    // For std::vector
@@ -10,16 +11,11 @@
 
 namespace ReiToEngine
 {
-template <uint8_t DIM,typename T>
+template <uint8_t DIM, typename T>
 class SVector : public IVector<SVector<DIM, T>, DIM, T>
 {
 public:
-    ~SVector()
-    {
-        std::cout << "默认析构"<< std::endl;
-        delete[] data;
-    }
-    SVector(const std::initializer_list<T>& init) : data(new T[DIM]),
+    SVector(const std::initializer_list<T>& init) :
         x(data[0]),
         y(DIM >= 2 ? data[1] : data[0]),
         z(DIM >= 3 ? data[2] : data[0]),
@@ -28,68 +24,67 @@ public:
         size_t list_size = init.size();
         list_size = list_size > DIM ? DIM : list_size;
         size_t i = 0;
-        for(; i < list_size; ++ i)
+        for (; i < list_size; ++i)
         {
             data[i] = init.begin()[i];
         }
-        for(; i < DIM; ++ i)
+        for (; i < DIM; ++i)
         {
             data[i] = T{0};
         }
     }
-    SVector() : data(new T[DIM]),
+    SVector() :
         x(data[0]),
         y(DIM >= 2 ? data[1] : data[0]),
         z(DIM >= 3 ? data[2] : data[0]),
         w(DIM >= 4 ? data[3] : data[0])
     {
-        std::cout << "默认初始化"<< std::endl;
         size_t i = 0;
-        for(; i < DIM; ++ i)
+        for (; i < DIM; ++i)
         {
             data[i] = T{0};
         }
     }
-    SVector(T val) : data(new T[DIM]),
+    SVector(T val) :
         x(data[0]),
         y(DIM >= 2 ? data[1] : data[0]),
         z(DIM >= 3 ? data[2] : data[0]),
         w(DIM >= 4 ? data[3] : data[0])
     {
         size_t i = 0;
-        for(; i < DIM; ++ i)
+        for (; i < DIM; ++i)
         {
-            data[i] = T{val};
+            data[i] = val;
         }
     }
-    SVector(const SVector<DIM, T>& other) : data(new T[DIM]),
+    SVector(const SVector<DIM, T>& other) :
         x(data[0]),
         y(DIM >= 2 ? data[1] : data[0]),
         z(DIM >= 3 ? data[2] : data[0]),
         w(DIM >= 4 ? data[3] : data[0])
     {
-        std::cout << "拷贝构造"<< std::endl;
-
         size_t i = 0;
-        for(; i < DIM; ++i)
+        for (; i < DIM; ++i)
         {
             data[i] = other.data[i];
         }
     }
-    SVector(SVector<DIM, T>&& other) : data(other.data),
-        x(data[0]),
-        y(DIM >= 2 ? data[1] : data[0]),
-        z(DIM >= 3 ? data[2] : data[0]),
-        w(DIM >= 4 ? data[3] : data[0])
-    {
-        std::cout << "移动构造"<< std::endl;
-        other.data = nullptr;
-    }
-    // SVector<DIM, T>ement functions from IVector (CRTP style, returning SVector<T, DIM>& and SVector<T, DIM>)
+
+    // Move constructor is now deleted.  It doesn't make sense for array in class.
+    // SVector(SVector<DIM, T>&& other) : data(other.data),
+    //     x(data[0]),
+    //     y(DIM >= 2 ? data[1] : data[0]),
+    //     z(DIM >= 3 ? data[2] : data[0]),
+    //     w(DIM >= 4 ? data[3] : data[0])
+    // {
+    //     //other.data = nullptr;  // No longer needed
+    // }
+
+    // Element functions from IVector (CRTP style, returning SVector<T, DIM>& and SVector<T, DIM>)
     SVector<DIM, T>& operator+=(const SVector<DIM, T>& other) override
     {
         size_t i = 0;
-        for(; i < DIM; ++ i)
+        for (; i < DIM; ++i)
         {
             data[i] += other.data[i];
         }
@@ -98,7 +93,7 @@ public:
     SVector<DIM, T>& operator-=(const SVector<DIM, T>& other) override
     {
         size_t i = 0;
-        for(; i < DIM; ++ i)
+        for (; i < DIM; ++i)
         {
             data[i] -= other.data[i];
         }
@@ -107,7 +102,7 @@ public:
     SVector<DIM, T>& operator*=(T scalar) override
     {
         size_t i = 0;
-        for(; i < DIM; ++ i)
+        for (; i < DIM; ++i)
         {
             data[i] *= scalar;
         }
@@ -116,7 +111,7 @@ public:
     SVector<DIM, T>& operator/=(T scalar) override
     {
         size_t i = 0;
-        for(; i < DIM; ++ i)
+        for (; i < DIM; ++i)
         {
             data[i] /= scalar;
         }
@@ -145,7 +140,7 @@ public:
     T operator*(const SVector<DIM, T>& other) const override {
         T ret = T{};
         size_t i = 0;
-        for(; i < DIM; ++ i)
+        for (; i < DIM; ++i)
         {
             ret += data[i] * other.data[i];
         }
@@ -169,7 +164,7 @@ public:
     bool operator==(const SVector<DIM, T>& other) const override
     {
         size_t i = 0;
-        for(; i < DIM; ++ i)
+        for (; i < DIM; ++i)
         {
             if (std::abs(data[i] - other.data[i]) < RT_COMPARE_PRECISION) return false;
         }
@@ -177,26 +172,25 @@ public:
     }
     bool operator!=(const SVector<DIM, T>& other) const override
     {
-        return !(*this==other);
+        return !(*this == other);
     }
     friend std::ostream& operator<<(std::ostream& os, const SVector<DIM, T>& vec)
     {
 
         os << "(";
         size_t i = 0;
-        for(; i < DIM - 1; ++i)
+        for (; i < DIM - 1; ++i)
         {
             os << vec.data[i] << ", ";
         }
-        os <<vec.data[DIM - 1]<< ")" << std::endl;
+        os << vec.data[DIM - 1] << ")" << std::endl;
         return os;
     }
 
     SVector<DIM, T>& operator=(const SVector<DIM, T>& other)
     {
-        std::cout << "赋值运算符"<< std::endl;
         size_t i = 0;
-        for(; i < DIM; ++ i)
+        for (; i < DIM; ++i)
         {
             data[i] = other.data[i];
         }
@@ -205,13 +199,13 @@ public:
 
     T dot(const SVector<DIM, T>& other) const override
     {
-        return *this*other;
+        return *this * other;
     }
 
     T cross2D(const SVector<DIM, T>& other) const override
     {
         assert(DIM >= 2 && "Call cross2D with a wrong DIMENTION.\n");
-        return data[0]*other.data[1] - data[1]*other.data[0];
+        return data[0] * other.data[1] - data[1] * other.data[0];
     }
 
     SVector<DIM, T> cross4D(const SVector<DIM, T>& other) const override {
@@ -219,10 +213,10 @@ public:
         if (DIM == 3) return cross3D(other);
 
         SVector<DIM, T> ret;
-        ret[0] = data[1]*other.data[2] - data[2]*other.data[1] + data[3]* other.data[0] - data[0]*other.data[3];
-        ret[1] = data[2]*other.data[0] - data[0]*other.data[2] + data[3]* other.data[1] - data[1]*other.data[3];
-        ret[2] = data[0]*other.data[1] - data[1]*other.data[0] + data[3]* other.data[2] - data[2]*other.data[3];
-        ret[3] = data[0]*other.data[3] - data[3]*other.data[0] + data[1]* other.data[2] - data[2]*other.data[1];
+        ret[0] = data[1] * other.data[2] - data[2] * other.data[1] + data[3] * other.data[0] - data[0] * other.data[3];
+        ret[1] = data[2] * other.data[0] - data[0] * other.data[2] + data[3] * other.data[1] - data[1] * other.data[3];
+        ret[2] = data[0] * other.data[1] - data[1] * other.data[0] + data[3] * other.data[2] - data[2] * other.data[3];
+        ret[3] = data[0] * other.data[3] - data[3] * other.data[0] + data[1] * other.data[2] - data[2] * other.data[1];
         return ret;
     }
 
@@ -230,9 +224,9 @@ public:
         assert((DIM == 4 || DIM == 3) && "Call cross3D with a wrong DIMENTION.\n");
 
         SVector<DIM, T> ret;
-        ret[0] = data[1]*other.data[2] - data[2]*other.data[1];
-        ret[1] = data[2]*other.data[0] - data[0]*other.data[2];
-        ret[2] = data[0]*other.data[1] - data[1]*other.data[0];
+        ret[0] = data[1] * other.data[2] - data[2] * other.data[1];
+        ret[1] = data[2] * other.data[0] - data[0] * other.data[2];
+        ret[2] = data[0] * other.data[1] - data[1] * other.data[0];
         return ret;
     }
 
@@ -243,7 +237,7 @@ public:
             return SVector<DIM, T>();
         }
         SVector<DIM, T> ret = SVector();
-        for(size_t i = 0; i < DIM; ++i)
+        for (size_t i = 0; i < DIM; ++i)
         {
             ret.data[i] = data[i] / _length;
         }
@@ -255,12 +249,12 @@ public:
     {
         T _length = length();
         if (_length == static_cast<T>(0)) {
-            for(size_t i = 0; i < DIM; ++i)
+            for (size_t i = 0; i < DIM; ++i)
             {
                 data[i] = 0;
             }
         }
-        for(size_t i = 0; i < DIM; ++i)
+        for (size_t i = 0; i < DIM; ++i)
         {
             data[i] = 0;
         }
@@ -272,9 +266,9 @@ public:
     T lengthSquared() const override
     {
         T ret = T{0};
-        for(size_t i = 0; i < DIM; ++i)
+        for (size_t i = 0; i < DIM; ++i)
         {
-            ret += data[i]*data[i];
+            ret += data[i] * data[i];
         }
         return ret;
     }
@@ -293,16 +287,16 @@ public:
     T distanceSquared(const SVector<DIM, T>& other) const override
     {
         T ret = T{0};
-        for(size_t i = 0; i < DIM; ++i)
+        for (size_t i = 0; i < DIM; ++i)
         {
-            ret += (data[i] - other.data[i])*(data[i] - other.data[i]);
+            ret += (data[i] - other.data[i]) * (data[i] - other.data[i]);
         }
         return ret;
     }
     SVector<DIM, T> lerp(const SVector<DIM, T>& other, T t) const override
     {
         SVector<DIM, T> ret;
-        for(size_t i = 0; i < DIM; ++i)
+        for (size_t i = 0; i < DIM; ++i)
         {
             ret.data[i] = data[i] + (other.data[i] - data[i]) * t;
         }
@@ -313,9 +307,9 @@ public:
         T dotProduct = this->dot(normal);
 
         SVector<DIM, T> ret;
-        for(size_t i = 0; i < DIM; ++i)
+        for (size_t i = 0; i < DIM; ++i)
         {
-            ret.data[i] = data[i] - 2* dotProduct * normal.data[i];
+            ret.data[i] = data[i] - 2 * dotProduct * normal.data[i];
         }
         return ret;
     }
@@ -325,14 +319,14 @@ public:
         T normalLengthSquared = normal.lengthSquared();
         T mult = dotProduct / normalLengthSquared;
         SVector<DIM, T> ret;
-        for(size_t i = 0; i < DIM; ++i)
+        for (size_t i = 0; i < DIM; ++i)
         {
             ret.data[i] = mult * normal.data[i];
         }
         return ret;
     }
 public:
-    T* data;
+    T data[DIM];
     T& x;
     T& y;
     T& z;

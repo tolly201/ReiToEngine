@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 #include "Core/Macro/Macro.h"
+#include "Platform/HAL/Input/Include/InputEnums.h"
 #include "Platform/HAL/Input/Input.h"
 #include "Platform/Singleton/RuntimeSingleton.h"
 
@@ -28,6 +29,8 @@ class InputSystem : public Runtime_Singleton<InputSystem> {
     void Initialize();
     void Terminate();
     void Tick();
+
+    std::vector<InputEvent> GetInputEvents();
    private:
     std::unordered_map<EINPUT_DEVICE_TYPE, std::vector<InputDevice*>> m_devices;
     std::vector<InputEvent> eventList;
