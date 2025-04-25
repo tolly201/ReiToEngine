@@ -1,51 +1,77 @@
-#ifndef CORE_HAL_MACRO_MACRO_H
-#define CORE_HAL_MACRO_MACRO_H
-namespace ReiToEngine
-{
-#ifdef _WIN32
+#ifndef CORE_MACRO_MACRO_H
+#define CORE_MACRO_MACRO_H
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
     #define RT_SYSTEM_WINDOWS
-    #ifdef _WIN64
-        #define RT_SYSTEM_BIT_WIDTH 64
-    #else
-        #define RT_SYSTEM_BIT_WIDTH 32
-    #endif
-#elif defined(__APPLE__) // macOS
+#    ifndef _WIN64
+#        error "64-bit is required on Windows!"
+#    endif
+#elif defined(__linux__) || defined(__gnu_linux__)
+#    define RT_SYSTEM_LINUX 1
+#    if defined(__ANDROID__)
+#        define RT_SYSTEM_ANDROID 1
+#    endif
+#elif defined(__unix__)
+#    define RT_SYSTEM_UNIX 1
+#elif defined(_POSIX_VERSION)
+#    define RT_SYSTEM_POSIX 1
+#elif __APPLE__
     #define RT_SYSTEM_APPLE
-    #if defined(__x86_64__) || defined(__ppc64__)
-        #define RT_SYSTEM_BIT_WIDTH 64
+    #include <TargetConditionals.h>
+    #if TARGET_IPHONE_SIMULATOR
+        #define RT_SYSTEM_IOS 1
+        #define RT_SYSTEM_IOS_SIMULATOR 1
+    #elif TARGET_OS_IPHONE
+        #define RT_SYSTEM_IOS 1
+    #elif TARGET_OS_MAC
+// HACK: Should probably be in the Vulkan Renderer lib, not here.
+        #define VK_USE_PLATFORM_MACOS_MVK
     #else
-        #define RT_SYSTEM_BIT_WIDTH 32
-    #endif
-#elif defined(__linux__) // Linux
-    #define RT_SYSTEM_LINUX
-    #if defined(__x86_64__) || defined(__ppc64__)
-        #define RT_SYSTEM_BIT_WIDTH 64
-    #else
-        #define RT_SYSTEM_BIT_WIDTH 32
+        #error "Unknown Apple platform"
     #endif
 #else
     #define RT_SYSTEM_UNKNOWN
+    #error "Unknown platform!"
 #endif
 
-#ifdef RT_SYSTEM_WINDOWS
-    #ifdef RT_EXPORTS // 定义这个宏表示正在编译 DLL
-        #define RTENGINE_API __declspec(dllexport)
-    #else // 使用 DLL 的项目
-        #define RTENGINE_API __declspec(dllimport)
-    #endif
-    #define RT_FORCEINLINE __forceinline
-#elif defined(RT_SYSTEM_APPLE) // macOS
-    #define RTENGINE_API __attribute__((visibility("default")))
-    #define RT_FORCEINLINE inline __attribute__((always_inline))
-#elif defined(RT_SYSTEM_LINUX) // Linux
-    #define RTENGINE_API __attribute__((visibility("default")))
-    #define RT_FORCEINLINE inline __attribute__((always_inline))
+#ifdef RT_EXPORTS
+#    ifdef _MSC_VER
+#        define RTENGINE_API __declspec(dllexport)
+#    else
+#        define RTENGINE_API __attribute__((visibility("default")))
+#    endif
 #else
-    #error "Unsupported platform"
+#    ifdef _MSC_VER
+#        define RTENGINE_API __declspec(dllimport)
+#    else
+#        define RTENGINE_API
+#    endif
 #endif
 
-//math
-static const double RT_COMPARE_PRECISION = 1.0e-7;
-}
+#ifdef _MSC_VER
+    #define RT_FORCEINLINE __forceinline
+#else
+    #define RT_FORCEINLINE inline __attribute__((always_inline))
+#endif
 
+#if _DEBUG
+#    define RT_OHI_DEBUG 1
+#    define RT_OHI_RELEASE 0
+#else
+#    define RT_OHI_RELEASE 1
+#    define RT_OHI_DEBUG 0
+#endif
+
+// Deprecation
+#if defined(__clang__) || defined(__gcc__)
+/** @brief Mark something (i.e. a function) as deprecated. */
+#    define RTDEPRECATED(message) __attribute__((deprecated(message)))
+#elif defined(_MSC_VER)
+/** @brief Mark something (i.e. a function) as deprecated. */
+#    define RTDEPRECATED(message) __declspec(deprecated(message))
+#else
+#    error "Unsupported compiler - don't know how to define deprecations!"
+#endif
+#define RT_SYSTEM_BIT_WIDTH 64
+static const double RT_COMPARE_PRECISION = 1.0e-7;
 #endif

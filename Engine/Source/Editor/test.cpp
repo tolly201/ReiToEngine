@@ -15,6 +15,9 @@
 #include "Function/RenderManager/Include/RenderManager.h"
 #include "Platform/HAL/Window/Include/MACOSX/MacOSXWindow.h"
 #include "Platform/ImageParser/Include/STBImageParser.h"
+#include "Core/MinimalCore.h"
+#include "Core/Logger/Logger.h"
+#include "Core/Logger/Asserts.h"
 
 //[capture variable]
 //{accepted variable}
@@ -67,5 +70,8 @@ void testMatrix() {
 
 int main(int argc, const char * argv[]) {
     // return 0;
+    RTFATAL("test", 1, "dad");
+    RTASSERT(0 == 0);
+    RTASSERT(1 == 0);
     return RuntimeMainLoopEntry(argc, argv);
 }

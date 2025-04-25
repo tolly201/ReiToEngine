@@ -6,6 +6,8 @@ ${CMAKE_CURRENT_SOURCE_DIR}/**.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/**.mm
 )
 file(GLOB_RECURSE RUNTIME_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/**.h)
+
+add_custom_target(ClangD_Runtime_Header_Support SOURCES ${RUNTIME_HEADERS})
 # 构建 DLL
 add_library(ReiToRuntime SHARED)
 target_sources(ReiToRuntime PRIVATE
@@ -58,7 +60,7 @@ else()
     )
 endif()
 
-target_compile_definitions(ReiToRuntime PRIVATE REITOENGINE_EXPORTS)
+target_compile_definitions(ReiToRuntime PRIVATE RT_EXPORTS)
 target_include_directories(ReiToRuntime PRIVATE
 ${CMAKE_CURRENT_SOURCE_DIR}
 ${CMAKE_CURRENT_SOURCE_DIR}/../../Thirdparty/stb/

@@ -1,5 +1,5 @@
-#ifndef CORE_CORE_H
-#define CORE_CORE_H
+#ifndef CORE_H
+#define CORE_H
 #include "Platform/Memory/Memory.h"
 #include "Platform/File/Include/CFileManager.h"
 #include "Platform/ImageParser/Include/STBImageParser.h"

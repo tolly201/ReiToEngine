@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "mitaki28.vscode-clang",
+        "xaver.clang-format",
+        "ms-vscode.cmake-tools",
+        "EditorConfig.EditorConfig",
+        "wmaurer.vscode-jumpy",
+        "sainnhe.sonokai",
+        "twxs.cmake",
+        "llvm-vs-code-extensions.vscode-clangd"
+    ]
+}
