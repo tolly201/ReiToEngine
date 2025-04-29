@@ -1,5 +1,7 @@
+#include <unistd.h>
 #include "Core/Macro/Macro.h"
 #include "Platform/Application/Include/RTApplication.h"
+#include "Platform/Application/Include/RTApplicationEnums.h"
 
 #ifdef RT_SYSTEM_WINDOWS
 
@@ -12,20 +14,29 @@ ReiToEngine::RTApplication* ReiToEngine::RTApplication::instance_ptr = &ReiToEng
 
 #elif defined(RT_SYSTEM_LINUX) // Linux
 
-
 #else
 #endif
 
 int RuntimeMainLoopEntry(int argc, const char* argv[])
 {
-    ReiToEngine::RTApplication::Instance().Initialize();
+    ReiToEngine::ApplicatonConfig app_config;
+    app_config.name = "";
+    app_config.start_height = 1024;
+    app_config.start_width = 768;
+    app_config.start_pos_y = 100;
+    app_config.start_pos_x = 100;
+
+    ReiToEngine::RTApplication::Instance().Initialize(app_config);
     printf("init\n");
     ReiToEngine::RTApplication::Instance().Run();
     printf("run \n");
-    while (!ReiToEngine::RTApplication::Instance().shouldQuit) {
-        ReiToEngine::RTApplication::Instance().Tick();
-        // printf("keep\n");
+    while (ReiToEngine::RTApplication::Instance().app_state.is_running) {
+        while (!ReiToEngine::RTApplication::Instance().app_state.is_paused) {
+            ReiToEngine::RTApplication::Instance().Tick();
+        }
+        sleep(10);
     }
+
     printf("terminate\n");
     ReiToEngine::RTApplication::Instance().Terminate();
     return 0;

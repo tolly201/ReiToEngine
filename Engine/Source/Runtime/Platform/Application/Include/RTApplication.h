@@ -1,6 +1,6 @@
 #ifndef CORE_APPLICATION_RTAPPLICATION_H
 #define CORE_APPLICATION_RTAPPLICATION_H
-#include <cstddef>
+#include "RTApplicationEnums.h"
 #include "Platform/HAL/System/Include/SystemInfo.h"
 #include "Platform/Singleton/SingletonFactory.h"
 #include "Platform/HAL/System/System.h"
@@ -9,6 +9,7 @@
 #include "Platform/InputSystem/Include/InputSystem.h"
 
 #include "Function/RenderManager/Include/RenderManager.h"
+#include "Core/MinimalCore.h"
 
 namespace ReiToEngine{
 class RTApplication : public SingletonFactory
@@ -19,17 +20,19 @@ public:
     static RTApplication& Instance();
     RTApplication();
     ~RTApplication();
-    virtual void Initialize();
+    virtual void Initialize(ApplicatonConfig&);
     virtual void Run();
     virtual void Tick();
     virtual void Terminate();
-    bool shouldQuit;
+    ApplicatonState app_state;
 protected:
     static RTApplication* instance_ptr;
     SystemInfo* systemInfo_ptr;
     WindowsManager* windowsManager_ptr;
     InputSystem* inputSystem_ptr;
     RenderManager* renderManager_ptr;
+
+    ApplicatonConfig app_config;
 };
 }
 #endif

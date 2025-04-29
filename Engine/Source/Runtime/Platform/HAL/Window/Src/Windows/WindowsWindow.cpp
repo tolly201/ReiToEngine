@@ -1,9 +1,7 @@
 #include "../../Include/Windows/WindowsWindow.h"
-#include "Core/Macro/Macro.h"
 
 #ifdef RT_SYSTEM_WINDOWS
 #include <windows.h>
-
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -22,7 +20,9 @@ IWindow* WindowsWindow::Create(const char* title, uint32_t width, uint32_t heigh
     this->width = width;
     this->height = height;
 
-    WNDCLASS wc = {};
+    hInstance =GetModuleHandleA(0);
+    HICON icon = LoadIcon(hInstance, IDI_APPLICATION);
+    WNDCLASSA wc;
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = GetModuleHandle(nullptr);
     wc.lpszClassName = "SampleWindowClass";

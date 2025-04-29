@@ -73,5 +73,7 @@
 #    error "Unsupported compiler - don't know how to define deprecations!"
 #endif
 #define RT_SYSTEM_BIT_WIDTH 64
+
 static const double RT_COMPARE_PRECISION = 1.0e-7;
+
 #endif

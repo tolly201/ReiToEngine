@@ -6,7 +6,7 @@ namespace ReiToEngine{
 class RTMacApplication : public RTApplication
 {
     friend RTApplication;
-    void Initialize() override;
+    void Initialize(ApplicatonConfig&) override;
     void Run() override;
     void Tick() override;
     void Terminate() override;

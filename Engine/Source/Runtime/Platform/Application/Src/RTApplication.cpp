@@ -1,11 +1,12 @@
 #include "../Include/RTApplication.h"
-#include <_types/_uint8_t.h>
 #include <functional>
+#include <vector>
 #include "Function/RenderManager/Include/RenderManager.h"
 #include "Platform/HAL/Input/Include/InputEnums.h"
 #include "Platform/HAL/System/Include/SystemInfo.h"
 #include "Platform/WindowsManager/Include/WindowsManager.h"
 #include "test.h"
+#include "Core/Logger/Logger.h"
 
 namespace ReiToEngine{
     RTApplication::RTApplication() = default;
@@ -20,8 +21,18 @@ namespace ReiToEngine{
         return *instance_ptr;
     }
 
-    void RTApplication::Initialize()
+    void RTApplication::Initialize(ApplicatonConfig& config)
     {
+        app_config = config;
+        app_state.height = config.start_height;
+        app_state.width = config.start_width;
+        app_state.pos_x = config.start_pos_x;
+        app_state.pos_y = config.start_pos_y;
+
+        app_state.is_paused = false;
+        app_state.is_running = false;
+        app_state.last_time = 0.;
+
         // declear to make sure be initialzied firstly
         GetSingletonManager();
         systemInfo_ptr = &SystemInfo::Instance();
@@ -34,27 +45,27 @@ namespace ReiToEngine{
         windowsManager_ptr->Initialize();
         renderManager_ptr->Initialize();
 
-        shouldQuit = false;
         printf("base init\n");
         test::InitTestSpace(&renderManager_ptr->softRenderer);
+        InitializeLog();
     }
     void RTApplication::Run()
     {
         printf("base run\n");
         // inputSystem_ptr->AddInputCallback(EINPUT_EVENT_TYPE::EVENT_KEY_PRESS, test::MoveCamera);
         // inputSystem_ptr->AddInputCallback(EINPUT_EVENT_TYPE::EVENT_POINTER_MOVE, test::MoveCameraMouse);
+
+        windowsManager_ptr->CreateWindow(app_state.width, app_state.height, 3);
     }
+
     void RTApplication::Tick()
     {
         inputSystem_ptr->Tick();
-
-        uint8_t* data;
-        size_t size;
-        test::tick(data, size);
-        windowsManager_ptr->PassViewData(test::image->buffer(), 800*600*4, test::width, test::height);
-        windowsManager_ptr->Tick();
-        // delete[] data;
+        std::vector<InputEvent> events = inputSystem_ptr->GetInputEvents();
+        // std::vector<systemEvent> events = inputSystem_ptr->GetInputEvents();
+        // Consoles_ptr->Tick();
     }
+
     void RTApplication::Terminate()
     {
         windowsManager_ptr->Terminate();

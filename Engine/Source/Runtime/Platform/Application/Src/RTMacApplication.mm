@@ -9,12 +9,12 @@
     printf("KeyDown: %hu\n", event.inputCode);
     printf("KeyDown: %d\n", event.codepoint);
     if (event.inputCode == ReiToEngine::EINPUT_KEY_CODE::INPUT_KEYBOARD_ESCAPE) {
-            ReiToEngine::RTApplication::Instance().shouldQuit = true;
+            ReiToEngine::RTApplication::Instance().app_state.is_running = false;
         }
     }
 namespace ReiToEngine {
-void RTMacApplication::Initialize() {
-    RTApplication::Initialize();
+void RTMacApplication::Initialize(ApplicatonConfig& config) {
+    RTApplication::Initialize(config);
 
     // macOS 特定初始化
     [NSApplication sharedApplication];
@@ -60,7 +60,6 @@ void RTMacApplication::Run() {
 
     inputSystem_ptr->AddInputCallback(EINPUT_EVENT_TYPE::EVENT_KEY_PRESS,
     testKeyDown);
-    // windowsManager_ptr->CreateWindow(800, 600, 4);
 
     printf("mac run\n");
 }
