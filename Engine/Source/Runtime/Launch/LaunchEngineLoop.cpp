@@ -1,9 +1,12 @@
-#include <unistd.h>
 #include "Core/Macro/Macro.h"
 #include "Platform/Application/Include/RTApplication.h"
 #include "Platform/Application/Include/RTApplicationEnums.h"
 
 #ifdef RT_SYSTEM_WINDOWS
+#include "Platform/Application/Include/RTWindowsApplication.h"
+ReiToEngine::RTWindowsApplication ReiToEngine::RTWindowsApplication::instance;
+
+ReiToEngine::RTApplication* ReiToEngine::RTApplication::instance_ptr = &ReiToEngine::RTWindowsApplication::instance;
 
 #elif defined(RT_SYSTEM_APPLE) // macOS
 #include "Platform/Application/Include/RTMacApplication.h"

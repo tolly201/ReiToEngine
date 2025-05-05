@@ -16,30 +16,90 @@ WindowsWindow::WindowsWindow()
 
 IWindow* WindowsWindow::Create(const char* title, uint32_t width, uint32_t height)
 {
-    this->title = const_cast<char*>(title);
-    this->width = width;
-    this->height = height;
+    i32 posx = 100;
+    i32 posy = 100;
+    // Create window
+    i32 client_x = posx;
+    i32 client_y = posy;
+    u32 client_width = width;
+    u32 client_height = height;
 
-    hInstance =GetModuleHandleA(0);
-    HICON icon = LoadIcon(hInstance, IDI_APPLICATION);
-    WNDCLASSA wc;
-    wc.lpfnWndProc = WindowProc;
-    wc.hInstance = GetModuleHandle(nullptr);
-    wc.lpszClassName = "SampleWindowClass";
+    i32 window_x = posx;
+    i32 window_y = posy;
+    i32 window_width = client_width;
+    i32 window_height = client_height;
 
-    RegisterClass(&wc);
+    u32 window_style = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION;
+    u32 window_ex_style = WS_EX_APPWINDOW;
 
-    hwnd = CreateWindowEx(
-        0,
-        "SampleWindowClass",
-        title,
-        WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, width, height,
-        nullptr,
-        nullptr,
-        wc.hInstance,
-        nullptr
-    );
+    window_style |= WS_MAXIMIZEBOX;
+    window_style |= WS_MINIMIZEBOX;
+    window_style |= WS_THICKFRAME;
+
+    // Obtain the size of the border.
+    RECT border_rect = {0, 0, 0, 0};
+    AdjustWindowRectEx(&border_rect, window_style, 0, window_ex_style);
+
+    // In this case, the border rectangle is negative.
+    window_x += border_rect.left;
+    window_y += border_rect.top;
+
+    // Grow by the size of the OS border.
+    window_width += border_rect.right - border_rect.left;
+    window_height += border_rect.bottom - border_rect.top;
+
+    if (title) {
+        delete[] this->title;
+        this->title = new char[strlen(title) + 1];
+        memcpy(this->title, title, strlen(title) + 1);
+    } else {
+        delete[] this->title;
+        this->title = new char[256];
+        memcpy(this->title, "Kohi Game Engine Window", 22);
+    }
+
+    this->width = client_width;
+    this->height = client_height;
+    f32 device_pixel_ratio = 1.0f;
+
+    WCHAR wtitle[256];
+    int len = MultiByteToWideChar(CP_UTF8, 0, this->title, -1, wtitle, 256);
+    if (!len) {
+    }
+    hwnd = CreateWindowExW(
+        window_ex_style, L"kohi_window_class", wtitle,
+        window_style, window_x, window_y, window_width, window_height,
+        0, 0, this->hInstance, 0);
+
+    if (hwnd == 0) {
+        DWORD last_error = GetLastError();
+        LPWSTR wmessage_buf = 0;
+
+        // Ask Win32 to give us the string version of that message ID.
+        // The parameters we pass in, tell Win32 to create the buffer that holds the message for us
+        // (because we don't yet know how long the message string will be).
+        u64 size = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                  NULL, last_error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&wmessage_buf, 0, NULL);
+        if (size) {
+                // 将宽字符错误信息转换为多字节字符
+    int mb_len = WideCharToMultiByte(CP_UTF8, 0, wmessage_buf, -1, NULL, 0, NULL, NULL);
+    char* message_buf = new char[mb_len];
+    WideCharToMultiByte(CP_UTF8, 0, wmessage_buf, -1, message_buf, mb_len, NULL, NULL);
+
+    MessageBoxW(NULL, wmessage_buf, L"Error!", MB_ICONEXCLAMATION | MB_OK);
+    RTFATAL(message_buf);
+
+    delete[] message_buf;
+    LocalFree(wmessage_buf);
+        } else {
+            MessageBoxW(NULL, L"Window creation failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
+            RTFATAL("Window creation failed!");
+        }
+
+        return false;
+    }
+
+        // platform_window_show(window);
 
     return this;
 }
@@ -74,7 +134,10 @@ uint32_t WindowsWindow::GetHeight() const
 
 void WindowsWindow::ShowWindow()
 {
-    ::ShowWindow(hwnd, SW_SHOW);
+    b32 should_activate = 1; // TODO: if the window should not accept input, this should be false.
+    i32 show_window_command_flags = should_activate ? SW_SHOW : SW_SHOWNOACTIVATE;
+    ::ShowWindow(hwnd, show_window_command_flags);
+
 }
 
 void WindowsWindow::HideWindow()
@@ -98,7 +161,7 @@ void WindowsWindow::ProcessEvents()
     }
 }
 
-void WindowsWindow::Update(const void* buffer, uint32_t width, uint32_t height)
+void WindowsWindow::Update(const u8* buffer, uint32_t width, uint32_t height)
 {
     // Update the display buffer if necessary
 }

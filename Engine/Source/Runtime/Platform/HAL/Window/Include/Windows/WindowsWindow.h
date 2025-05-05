@@ -1,5 +1,6 @@
 #ifndef CORE_HAL_WINDOW_WINDOWS_WINDOW_H
 #define CORE_HAL_WINDOW_WINDOWS_WINDOW_H
+#include "Core/MinimalCore.h"
 #ifdef RT_SYSTEM_WINDOWS
 
 #include "../IWindow.h"
@@ -24,7 +25,7 @@ public:
     virtual void CloseWindow() override;
 
     virtual void ProcessEvents() override;
-    virtual void Update(const uint8_t* buffer, uint32_t width, uint32_t height) override;
+    virtual void Update(const u8* buffer, uint32_t width, uint32_t height) override;
 
 private:
     HWND hwnd;
