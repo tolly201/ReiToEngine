@@ -1,5 +1,8 @@
 #ifndef CORE_APPLICATION_RT_MAC_APPLICATION_H
 #define CORE_APPLICATION_RT_MAC_APPLICATION_H
+
+#include "Core/MinimalCore.h"
+#ifdef RT_SYSTEM_APPLE
 #include "RTApplication.h"
 
 namespace ReiToEngine{
@@ -15,4 +18,5 @@ protected:
 };
 
 }
+#endif
 #endif

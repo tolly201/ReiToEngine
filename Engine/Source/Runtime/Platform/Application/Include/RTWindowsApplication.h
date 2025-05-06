@@ -2,9 +2,9 @@
 #define CORE_APPLICATION_RT_WINDOWS_APPLICATION_H
 #include "RTApplication.h"
 #ifdef RT_SYSTEM_WINDOWS
-    #include <windows.h>
+#include <windows.h>
 namespace ReiToEngine{
-class RTWindowsApplication : public RTApplication
+class RTENGINE_API RTWindowsApplication : public RTApplication
 {
     friend RTApplication;
     void Initialize(ApplicatonConfig&) override;
@@ -13,6 +13,8 @@ class RTWindowsApplication : public RTApplication
     void Terminate() override;
 protected:
     static RTWindowsApplication instance;
+    RTWindowsApplication() = default;
+    ~RTWindowsApplication() = default;
     HINSTANCE hInstance;
 };
 

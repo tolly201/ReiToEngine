@@ -1,6 +1,7 @@
 #ifndef PLATFORM_HAL_WINDOW_MACOSX_VIEW_H
 #define PLATFORM_HAL_WINDOW_MACOSX_VIEW_H
-
+#include "Core/MinimalCore.h"
+#ifdef RT_SYSTEM_APPLE
 #import <Cocoa/Cocoa.h>
 #include "../WindowData.h"
 #include "../IWindowView.h"
@@ -46,4 +47,5 @@ public:
 private:
     OSXView* osxView;
 };
+#endif
 #endif

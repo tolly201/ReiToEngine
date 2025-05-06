@@ -1,3 +1,5 @@
+#include "Core/MinimalCore.h"
+#ifdef RT_SYSTEM_APPLE
 #include "../Include/RTMacApplication.h"
 #include <AppKit/AppKit.h>
 #include "Platform/Application/Include/RTApplication.h"
@@ -69,3 +71,4 @@ void RTMacApplication::Terminate() {
      [NSApp terminate:nil];
 }
 }  // namespace ReiToEngine
+#endif

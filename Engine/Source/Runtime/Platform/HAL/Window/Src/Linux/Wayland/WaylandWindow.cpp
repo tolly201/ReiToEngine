@@ -1,3 +1,5 @@
+#include "Core/MinimalCore.h"
+#ifdef RT_SYSTEM_LINUX
 #include "../../../Include/Linux/Wayland/WaylandWindow.h"
 #include <wayland-client-protocol.h>
 #include <cstring>
@@ -275,3 +277,4 @@ void WaylandWindow::shellSurfaceCallback(void* data, struct wl_shell_surface* sh
     // 处理shell surface配置改变
     // 在简单实现中可以不做任何事
 }
+#endif

@@ -1,3 +1,5 @@
+#include "Core/MinimalCore.h"
+#ifdef RT_SYSTEM_APPLE
 #include "../Include/MacOSXInputMonitor.h"
 #include <Foundation/Foundation.h>
 #include "Platform/HAL/Input/Include/InputEnums.h"
@@ -242,3 +244,4 @@ EINPUT_KEY_CODE MacOSXInputMonitor::MapKeyCode(uint16_t nsKeyCode) {
 }
 
 }  // namespace ReiToEngine
+#endif

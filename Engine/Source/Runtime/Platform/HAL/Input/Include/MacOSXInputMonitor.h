@@ -1,6 +1,7 @@
 #ifndef CORE_PLATFORM_HAL_MACOSX_INPUT_MONITOR_H
 #define CORE_PLATFORM_HAL_MACOSX_INPUT_MONITOR_H
-
+#include "Core/MinimalCore.h"
+#ifdef RT_SYSTEM_APPLE
 #import <Cocoa/Cocoa.h>
 #include "Platform/HAL/Input/Include/InputEnums.h"
 #include "InputMonitor.h"
@@ -86,4 +87,5 @@ protected:
 };
 
 }
+#endif
 #endif

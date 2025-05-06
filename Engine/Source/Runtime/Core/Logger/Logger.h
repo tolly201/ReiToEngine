@@ -47,7 +47,7 @@ bool InitializeLog();
 void TerminateLog();
 
 template <typename... Args>
-RTENGINE_API void Log(E_LOG_LEVEL level, const char* message, Args&&... args)
+void Log(E_LOG_LEVEL level, const char* message, Args&&... args)
 {
     std::stringstream ss;
     ss << level_strings[level] << message << std::endl;

@@ -1,6 +1,7 @@
 #ifndef PLATFORM_HAL_WINDOW_LINUX_WAYLAND_WINDOW_H
 #define PLATFORM_HAL_WINDOW_LINUX_WAYLAND_WINDOW_H
-
+#include "Core/MinimalCore.h"
+#ifdef RT_SYSTEM_LINUX
 #include "../../IWindow.h"
 #include <wayland-client.h>
 #include <wayland-egl.h>
@@ -46,4 +47,5 @@ private:
     void DestroyBuffer();
 };
 
+#endif
 #endif

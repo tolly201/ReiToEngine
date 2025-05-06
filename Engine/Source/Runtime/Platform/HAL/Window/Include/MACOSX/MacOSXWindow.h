@@ -1,6 +1,7 @@
 #ifndef PLATFORM_HAL_WINDOW_MACOSX_WINDOW_H
 #define PLATFORM_HAL_WINDOW_MACOSX_WINDOW_H
-
+#include "Core/MinimalCore.h"
+#ifdef RT_SYSTEM_APPLE
 #import <Cocoa/Cocoa.h>
 #include "Platform/HAL/Window/Include/WindowEnums.h"
 #include "../IWindow.h"
@@ -44,4 +45,5 @@ protected:
 private:
     OSXWindow*  cocoaWindow; // 假设你使用现有的 OSXWindow (NSWindow 子类)
 };
+#endif
 #endif

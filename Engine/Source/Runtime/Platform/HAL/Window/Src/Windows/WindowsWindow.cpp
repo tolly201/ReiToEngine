@@ -96,7 +96,7 @@ IWindow* WindowsWindow::Create(const char* title, uint32_t width, uint32_t heigh
             RTFATAL("Window creation failed!");
         }
 
-        return false;
+        return this;
     }
 
         // platform_window_show(window);
@@ -107,7 +107,8 @@ IWindow* WindowsWindow::Create(const char* title, uint32_t width, uint32_t heigh
 void WindowsWindow::SetTitle(const char* title)
 {
     this->title = const_cast<char*>(title);
-    SetWindowText(hwnd, title);
+    std::wstring wideTitle = std::wstring(title, title + strlen(title));
+    SetWindowText(hwnd, wideTitle.c_str());
 }
 
 char* WindowsWindow::GetTitle() const

@@ -1,3 +1,5 @@
+#include "Core/MinimalCore.h"
+#ifdef RT_SYSTEM_APPLE
 #include "../../Include/MACOSX/MacOSXView.h"
 #import <AppKit/AppKit.h>
 #include "Platform/HAL/Window/Include/WindowEnums.h"
@@ -150,3 +152,4 @@ void MacOSXView::Draw()
 {
     [osxView displayBuffer:buffer width:width height:height channel:channel]; // 调用 OSXView 的 displayBuffer 更新 image
 }
+#endif

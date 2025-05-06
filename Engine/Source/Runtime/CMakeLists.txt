@@ -19,7 +19,6 @@ target_sources(ReiToRuntime PRIVATE
 if(MSVC)
     target_compile_options(ReiToRuntime PRIVATE /RTC1 /sdl)
     target_compile_options(ReiToRuntime PRIVATE
-    -ObjC++
     )
 elseif(APPLE)
     # GCC/Clang 编译选项
@@ -42,21 +41,7 @@ elseif(APPLE)
         "-framework Cocoa"
     )
 else()
-    # GCC/Clang 编译选项
     target_compile_options(ReiToRuntime PRIVATE
-        -ggdb         # 生成GDB调试信息
-        -g            # 生成调试信息
-        -pg           # 生成性能分析信息（用于gprof）
-        -O0           # 禁用优化
-        -fsanitize=address
-        -fno-omit-frame-pointer
-    )
-    target_link_options(ReiToRuntime PRIVATE
-        -pg           # 链接时也需要添加性能分析选项
-        -fsanitize=address
-    )
-    target_compile_options(ReiToRuntime PRIVATE
-    -ObjC++
     )
 endif()
 

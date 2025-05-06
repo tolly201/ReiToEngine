@@ -12,7 +12,7 @@
 #include "Core/MinimalCore.h"
 
 namespace ReiToEngine{
-class RTApplication : public SingletonFactory
+class RTENGINE_API RTApplication : public SingletonFactory
 {
     friend class SingletonFactory;
 public:

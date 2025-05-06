@@ -1,8 +1,5 @@
 #ifndef RT_TEST_SCENE
 #define RT_TEST_SCENE
-#include <Security/Security.h>
-#include <_types/_uint8_t.h>
-#include <sys/_types/_size_t.h>
 #include <cstddef>
 #include <iostream>
 

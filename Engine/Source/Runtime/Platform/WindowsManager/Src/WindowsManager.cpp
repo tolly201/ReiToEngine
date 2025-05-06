@@ -1,7 +1,4 @@
 #include "../Include/WindowsManager.h"
-#include <Security/Security.h>
-#include <_types/_uint32_t.h>
-#include <_types/_uint8_t.h>
 #include <cstring>
 
 #include "Platform/HAL/Window/Include/IWindow.h"

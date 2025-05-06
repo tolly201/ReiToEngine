@@ -1,7 +1,6 @@
 #include "../Include/RTWindowsApplication.h"
 
 #ifdef RT_SYSTEM_WINDOWS
-
 using namespace ReiToEngine;
 void RTWindowsApplication::Initialize(ApplicatonConfig& app_config)
 {

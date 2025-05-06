@@ -10,7 +10,7 @@ class WindowsWindow : public IWindow
 {
 public:
     WindowsWindow();
-    virtual ~WindowsWindow();
+    ~WindowsWindow() = default;
 
     virtual IWindow* Create(const char* title, uint32_t width, uint32_t height) override;
     virtual void SetTitle(const char* title) override;

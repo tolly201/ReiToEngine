@@ -37,12 +37,16 @@
 #ifdef RT_EXPORTS
 #    ifdef _MSC_VER
 #        define RTENGINE_API __declspec(dllexport)
+#    elif defined(__MINGW32__) || defined(__MINGW64__)
+#        define RTENGINE_API __attribute__((dllexport))
 #    else
 #        define RTENGINE_API __attribute__((visibility("default")))
 #    endif
 #else
 #    ifdef _MSC_VER
 #        define RTENGINE_API __declspec(dllimport)
+#    elif defined(__MINGW32__) || defined(__MINGW64__)
+#        define RTENGINE_API __attribute__((dllimport))
 #    else
 #        define RTENGINE_API
 #    endif
@@ -63,7 +67,7 @@
 #endif
 
 // Deprecation
-#if defined(__clang__) || defined(__gcc__)
+#if defined(__clang__) || defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW64__)
 /** @brief Mark something (i.e. a function) as deprecated. */
 #    define RTDEPRECATED(message) __attribute__((deprecated(message)))
 #elif defined(_MSC_VER)
@@ -72,6 +76,7 @@
 #else
 #    error "Unsupported compiler - don't know how to define deprecations!"
 #endif
+
 #define RT_SYSTEM_BIT_WIDTH 64
 
 static const double RT_COMPARE_PRECISION = 1.0e-7;

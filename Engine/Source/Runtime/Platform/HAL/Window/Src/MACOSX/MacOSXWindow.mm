@@ -1,3 +1,5 @@
+#include "Core/MinimalCore.h"
+#ifdef RT_SYSTEM_APPLE
 #import "../../Include/MACOSX/MacOSXWindow.h"
 #include <Foundation/Foundation.h>
 #include <sys/types.h>
@@ -193,3 +195,4 @@ void MacOSXWindow::Update(const uint8_t* buffer, uint32_t width, uint32_t height
         cocoaView->SetHeight(600);
         cocoaView->Draw();
 }
+#endif

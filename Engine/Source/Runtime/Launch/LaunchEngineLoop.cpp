@@ -1,3 +1,4 @@
+#include "LaunchEngineLoop.h"
 #include "Core/Macro/Macro.h"
 #include "Platform/Application/Include/RTApplication.h"
 #include "Platform/Application/Include/RTApplicationEnums.h"
@@ -37,7 +38,7 @@ int RuntimeMainLoopEntry(int argc, const char* argv[])
         while (!ReiToEngine::RTApplication::Instance().app_state.is_paused) {
             ReiToEngine::RTApplication::Instance().Tick();
         }
-        sleep(10);
+        // sleep(10);
     }
 
     printf("terminate\n");
