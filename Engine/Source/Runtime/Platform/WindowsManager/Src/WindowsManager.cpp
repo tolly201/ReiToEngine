@@ -8,6 +8,11 @@
 #include "Platform/HAL/Window/Include/MACOSX/MacOSXView.h"
 #include "Platform/HAL/Window/Include/MACOSX/MacOSXWindow.h"
 #endif
+
+#ifdef RT_SYSTEM_WINDOWS
+#include "Platform/HAL/Window/Include/Windows/WindowsWindow.h"
+#endif
+
 namespace ReiToEngine {
 WindowsManager::WindowsManager() = default;
 void WindowsManager::Initialize() {}
@@ -45,11 +50,23 @@ IWindow* InnerCreateWindowMacOSX(uint32_t width, uint32_t height, uint8_t channe
 };
 #endif
 
-uint32_t WindowsManager::CreateWindow(uint32_t width, uint32_t height, uint8_t channel) {
+#ifdef RT_SYSTEM_WINDOWS
+IWindow* InnerCreateWindowWindows(uint32_t width, uint32_t height, uint8_t channel) {
+    WindowsWindow* window = new WindowsWindow();
+    window->Create("test", width, height);
+    window->ShowWindow();
+    return static_cast<IWindow*>(window);
+};
+#endif
+
+uint32_t WindowsManager::RTCreateWindow(uint32_t width, uint32_t height, uint8_t channel) {
     IWindow* instance = nullptr;
     uint32_t index = windows.size();
 #ifdef RT_SYSTEM_APPLE
     instance = InnerCreateWindowMacOSX(width, height, channel);
+#endif
+#ifdef RT_SYSTEM_WINDOWS
+    instance = InnerCreateWindowWindows(width, height, channel);
 #endif
     windows.push_back(instance);
     return index;

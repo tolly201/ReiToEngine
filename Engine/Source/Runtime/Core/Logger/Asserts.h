@@ -9,10 +9,11 @@ RTENGINE_API void report_assertion_failure(const char* expression, const char* m
 #if __MSC_VER
 #include <intrin.h>
 #define debugBreak() __debugbreak()
+#elif defined(__GNUC__) || defined(__clang__)
+#define debugBreak() __asm__ volatile("int $3")
 #else
-#define debugBreak() __builtin_trap()
+#define debugBreak() ((void)0) // 如果无法定义，则为空实现
 #endif
-
 
 #define RTASSERT(expr)                                               \
     {                                                                \

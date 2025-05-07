@@ -37,11 +37,11 @@ namespace ReiToEngine{
         GetSingletonManager();
         systemInfo_ptr = &SystemInfo::Instance();
         windowsManager_ptr = &WindowsManager::Instance();
-        inputSystem_ptr = &InputSystem::Instance();
+        // inputSystem_ptr = &InputSystem::Instance();
         renderManager_ptr = &RenderManager::Instance();
 
 
-        inputSystem_ptr->Initialize();
+        // inputSystem_ptr->Initialize();
         windowsManager_ptr->Initialize();
         renderManager_ptr->Initialize();
 
@@ -54,14 +54,15 @@ namespace ReiToEngine{
         printf("base run\n");
         // inputSystem_ptr->AddInputCallback(EINPUT_EVENT_TYPE::EVENT_KEY_PRESS, test::MoveCamera);
         // inputSystem_ptr->AddInputCallback(EINPUT_EVENT_TYPE::EVENT_POINTER_MOVE, test::MoveCameraMouse);
-
-        windowsManager_ptr->CreateWindow(app_state.width, app_state.height, 3);
+        app_state.is_running = true;
+        app_state.is_paused = false;
+        windowsManager_ptr->RTCreateWindow(app_state.width, app_state.height, 3);
     }
 
     void RTApplication::Tick()
     {
-        inputSystem_ptr->Tick();
-        std::vector<InputEvent> events = inputSystem_ptr->GetInputEvents();
+        // inputSystem_ptr->Tick();
+        // std::vector<InputEvent> events = inputSystem_ptr->GetInputEvents();
         // std::vector<systemEvent> events = inputSystem_ptr->GetInputEvents();
         // Consoles_ptr->Tick();
     }
