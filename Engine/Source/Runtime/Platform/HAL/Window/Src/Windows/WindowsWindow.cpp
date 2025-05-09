@@ -16,6 +16,7 @@ WindowsWindow::WindowsWindow()
 
 IWindow* WindowsWindow::Create(const char* title, uint32_t width, uint32_t height)
 {
+    printf("Creating Windows window...\n");
     i32 posx = 100;
     i32 posy = 100;
     // Create window
@@ -47,7 +48,7 @@ IWindow* WindowsWindow::Create(const char* title, uint32_t width, uint32_t heigh
     // Grow by the size of the OS border.
     window_width += border_rect.right - border_rect.left;
     window_height += border_rect.bottom - border_rect.top;
-
+printf("Window size: %d x %d\n", window_width, window_height);
     if (title) {
         delete[] this->title;
         this->title = new char[strlen(title) + 1];
@@ -61,45 +62,84 @@ IWindow* WindowsWindow::Create(const char* title, uint32_t width, uint32_t heigh
     this->width = client_width;
     this->height = client_height;
     f32 device_pixel_ratio = 1.0f;
-
+printf("Device pixel ratio: %f\n", device_pixel_ratio);
     WCHAR wtitle[256];
     int len = MultiByteToWideChar(CP_UTF8, 0, this->title, -1, wtitle, 256);
     if (!len) {
     }
+
+    WNDCLASSEXW wc = {0};
+    if (GetClassInfoExW(GetModuleHandleW(0), L"kohi_window_class", &wc)) {
+        printf("Window class 'kohi_window_class' is already registered.\n");
+    } else {
+        // 如果未注册，则注册窗口类
+        wc.cbSize = sizeof(WNDCLASSEXW);
+        wc.style = CS_HREDRAW | CS_VREDRAW;
+        wc.lpfnWndProc = DefWindowProcW; // 或自定义窗口过程
+        wc.cbClsExtra = 0;
+        wc.cbWndExtra = 0;
+        wc.hInstance = GetModuleHandleW(0);
+        wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+        wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+        wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+        wc.lpszMenuName = NULL;
+        wc.lpszClassName = L"kohi_window_class";
+        wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+
+        if (!RegisterClassExW(&wc)) {
+            DWORD last_error = GetLastError();
+            printf("Failed to register window class. Error: %lu\n", last_error);
+            return nullptr;
+        }
+    }
+
+    printf("Window title: %ls\n", wtitle);
     hwnd = CreateWindowExW(
         window_ex_style, L"kohi_window_class", wtitle,
         window_style, window_x, window_y, window_width, window_height,
-        0, 0, this->hInstance, 0);
-
+        0, 0, GetModuleHandleW(0), 0);
+    printf("Window handle: %p\n", hwnd);
     if (hwnd == 0) {
+        printf("Window creation failed!\n");
+
         DWORD last_error = GetLastError();
         LPWSTR wmessage_buf = 0;
 
         // Ask Win32 to give us the string version of that message ID.
         // The parameters we pass in, tell Win32 to create the buffer that holds the message for us
         // (because we don't yet know how long the message string will be).
-        u64 size = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                                  NULL, last_error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&wmessage_buf, 0, NULL);
+        u64 size =
+            FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                           NULL, last_error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&wmessage_buf, 0, NULL);
+        printf("Error message size: %d\n", size);
+
         if (size) {
-                // 将宽字符错误信息转换为多字节字符
-    int mb_len = WideCharToMultiByte(CP_UTF8, 0, wmessage_buf, -1, NULL, 0, NULL, NULL);
-    char* message_buf = new char[mb_len];
-    WideCharToMultiByte(CP_UTF8, 0, wmessage_buf, -1, message_buf, mb_len, NULL, NULL);
+            // 将宽字符错误信息转换为多字节字符
+            int mb_len = WideCharToMultiByte(CP_UTF8, 0, wmessage_buf, -1, NULL, 0, NULL, NULL);
+            char* message_buf = new char[mb_len];
+            WideCharToMultiByte(CP_UTF8, 0, wmessage_buf, -1, message_buf, mb_len, NULL, NULL);
 
-    MessageBoxW(NULL, wmessage_buf, L"Error!", MB_ICONEXCLAMATION | MB_OK);
-    RTFATAL(message_buf);
+            MessageBoxW(NULL, wmessage_buf, L"Error!", MB_ICONEXCLAMATION | MB_OK);
+            RTFATAL(message_buf);
+            int a;
+            std::cin >> a;
 
-    delete[] message_buf;
-    LocalFree(wmessage_buf);
-        } else {
+            delete[] message_buf;
+            LocalFree(wmessage_buf);
+        }
+        else {
             MessageBoxW(NULL, L"Window creation failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
             RTFATAL("Window creation failed!");
+            int a;
+            std::cin >> a;
         }
-
-        return this;
+        return nullptr;
+    }
+    else {
+        printf("Window created successfully!\n");
     }
 
-        // platform_window_show(window);
+    // platform_window_show(window);
 
     return this;
 }
