@@ -10,25 +10,29 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 WindowsWindow::WindowsWindow()
-    : title(nullptr), width(800), height(600), hwnd(nullptr)
 {
+    this->title  = nullptr;
+    this->width = 0;
+    this->height = 0;
+    this->hwnd = nullptr;
+    this->position_x = 0;
+    this->position_y = 0;
 }
 
-IWindow* WindowsWindow::Create(const char* title, uint32_t width, uint32_t height)
+IWindow* WindowsWindow::Create(const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y)
 {
     printf("Creating Windows window...\n");
-    i32 posx = 100;
-    i32 posy = 100;
     // Create window
-    i32 client_x = posx;
-    i32 client_y = posy;
+
+    i32 client_x = pos_x;
+    i32 client_y = pos_y;
     u32 client_width = width;
     u32 client_height = height;
 
-    i32 window_x = posx;
-    i32 window_y = posy;
-    i32 window_width = client_width;
-    i32 window_height = client_height;
+    i32 window_x = client_x;
+    i32 window_y = client_y;
+    u32 window_width = client_width;
+    u32 window_height = client_height;
 
     u32 window_style = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION;
     u32 window_ex_style = WS_EX_APPWINDOW;
@@ -48,7 +52,9 @@ IWindow* WindowsWindow::Create(const char* title, uint32_t width, uint32_t heigh
     // Grow by the size of the OS border.
     window_width += border_rect.right - border_rect.left;
     window_height += border_rect.bottom - border_rect.top;
-printf("Window size: %d x %d\n", window_width, window_height);
+
+
+    printf("Window size: %d x %d\n", window_width, window_height);
     if (title) {
         delete[] this->title;
         this->title = new char[strlen(title) + 1];
@@ -56,11 +62,14 @@ printf("Window size: %d x %d\n", window_width, window_height);
     } else {
         delete[] this->title;
         this->title = new char[256];
-        memcpy(this->title, "Kohi Game Engine Window", 22);
+        memcpy(this->title, "ReiToEngine Window", 19);
     }
 
     this->width = client_width;
     this->height = client_height;
+    this->position_x = client_x;
+    this->position_y = client_y;
+
     f32 device_pixel_ratio = 1.0f;
 printf("Device pixel ratio: %f\n", device_pixel_ratio);
     WCHAR wtitle[256];
@@ -68,36 +77,11 @@ printf("Device pixel ratio: %f\n", device_pixel_ratio);
     if (!len) {
     }
 
-    WNDCLASSEXW wc = {0};
-    if (GetClassInfoExW(GetModuleHandleW(0), L"kohi_window_class", &wc)) {
-        printf("Window class 'kohi_window_class' is already registered.\n");
-    } else {
-        // 如果未注册，则注册窗口类
-        wc.cbSize = sizeof(WNDCLASSEXW);
-        wc.style = CS_HREDRAW | CS_VREDRAW;
-        wc.lpfnWndProc = DefWindowProcW; // 或自定义窗口过程
-        wc.cbClsExtra = 0;
-        wc.cbWndExtra = 0;
-        wc.hInstance = GetModuleHandleW(0);
-        wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-        wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-        wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-        wc.lpszMenuName = NULL;
-        wc.lpszClassName = L"kohi_window_class";
-        wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-
-        if (!RegisterClassExW(&wc)) {
-            DWORD last_error = GetLastError();
-            printf("Failed to register window class. Error: %lu\n", last_error);
-            return nullptr;
-        }
-    }
-
     printf("Window title: %ls\n", wtitle);
     printf("ready to create\n");
 
     hwnd = CreateWindowExW(
-        window_ex_style, L"kohi_window_class", wtitle,
+        window_ex_style, L"rt_base_window_class", wtitle,
         window_style, window_x, window_y, window_width, window_height,
         0, 0, GetModuleHandleW(0), 0);
 
@@ -105,44 +89,13 @@ printf("Device pixel ratio: %f\n", device_pixel_ratio);
     if (hwnd == 0) {
         printf("Window creation failed!\n");
 
-        DWORD last_error = GetLastError();
-        LPWSTR wmessage_buf = 0;
+        MessageBoxW(NULL, L"Window Creation Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
 
-        // Ask Win32 to give us the string version of that message ID.
-        // The parameters we pass in, tell Win32 to create the buffer that holds the message for us
-        // (because we don't yet know how long the message string will be).
-        u64 size =
-            FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                           NULL, last_error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&wmessage_buf, 0, NULL);
-        printf("Error message size: %d\n", size);
-
-        if (size) {
-            // 将宽字符错误信息转换为多字节字符
-            int mb_len = WideCharToMultiByte(CP_UTF8, 0, wmessage_buf, -1, NULL, 0, NULL, NULL);
-            char* message_buf = new char[mb_len];
-            WideCharToMultiByte(CP_UTF8, 0, wmessage_buf, -1, message_buf, mb_len, NULL, NULL);
-
-            MessageBoxW(NULL, wmessage_buf, L"Error!", MB_ICONEXCLAMATION | MB_OK);
-            RTFATAL(message_buf);
-            int a;
-            std::cin >> a;
-
-            delete[] message_buf;
-            LocalFree(wmessage_buf);
-        }
-        else {
-            MessageBoxW(NULL, L"Window creation failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
-            RTFATAL("Window creation failed!");
-            int a;
-            std::cin >> a;
-        }
-        return nullptr;
+        RTFATAL("Window creation failed!");
     }
     else {
         printf("Window created successfully!\n");
     }
-
-    // platform_window_show(window);
 
     return this;
 }

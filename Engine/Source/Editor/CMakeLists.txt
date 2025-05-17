@@ -43,6 +43,8 @@ else()
     )
 endif()
 
+target_compile_options(ReiToEditor PRIVATE -URT_EXPORTS)
+
 target_link_libraries(ReiToEditor assimp ReiToRuntime )
 # target_link_libraries(ReiToEditor )
 # Set compile flags for ReiToRuntime (important for custom delete)

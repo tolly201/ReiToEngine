@@ -2,16 +2,13 @@
 
 #ifdef RT_SYSTEM_WINDOWS
 using namespace ReiToEngine;
-void RTWindowsApplication::Initialize(ApplicatonConfig& app_config)
+
+void RegisterWindowClass(HINSTANCE& hInstance)
 {
-    RTApplication::Initialize(app_config);
-    hInstance = GetModuleHandleW(0);
-    // Setup and register window class. This can be done at platform init and be reused.
     HICON icon = LoadIconW(hInstance, IDI_APPLICATION);
     WNDCLASSEXW wc = {0};
     wc.cbSize = sizeof(WNDCLASSEXW);
     wc.style = CS_DBLCLKS; // Get double-clicks
-    // wc.lpfnWndProc = win32_process_message;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = hInstance;
@@ -19,7 +16,7 @@ void RTWindowsApplication::Initialize(ApplicatonConfig& app_config)
     wc.hIconSm = icon;
     wc.hCursor = LoadCursorW(NULL, IDC_ARROW); // NULL; // Manage the cursor manually
     wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    wc.lpszClassName = L"kohi_window_class";
+    wc.lpszClassName = L"rt_base_window_class";
     wc.lpszMenuName = 0;
     wc.lpfnWndProc = DefWindowProcW; // DefWindowProcW; // win32_process_message;
 
@@ -47,6 +44,16 @@ void RTWindowsApplication::Initialize(ApplicatonConfig& app_config)
         }
     }
 }
+
+void RTWindowsApplication::Initialize(ApplicatonConfig& app_config)
+{
+    RTApplication::Initialize(app_config);
+
+    hInstance = GetModuleHandleW(0);
+
+    RegisterWindowClass(hInstance);
+}
+
 void RTWindowsApplication::Run()
 {
     RTApplication::Run();
