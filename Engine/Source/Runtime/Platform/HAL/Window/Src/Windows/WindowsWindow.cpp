@@ -94,10 +94,13 @@ printf("Device pixel ratio: %f\n", device_pixel_ratio);
     }
 
     printf("Window title: %ls\n", wtitle);
+    printf("ready to create\n");
+
     hwnd = CreateWindowExW(
         window_ex_style, L"kohi_window_class", wtitle,
         window_style, window_x, window_y, window_width, window_height,
         0, 0, GetModuleHandleW(0), 0);
+
     printf("Window handle: %p\n", hwnd);
     if (hwnd == 0) {
         printf("Window creation failed!\n");

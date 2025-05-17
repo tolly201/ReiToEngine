@@ -25,7 +25,7 @@ struct ApplicatonConfig
     i16 start_pos_y;
     i16 start_height;
     i16 start_width;
-    char* name;
+    const char* name;
 };
 
 }

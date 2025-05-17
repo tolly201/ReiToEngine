@@ -36,8 +36,11 @@ int RuntimeMainLoopEntry(int argc, const char* argv[])
     printf("run \n");
     while (ReiToEngine::RTApplication::Instance().app_state.is_running) {
         while (!ReiToEngine::RTApplication::Instance().app_state.is_paused) {
+            int a;
+            std::cin >>a;
             ReiToEngine::RTApplication::Instance().Tick();
         }
+
         // sleep(10);
     }
 

@@ -21,6 +21,7 @@ void RTWindowsApplication::Initialize(ApplicatonConfig& app_config)
     wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     wc.lpszClassName = L"kohi_window_class";
     wc.lpszMenuName = 0;
+    wc.lpfnWndProc = DefWindowProcW; // DefWindowProcW; // win32_process_message;
 
     if (!RegisterClassExW(&wc)) {
         DWORD last_error = GetLastError();

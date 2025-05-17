@@ -12,6 +12,12 @@ if(NOT DEFINED RT_TARGET_PLATFORM)
     endif()
 endif()
 
+if(NOT DEFINED RT_COMPILE_PLATFORM)
+    if(DEFINED ENV{RT_COMPILE_PLATFORM})
+        set(RT_COMPILE_PLATFORM $ENV{RT_COMPILE_PLATFORM})
+    endif()
+endif()
+
 # 根据编译器和平台设置编译环境
 if(WIN32)
     if(NOT DEFINED RT_COMPILE_PLATFORM)
@@ -52,18 +58,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # 针对不同编译器的额外设置
 if(MSVC)
-    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /utf-8")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
-endif()
-
-# 输出目录设置
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/lib)  # 静态库
-set(CMAKE_OBJECT_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/obj)   # 中间文件
-if(MSVC)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/)  # exe/dll
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/lib)  # dll
 endif()
 
 # 资源文件输出目录
