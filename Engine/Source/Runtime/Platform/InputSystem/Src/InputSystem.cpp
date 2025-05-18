@@ -1,9 +1,9 @@
 #include "../Include/InputSystem.h"
 
-#include "Platform/HAL/Input/Include/InputEnums.h"
+#include "Core/HAL/Input/Include/InputEnums.h"
 
 #ifdef RT_SYSTEM_APPLE
-    #include "Platform/HAL/Input/Include/MacOSXInputMonitor.h"
+    #include "Core/HAL/Input/Include/MacOSXInputMonitor.h"
 #endif
 
 namespace ReiToEngine {

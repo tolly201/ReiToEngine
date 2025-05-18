@@ -1,7 +1,7 @@
 #include "LaunchEngineLoop.h"
 #include "Core/Macro/Macro.h"
 #include "Platform/Application/Include/RTApplication.h"
-#include "Platform/Application/Include/RTApplicationEnums.h"
+#include "Platform/Enums/RTApplicationEnums.h"
 
 #ifdef RT_SYSTEM_WINDOWS
 #include "Platform/Application/Include/RTWindowsApplication.h"
@@ -23,6 +23,13 @@ ReiToEngine::RTApplication* ReiToEngine::RTApplication::instance_ptr = &ReiToEng
 
 int RuntimeMainLoopEntry(int argc, const char* argv[])
 {
+    RTFATAL("test");
+    RTERROR("test");
+    RTDEBUG("test");
+    RTTRACE("test");
+    RTINFO("test");
+    RTWARN("test");
+    // RTASSERT(0 == 0);
     ReiToEngine::ApplicatonConfig app_config;
     app_config.name = "";
     app_config.start_height = 1024;
@@ -34,14 +41,10 @@ int RuntimeMainLoopEntry(int argc, const char* argv[])
     printf("init\n");
     ReiToEngine::RTApplication::Instance().Run();
     printf("run \n");
-    while (ReiToEngine::RTApplication::Instance().app_state.is_running) {
-        while (!ReiToEngine::RTApplication::Instance().app_state.is_paused) {
-            int a;
-            std::cin >>a;
+    while (ReiToEngine::RTApplication::Instance().GetConstApplicationState().is_running) {
+        while (!ReiToEngine::RTApplication::Instance().GetConstApplicationState().is_paused) {
             ReiToEngine::RTApplication::Instance().Tick();
         }
-
-        // sleep(10);
     }
 
     printf("terminate\n");

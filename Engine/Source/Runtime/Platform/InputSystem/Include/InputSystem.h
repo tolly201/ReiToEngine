@@ -1,11 +1,11 @@
-// Engine/Source/Runtime/Platform/HAL/Input/Include/IInputSystem.h
+// Engine/Source/Runtime/Core/HAL/Input/Include/IInputSystem.h
 #ifndef CORE_PLATFORM_INPUTSYSTEM_INPUTSUSTEM_H
 #define CORE_PLATFORM_INPUTSYSTEM_INPUTSUSTEM_H
 #include <functional>
 #include <memory>
 #include "Core/Macro/Macro.h"
-#include "Platform/HAL/Input/Include/InputEnums.h"
-#include "Platform/HAL/Input/Input.h"
+#include "Core/HAL/Input/Include/InputEnums.h"
+#include "Core/HAL/Input/Input.h"
 #include "Platform/Singleton/RuntimeSingleton.h"
 
 namespace ReiToEngine {

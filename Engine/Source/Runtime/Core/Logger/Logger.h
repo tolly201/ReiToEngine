@@ -2,13 +2,13 @@
 #define CORE_LOGGER_LOGGER_H
 #include "../Macro/Functions.h"
 #include "Core/Macro/Macro.h"
+#include "Core/HAL/Console/Include/IConsole.h"
 #include <iostream>
 #include <cstdarg>
 #include <sstream>
 #include <utility>
 #define LOG_FATAL_ENABLED 1
-#define LOG_ERROE_ENABLED 1
-
+#define LOG_ERROR_ENABLED 1
 namespace{
 const char* level_strings[6]
 {
@@ -53,7 +53,17 @@ void Log(E_LOG_LEVEL level, const char* message, Args&&... args)
     ss << level_strings[level] << message << std::endl;
 
     ((ss << std::forward<Args>(args) << std::endl), ...);
-    printf("%s", ss.str().c_str());
+
+    if (level < LOG_LEVEL_WARN)
+    {
+        printf("level: %d\n", level);
+        RT_HAL_ConsoleWriteError(ss.str().c_str(), level);
+    }
+    else
+    {
+        printf("level: %d\n", level);
+        RT_HAL_ConsoleWrite(ss.str().c_str(), level);
+    }
 }
 
 // 日志宏定义（根据日志级别控制是否启用）

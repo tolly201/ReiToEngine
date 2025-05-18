@@ -26,4 +26,7 @@
     },
 
     "clang-format.executable": "/usr/local/bin/clang-format",
+    "files.associations": {
+        "xstring": "cpp"
+    },
 }

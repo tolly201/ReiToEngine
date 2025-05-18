@@ -2,10 +2,8 @@
 #include <functional>
 #include <vector>
 #include "Function/RenderManager/Include/RenderManager.h"
-#include "Platform/HAL/Input/Include/InputEnums.h"
-#include "Platform/HAL/System/Include/SystemInfo.h"
+#include "Core/HAL/Input/Include/InputEnums.h"
 #include "Platform/WindowsManager/Include/WindowsManager.h"
-#include "test.h"
 #include "Core/Logger/Logger.h"
 
 namespace ReiToEngine{
@@ -35,7 +33,6 @@ namespace ReiToEngine{
 
         // declear to make sure be initialzied firstly
         GetSingletonManager();
-        systemInfo_ptr = &SystemInfo::Instance();
         windowsManager_ptr = &WindowsManager::Instance();
         // inputSystem_ptr = &InputSystem::Instance();
         renderManager_ptr = &RenderManager::Instance();
@@ -46,14 +43,11 @@ namespace ReiToEngine{
         renderManager_ptr->Initialize();
 
         printf("base init\n");
-        test::InitTestSpace(&renderManager_ptr->softRenderer);
         InitializeLog();
     }
     void RTApplication::Run()
     {
         printf("base run\n");
-        // inputSystem_ptr->AddInputCallback(EINPUT_EVENT_TYPE::EVENT_KEY_PRESS, test::MoveCamera);
-        // inputSystem_ptr->AddInputCallback(EINPUT_EVENT_TYPE::EVENT_POINTER_MOVE, test::MoveCameraMouse);
         app_state.is_running = true;
         app_state.is_paused = false;
         windowsManager_ptr->RTCreateWindow(app_state.width, app_state.height, 3);
@@ -69,7 +63,18 @@ namespace ReiToEngine{
 
     void RTApplication::Terminate()
     {
+        ApplicationState& state = app_state;
         windowsManager_ptr->Terminate();
+    }
+
+    const ApplicationState& RTApplication::GetConstApplicationState()
+    {
+        return app_state;
+    }
+
+    ApplicationState& RTApplication::GetApplicationState()
+    {
+        return app_state;
     }
 }
 

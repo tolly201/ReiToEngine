@@ -1,3 +1,4 @@
+#ifdef RTTEST
 #ifndef RT_TEST_SCENE
 #define RT_TEST_SCENE
 #include <cstddef>
@@ -6,13 +7,14 @@
 #include "camera.h"
 #include "Platform/Application/Include/RTApplication.h"
 #include "Platform/Application/Src/geometry.h"
-#include "Platform/HAL/System/Include/SystemInfo.h"
-#include "Platform/HAL/Window/Include/IWindow.h"
+#include "Core/HAL/System/Include/SystemInfo.h"
+#include "Core/HAL/Window/Include/IWindow.h"
 
 #include "Platform/ImageParser/Include/STBImageParser.h"
-#include "Platform/HAL/Input/Include/InputEnums.h"
+#include "Core/HAL/Input/Include/InputEnums.h"
 #include "model.h"
 #include "tgaimage.h"
+#include <cmath>
 #include "our_gl.h"
 
 namespace test {
@@ -172,4 +174,5 @@ void tick(uint8_t*& data,size_t& size)
     // imageParser.Write("./test1.png", image);
 }
 }
+#endif
 #endif

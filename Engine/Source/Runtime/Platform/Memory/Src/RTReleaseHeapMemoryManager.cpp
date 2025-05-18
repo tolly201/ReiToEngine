@@ -1,5 +1,5 @@
 #include "../Include/RTReleaseHeapMemoryManager.h"
-#include "Platform/HAL/System/System.h"
+#include "Core/HAL/System/System.h"
 #include <cassert>
 
 namespace ReiToEngine
@@ -12,7 +12,7 @@ template< class T > inline T Align(const T Ptr, uint32_t Alignment )
 RTReleaseHeapMemoryManager::RTReleaseHeapMemoryManager()
 {
 	SystemPageSize = 0 ;
-	SystemPageSize = SystemInfo::Instance().GetSystemBitWidth();
+	SystemPageSize = 64;
 	assert((SystemPageSize&(SystemPageSize-1)) == 0 && "SystemPageSize is not 2^n");
 
 	// Init tables.
@@ -59,11 +59,11 @@ RTReleaseHeapMemoryManager::~RTReleaseHeapMemoryManager()
 			{
 				if (PoolIndirect[i][j].Mem)
 				{
-					RTSysFree( PoolIndirect[i][j].Mem, PoolIndirect[i][j].Bytes);
+					RT_HAL_SYSFree( PoolIndirect[i][j].Mem, PoolIndirect[i][j].Bytes);
 					PoolIndirect[i][j].Mem = nullptr;
 				}
 
-				RTSysFree( PoolIndirect[i][j].Mem, PoolIndirect[i][j].Bytes);
+				RT_HAL_SYSFree( PoolIndirect[i][j].Mem, PoolIndirect[i][j].Bytes);
 				PoolIndirect[i] = nullptr;
 			}
 		}
@@ -95,7 +95,7 @@ void* RTReleaseHeapMemoryManager::allocateImpl(size_t uiSize, uint8_t uiAlignmen
 			assert(Blocks*Table->BlockSize<=Bytes && "Bytes Counting Error.");
 
 			// Allocate memory.
-			Free = (FFreeMem*)RTSysAlloc(Bytes);
+			Free = (FFreeMem*)RT_HAL_SYSAlloc(Bytes);
 			if( !Free )
 			{
 				return nullptr;
@@ -143,7 +143,7 @@ void* RTReleaseHeapMemoryManager::allocateImpl(size_t uiSize, uint8_t uiAlignmen
 	{
 		// Use OS for large allocations.
 		size_t AlignedSize = Align(uiSize,SystemPageSize);
-		Free = (FFreeMem*)RTSysAlloc(AlignedSize);
+		Free = (FFreeMem*)RT_HAL_SYSAlloc(AlignedSize);
 		if( !Free )
 		{
 			return nullptr;
@@ -196,7 +196,7 @@ void RTReleaseHeapMemoryManager::deallocateImpl(void* pcAddr, uint8_t uiAlignmen
 		{
 			// Free the OS memory.
 			Pool->Unlink();
-			RTSysFree( Pool->Mem, 0 );
+			RT_HAL_SYSFree( Pool->Mem, 0 );
 			Pool->Mem = NULL;
 		}
 	}
@@ -204,7 +204,7 @@ void RTReleaseHeapMemoryManager::deallocateImpl(void* pcAddr, uint8_t uiAlignmen
 	{
 		// Free an OS allocation.
 
-		RTSysFree( pcAddr, 0 );
+		RT_HAL_SYSFree( pcAddr, 0 );
 		Pool->Mem = NULL;
 	}
 

@@ -3,6 +3,70 @@
 #ifdef RT_SYSTEM_WINDOWS
 using namespace ReiToEngine;
 
+namespace {
+    b8 platform_pump_messages(ApplicationState& app_state)
+    {
+        MSG message;
+        while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&message);
+            DispatchMessageW(&message);
+        }
+        return true;
+    }
+
+    LRESULT CALLBACK win32_process_message(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+    {
+        switch (msg)
+        {
+            case WM_ERASEBKGND:
+                return 1;
+            case WM_CLOSE:
+            //TODO: Fire an event for the application layer
+                return 0;
+            case WM_DESTROY:
+            {
+                PostQuitMessage(0);
+                return 0;
+            }
+            case WM_SIZE:
+            {
+                RECT r;
+                GetClientRect(hwnd, &r);
+                u32 width = r.right - r.left;
+                u32 height = r.bottom - r.top;
+            }
+            case WM_KEYDOWN:
+            case WM_SYSKEYDOWN:
+            case WM_KEYUP:
+            case WM_SYSKEYUP:
+            {
+                break;
+            }
+            case WM_MOUSEMOVE:
+            {
+                GET_DEVICE_LPARAM(lparam);
+                break;
+            }
+            case WM_MOUSEWHEEL:
+            {
+                i32 z_delta = GET_WHEEL_DELTA_WPARAM(wparam);
+            }
+            case WM_LBUTTONDOWN:
+            case WM_MBUTTONDOWN:
+            case WM_RBUTTONDOWN:
+            case WM_LBUTTONUP:
+            case WM_MBUTTONUP:
+            case WM_RBUTTONUP:
+            default:
+            {}
+        }
+
+        return DefWindowProcW(hwnd, msg, wparam, lparam);
+    }
+}
+
+
 void RegisterWindowClass(HINSTANCE& hInstance)
 {
     HICON icon = LoadIconW(hInstance, IDI_APPLICATION);
@@ -18,7 +82,7 @@ void RegisterWindowClass(HINSTANCE& hInstance)
     wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     wc.lpszClassName = L"rt_base_window_class";
     wc.lpszMenuName = 0;
-    wc.lpfnWndProc = DefWindowProcW; // DefWindowProcW; // win32_process_message;
+    wc.lpfnWndProc = win32_process_message;
 
     if (!RegisterClassExW(&wc)) {
         DWORD last_error = GetLastError();
@@ -61,6 +125,9 @@ void RTWindowsApplication::Run()
 void RTWindowsApplication::Tick()
 {
     RTApplication::Tick();
+    platform_pump_messages(
+        this->app_state
+    );
 }
 void RTWindowsApplication::Terminate()
 {

@@ -3,9 +3,9 @@
 #include "../Include/RTMacApplication.h"
 #include <AppKit/AppKit.h>
 #include "Platform/Application/Include/RTApplication.h"
-#include "Platform/HAL/Input/Include/InputEnums.h"
-#include "Platform/HAL/Window/Include/MACOSX/MacOSXWindow.h"
-#include "Platform/HAL/Window/Include/WindowEnums.h"
+#include "Core/HAL/Input/Include/InputEnums.h"
+#include "Core/HAL/Window/Include/MACOSX/MacOSXWindow.h"
+#include "Core/HAL/Window/Include/WindowEnums.h"
 
     void testKeyDown(const ReiToEngine::InputEvent& event) {
     printf("KeyDown: %hu\n", event.inputCode);

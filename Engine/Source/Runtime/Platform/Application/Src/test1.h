@@ -10,14 +10,14 @@
 // #include "Core/Math/VectorInclude.h"
 // #include "Platform/Application/Include/RTApplication.h"
 // #include "Platform/Application/Src/geometry.h"
-// #include "Platform/HAL/System/Include/SystemInfo.h"
-// #include "Platform/HAL/Window/Include/IWindow.h"
+// #include "Core/HAL/System/Include/SystemInfo.h"
+// #include "Core/HAL/Window/Include/IWindow.h"
 // #include "Core/Math/IMath.h"
 
 // #include "Function/RenderManager/Include/RenderManager.h"
 // #include "Platform/ImageParser/Include/STBImageParser.h"
 // #include "Platform/RHI/Include/CPU/SoftRenderer.h"
-// #include "Platform/HAL/Input/Include/InputEnums.h"
+// #include "Core/HAL/Input/Include/InputEnums.h"
 // #include "model.h"
 // #include "tgaimage.h"
 

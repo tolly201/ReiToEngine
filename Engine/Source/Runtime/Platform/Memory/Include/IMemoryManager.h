@@ -2,7 +2,7 @@
 #define CORE_PLATFORM_MEMORY_IMEMORYALLOCATOR_H
 #include <cstdint>
 #include <cstddef>
-#include "Core/Macro/Macro.h"
+#include "Core/MinimalCore.h"
 namespace ReiToEngine
 {
 template <typename T>

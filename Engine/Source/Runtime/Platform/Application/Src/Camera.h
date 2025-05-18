@@ -1,7 +1,9 @@
+#ifdef RTTEST
 #ifndef CAMERA_H
 #define CAMERA_H
 #include "Core/Math/IMath.h"
 #include <numbers>
+#include <algorithm>
 //left-handed cartesian coordinates
 //default z(0,0,1) points at outside screen
 namespace ReiToEngine
@@ -17,8 +19,8 @@ enum Camera_Movement {
 };
 
 // Default camera values
-const float YAW         =  0.0f;
 const float PITCH       =  0.0f;
+const float YAW         =  0.0f;
 const float SPEED       =  2.5f;
 const float SENSITIVITY =  0.1f;
 const float ZOOM        =  45.0f;
@@ -193,3 +195,4 @@ private:
 }
 #endif
 
+#endif

@@ -4,7 +4,7 @@
 #include "IMemoryManager.h"
 #include <mutex>
 #include <cstddef> // for std::max_align_t
-#include "Platform/HAL/Memory/Memory.h"
+#include "Core/HAL/Memory/Memory.h"
 #include "RTMemoryPool.h"
 namespace ReiToEngine
 {
@@ -39,7 +39,7 @@ namespace ReiToEngine
         std::mutex MemoryMutex;
         FPoolInfo *CreateIndirect()
         {
-            FPoolInfo *Indirect = (FPoolInfo *)RTSysAlloc(2048 * sizeof(FPoolInfo));
+            FPoolInfo *Indirect = (FPoolInfo *)RT_HAL_SYSAlloc(2048 * sizeof(FPoolInfo));
             if (!Indirect)
             {
                 return nullptr;

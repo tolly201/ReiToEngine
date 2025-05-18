@@ -1,16 +1,16 @@
 #include "../Include/WindowsManager.h"
 #include <cstring>
 
-#include "Platform/HAL/Window/Include/IWindow.h"
-#include "Platform/HAL/Window/Include/IWindowView.h"
+#include "Core/HAL/Window/Include/IWindow.h"
+#include "Core/HAL/Window/Include/IWindowView.h"
 
 #ifdef RT_SYSTEM_APPLE
-#include "Platform/HAL/Window/Include/MACOSX/MacOSXView.h"
-#include "Platform/HAL/Window/Include/MACOSX/MacOSXWindow.h"
+#include "Core/HAL/Window/Include/MACOSX/MacOSXView.h"
+#include "Core/HAL/Window/Include/MACOSX/MacOSXWindow.h"
 #endif
 
 #ifdef RT_SYSTEM_WINDOWS
-#include "Platform/HAL/Window/Include/Windows/WindowsWindow.h"
+#include "Core/HAL/Window/Include/Windows/WindowsWindow.h"
 #endif
 
 namespace ReiToEngine {

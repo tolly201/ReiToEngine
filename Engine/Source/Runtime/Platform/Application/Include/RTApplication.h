@@ -1,9 +1,7 @@
 #ifndef CORE_APPLICATION_RTAPPLICATION_H
 #define CORE_APPLICATION_RTAPPLICATION_H
-#include "RTApplicationEnums.h"
-#include "Platform/HAL/System/Include/SystemInfo.h"
+#include "Platform/Enums/RTApplicationEnums.h"
 #include "Platform/Singleton/SingletonFactory.h"
-#include "Platform/HAL/System/System.h"
 #include "Platform/WindowsManager/Include/WindowsManager.h"
 #include "Platform/WindowsManager/WindowsManager.h"
 #include "Platform/InputSystem/Include/InputSystem.h"
@@ -24,10 +22,12 @@ public:
     virtual void Run();
     virtual void Tick();
     virtual void Terminate();
-    ApplicatonState app_state;
-protected:
+    const ApplicationState& GetConstApplicationState();
+    ApplicationState& GetApplicationState();
+
+    protected:
+    ApplicationState app_state;
     static RTApplication* instance_ptr;
-    SystemInfo* systemInfo_ptr;
     WindowsManager* windowsManager_ptr;
     InputSystem* inputSystem_ptr;
     RenderManager* renderManager_ptr;
