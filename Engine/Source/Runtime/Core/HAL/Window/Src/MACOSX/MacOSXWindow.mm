@@ -3,7 +3,6 @@
 #import "../../Include/MACOSX/MacOSXWindow.h"
 #include <Foundation/Foundation.h>
 #include <sys/types.h>
-#include <_types/_uint8_t.h>
 #include "Core/HAL/Window/Include/IWindow.h"
 #include <cstdio>
 #include "Core/HAL/Window/Include/WindowEnums.h"
@@ -76,7 +75,7 @@
 
 @end
 
-IWindow* MacOSXWindow::Create(const char* title, uint32_t _width, uint32_t _height)
+IWindow* MacOSXWindow::Create(const char* title, u32 _width, u32 _height, u32 pos_x, u32 pos_y)
 {
     std::cout << "create window\n";
     NSRect contentRect = NSMakeRect(0, 0, _width, _height);
@@ -134,7 +133,7 @@ char* MacOSXWindow::GetTitle() const
     return title;
 }
 
-void MacOSXWindow::SetSize(uint32_t width, uint32_t height)
+void MacOSXWindow::SetSize(u32 width, u32 height)
 {
     if (cocoaWindow) {
         NSRect contentRect = NSMakeRect(0, 0, width, height);
@@ -144,12 +143,12 @@ void MacOSXWindow::SetSize(uint32_t width, uint32_t height)
     }
 }
 
-uint32_t MacOSXWindow::GetWidth() const
+u32 MacOSXWindow::GetWidth() const
 {
     return width;
 }
 
-uint32_t MacOSXWindow::GetHeight() const
+u32 MacOSXWindow::GetHeight() const
 {
     return height;
 }
@@ -183,13 +182,13 @@ void MacOSXWindow::ProcessEvents()
     // You might add custom event polling or handling here if needed.
 }
 
-void MacOSXWindow::Update(const uint8_t* buffer, uint32_t width, uint32_t height)
+void MacOSXWindow::Update(const u8* buffer, u32 width, u32 height)
 {
     // [[NSApplication sharedApplication] run];
         // Placeholder for buffer update and display logic.
         // You will need to implement the platform-specific rendering here,
         // potentially using Core Graphics, Metal, or OpenGL with the buffer data.
-        cocoaView->SetBuffer(const_cast<uint8_t*>(buffer));
+        cocoaView->SetBuffer(const_cast<u8*>(buffer));
         cocoaView->SetChannel(4);
         cocoaView->SetWidth(800);
         cocoaView->SetHeight(600);

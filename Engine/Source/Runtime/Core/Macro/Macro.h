@@ -16,14 +16,14 @@
 #elif defined(_POSIX_VERSION)
 #    define RT_SYSTEM_POSIX 1
 #elif __APPLE__
-    #define RT_SYSTEM_APPLE
-    #include <TargetConditionals.h>
+#include <TargetConditionals.h>
     #if TARGET_IPHONE_SIMULATOR
         #define RT_SYSTEM_IOS 1
         #define RT_SYSTEM_IOS_SIMULATOR 1
     #elif TARGET_OS_IPHONE
         #define RT_SYSTEM_IOS 1
     #elif TARGET_OS_MAC
+        #define RT_SYSTEM_APPLE
 // HACK: Should probably be in the Vulkan Renderer lib, not here.
         #define VK_USE_PLATFORM_MACOS_MVK
     #else

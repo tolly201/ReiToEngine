@@ -11,5 +11,6 @@
 
 #include "HAL/System/System.h"
 #include "HAL/Window/Include/IWindow.h"
+#include "HAL/Initialize/Initialize.h"
 
 #endif

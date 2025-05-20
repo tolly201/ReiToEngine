@@ -1,7 +1,7 @@
 #ifndef CORE_LOGGER_LOGGER_H
 #define CORE_LOGGER_LOGGER_H
 #include "../Macro/Functions.h"
-#include "Core/Macro/Macro.h"
+#include "../InnerCore.h"
 #include "Core/HAL/Console/Include/IConsole.h"
 #include <iostream>
 #include <cstdarg>

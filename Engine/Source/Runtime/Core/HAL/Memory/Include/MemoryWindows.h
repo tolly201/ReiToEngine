@@ -6,8 +6,8 @@
 #include <iostream>
 #include <Windows.h>
 
-void* RT_HAL_SYSAlloc(size_t uiSize);
-void RT_HAL_SYSFree(void* pMem, size_t uiSize);
+void* RT_HAL_SYSAlloc(u64 uiSize);
+void RT_HAL_SYSFree(void* pMem, u64 uiSize);
 
 #endif
 #endif

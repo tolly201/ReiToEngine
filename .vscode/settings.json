@@ -27,6 +27,8 @@
 
     "clang-format.executable": "/usr/local/bin/clang-format",
     "files.associations": {
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "iostream": "cpp",
+        "*.txx": "cpp"
     },
 }

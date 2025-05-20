@@ -21,6 +21,7 @@ namespace ReiToEngine{
 
     void RTApplication::Initialize(ApplicatonConfig& config)
     {
+        RT_HAL_INITIALIZE();
         app_config = config;
         app_state.height = config.start_height;
         app_state.width = config.start_width;
@@ -44,6 +45,7 @@ namespace ReiToEngine{
 
         printf("base init\n");
         InitializeLog();
+
     }
     void RTApplication::Run()
     {

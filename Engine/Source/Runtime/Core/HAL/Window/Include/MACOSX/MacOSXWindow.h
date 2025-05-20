@@ -28,17 +28,17 @@ public:
     ~MacOSXWindow();
 
     // 实现 IWindow 的纯虚函数
-    IWindow* Create(const char* title, uint32_t width, uint32_t height) override; // 返回类型为 IWindow*
+    IWindow* Create(const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y) override; // 返回类型为 IWindow*
     void SetTitle(const char* title) override;
     char* GetTitle() const override;
-    void SetSize(uint32_t width, uint32_t height) override;
-    uint32_t GetWidth() const override;
-    uint32_t GetHeight() const override;
+    void SetSize(u32 width, u32 height) override;
+    u32 GetWidth() const override;
+    u32 GetHeight() const override;
     void ShowWindow() override;
     void HideWindow() override;
     void CloseWindow() override;
     void ProcessEvents() override;
-    void Update(const uint8_t* buffer, uint32_t width, uint32_t height) override;
+    void Update(const u8* buffer, u32 width, u32 height) override;
 
     MacOSXView* cocoaView;
 protected:

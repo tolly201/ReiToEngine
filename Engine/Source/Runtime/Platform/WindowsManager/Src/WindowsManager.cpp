@@ -40,7 +40,7 @@ IWindow* InnerCreateWindowMacOSX(uint32_t width, uint32_t height, uint8_t channe
         buffer[i] = 0;
         if ((i + 1) % 4 == 0) buffer[i] = 255;
     }
-    window->Create("test", width, height);
+    window->Create("test", width, height, 100,100);
     window->cocoaView->SetHeight(height);
     window->cocoaView->SetWidth(width);
     window->cocoaView->SetChannel(channel);
