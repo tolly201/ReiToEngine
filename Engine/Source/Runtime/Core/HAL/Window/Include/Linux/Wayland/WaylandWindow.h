@@ -1,51 +1,58 @@
-#ifndef PLATFORM_HAL_WINDOW_LINUX_WAYLAND_WINDOW_H
-#define PLATFORM_HAL_WINDOW_LINUX_WAYLAND_WINDOW_H
-#include "Core/MinimalCore.h"
-#ifdef RT_SYSTEM_LINUX
-#include "../../IWindow.h"
-#include <wayland-client.h>
-#include <wayland-egl.h>
-#include <cstring>
-#include <memory>
+#ifndef CORE_HAL_WINDOW_WAYLANDWINDOW_H
+#define CORE_HAL_WINDOW_WAYLANDWINDOW_H
 
-class WaylandWindow : public IWindow
+#include "../../IWindow.h"
+#ifdef RT_SYSTEM_LINUX
+#include <wayland-client.h>
+#include <xkbcommon/xkbcommon.h>
+#include <EGL/egl.h>
+#include <wayland-egl.h>
+class RTENGINE_API IWindow
+class WayLandWindow : public IWindow
 {
 public:
-    WaylandWindow();
-    virtual ~WaylandWindow();
+    WayLandWindow();
+    ~WayLandWindow();
 
-    virtual IWindow* Create(const char* title, uint32_t width, uint32_t height) override;
+    IWindow* Create(const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y) override;
     virtual void SetTitle(const char* title) override;
     virtual char* GetTitle() const override;
 
-    virtual void SetSize(uint32_t width, uint32_t height) override;
-    virtual uint32_t GetWidth() const override;
-    virtual uint32_t GetHeight() const override;
+    virtual void SetSize(u32 width, u32 height) override;
+    virtual u32 GetWidth() const override;
+    virtual u32 GetHeight() const override;
 
     virtual void ShowWindow() override;
     virtual void HideWindow() override;
     virtual void CloseWindow() override;
 
     virtual void ProcessEvents() override;
-    virtual void Update(const uint8_t* buffer, uint32_t width, uint32_t height) override;
+    virtual void Update(const u8* buffer, u32 width, u32 height) override;
 
 private:
-    struct wl_display* display;
-    struct wl_registry* registry;
-    struct wl_compositor* compositor;
-    struct wl_surface* surface;
-    struct wl_shell* shell;
-    struct wl_shell_surface* shell_surface;
-    struct wl_shm* shm;
-    struct wl_buffer* buffer;
-    bool isVisible;
+    // Wayland全局对象
+    struct wl_display* m_display;
+    struct wl_registry* m_registry;
+    struct wl_compositor* m_compositor;
+    struct wl_shell* m_shell;
+    struct wl_seat* m_seat;
 
-    // 内部辅助函数
-    bool InitializeWayland();
-    void DestroyWayland();
-    void CreateBuffer(uint32_t width, uint32_t height);
-    void DestroyBuffer();
+    // 窗口相关
+    struct wl_surface* m_surface;
+    struct wl_shell_surface* m_shell_surface;
+    struct wl_egl_window* m_egl_window;
+
+    // 输入相关
+    struct wl_keyboard* m_keyboard;
+    struct wl_pointer* m_pointer;
+    struct xkb_context* m_xkb_context;
+    struct xkb_keymap* m_xkb_keymap;
+    struct xkb_state* m_xkb_state;
+
+    // 窗口属性
+    int m_width;
+    int m_height;
+    bool m_running;
 };
-
 #endif
 #endif

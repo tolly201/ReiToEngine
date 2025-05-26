@@ -1,7 +1,6 @@
 #ifndef CORE_HAL_SYSTEM_SYSTEMINFO_H
 #define CORE_HAL_SYSTEM_SYSTEMINFO_H
-#include "Core/Macro/Macro.h"
-// #include "Platform/Singleton/SingletonFactory.h"
+#include "../../../InnerCore.h"
 #include <cstdint>
 
 namespace ReiToEngine

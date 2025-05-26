@@ -33,6 +33,7 @@ public:
     RenderManager* renderManager_ptr;
 
     ApplicatonConfig app_config;
+    RT_HAL_MAIN_WINDOW main_window;
 };
 }
 #endif

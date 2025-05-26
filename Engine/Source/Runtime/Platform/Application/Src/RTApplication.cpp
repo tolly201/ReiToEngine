@@ -5,6 +5,7 @@
 #include "Core/HAL/Input/Include/InputEnums.h"
 #include "Platform/WindowsManager/Include/WindowsManager.h"
 #include "Core/Logger/Logger.h"
+#include "Core/HAL/PlatformDefines.h"
 
 namespace ReiToEngine{
     RTApplication::RTApplication() = default;
@@ -21,7 +22,7 @@ namespace ReiToEngine{
 
     void RTApplication::Initialize(ApplicatonConfig& config)
     {
-        RT_HAL_INITIALIZE();
+        RT_HAL_Initialize(main_window, config.name, config.start_width, config.start_height, config.start_pos_x, config.start_pos_y);
         app_config = config;
         app_state.height = config.start_height;
         app_state.width = config.start_width;
@@ -52,11 +53,13 @@ namespace ReiToEngine{
         printf("base run\n");
         app_state.is_running = true;
         app_state.is_paused = false;
-        windowsManager_ptr->RTCreateWindow(app_state.width, app_state.height, 3);
     }
 
     void RTApplication::Tick()
     {
+        RT_HAL_PumpMessage(
+            main_window
+        );
         // inputSystem_ptr->Tick();
         // std::vector<InputEvent> events = inputSystem_ptr->GetInputEvents();
         // std::vector<systemEvent> events = inputSystem_ptr->GetInputEvents();

@@ -5,7 +5,6 @@
 #ifdef RT_SYSTEM_WINDOWS
 
 #include "windows.h"
-void RT_HAL_ConsoleWrite(const char* message, u8 color);
-void RT_HAL_ConsoleWriteError(const char* message, u8 color);
+
 #endif
 #endif

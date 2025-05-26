@@ -2,7 +2,7 @@
 #define CORE_LOGGER_LOGGER_H
 #include "../Macro/Functions.h"
 #include "../InnerCore.h"
-#include "Core/HAL/Console/Include/IConsole.h"
+#include "../HAL/PlatformDefines.h"
 #include <iostream>
 #include <cstdarg>
 #include <sstream>

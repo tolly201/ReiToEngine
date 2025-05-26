@@ -2,8 +2,7 @@
 #define CORE_HAL_WINDOW_IWINDOWVIEW_H
 
 #include <stdint.h>
-#include "Core/Macro/Macro.h"
-#include "Platform/File/Include/CFile.h"
+#include "../../../InnerCore.h"
 #include "IWindow.h"
 class RTENGINE_API IWindowView
 {

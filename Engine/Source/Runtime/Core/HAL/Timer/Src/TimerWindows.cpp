@@ -12,12 +12,6 @@ f64 RT_HAL_AbsoluteTime()
     QueryPerformanceCounter(&now_time);
     return (f64)now_time.QuadPart * clock_frequency;
 }
-
-void RT_HAL_Sleep(u64 ms)
-{
-    Sleep(ms);
-}
-
 void RT_HAL_InitTime()
 {
     QueryPerformanceFrequency(&frequency);

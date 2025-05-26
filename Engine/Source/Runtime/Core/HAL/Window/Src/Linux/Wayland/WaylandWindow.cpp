@@ -1,6 +1,5 @@
-#include "Core/MinimalCore.h"
-#ifdef RT_SYSTEM_LINUX
 #include "../../../Include/Linux/Wayland/WaylandWindow.h"
+#ifdef RT_SYSTEM_LINUX
 #include <wayland-client-protocol.h>
 #include <cstring>
 #include <cstdlib>

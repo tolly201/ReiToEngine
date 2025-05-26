@@ -51,7 +51,7 @@ endif()
 
 project(ReiToEngine)
 # 通用编译设置
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -82,6 +82,6 @@ set(ASSIMP_WARNINGS_AS_ERRORS OFF)
 include_directories(
     ${ENGINE_ROOT_DIR}/Thirdparty/Assimp/include/
 )
-add_subdirectory(Engine/Thirdparty/Assimp)
+# add_subdirectory(Engine/Thirdparty/Assimp)
 add_subdirectory(Engine/Source/Editor)
 

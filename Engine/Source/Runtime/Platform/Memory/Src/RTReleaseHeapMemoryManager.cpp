@@ -1,5 +1,4 @@
 #include "../Include/RTReleaseHeapMemoryManager.h"
-#include "Core/HAL/System/System.h"
 #include <cassert>
 
 namespace ReiToEngine
@@ -196,7 +195,7 @@ void RTReleaseHeapMemoryManager::deallocateImpl(void* pcAddr, uint8_t uiAlignmen
 		{
 			// Free the OS memory.
 			Pool->Unlink();
-			RT_HAL_SYSFree( Pool->Mem, 0 );
+			RT_HAL_SYSFree( Pool->Mem, 0);
 			Pool->Mem = NULL;
 		}
 	}
@@ -204,7 +203,7 @@ void RTReleaseHeapMemoryManager::deallocateImpl(void* pcAddr, uint8_t uiAlignmen
 	{
 		// Free an OS allocation.
 
-		RT_HAL_SYSFree( pcAddr, 0 );
+		RT_HAL_SYSFree( pcAddr, 0);
 		Pool->Mem = NULL;
 	}
 

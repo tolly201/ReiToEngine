@@ -15,9 +15,4 @@ public:
 protected:
 };
 RT_FORCEINLINE IConsole::~IConsole() = default;
-
-void RT_HAL_ConsoleWrite(const char* message, u8 color);
-
-void RT_HAL_ConsoleWriteError(const char* message, u8 color);
-
 #endif

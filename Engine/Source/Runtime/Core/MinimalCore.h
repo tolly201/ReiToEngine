@@ -7,10 +7,8 @@
 
 #include "HAL/Console/Include/IConsole.h"
 #include "HAL/Input/Input.h"
-#include "HAL/Memory/Memory.h"
 
-#include "HAL/System/System.h"
-#include "HAL/Window/Include/IWindow.h"
-#include "HAL/Initialize/Initialize.h"
+#include "./HAL/Window/Include/IWindow.h"
+#include "./HAL/PlatformDefines.h"
 
 #endif

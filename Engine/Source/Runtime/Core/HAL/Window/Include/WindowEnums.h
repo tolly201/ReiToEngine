@@ -23,9 +23,7 @@ enum EWINDOW_WINDOW_FLAGS {
 };
 
 // Opaque pointer
-struct mfb_window;
-struct mfb_timer;
-
+class IWindow;
 
 #ifndef __ANDROID__
 #define MFB_RGB(r, g, b)        (((uint32_t) r) << 16) | (((uint32_t) g) << 8) | ((uint32_t) b)

@@ -4,7 +4,7 @@
 #include "IMemoryManager.h"
 #include <mutex>
 #include <cstddef> // for std::max_align_t
-#include "Core/HAL/Memory/Memory.h"
+#include "Core/MinimalCore.h"
 #include "RTMemoryPool.h"
 namespace ReiToEngine
 {
