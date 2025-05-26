@@ -4,14 +4,14 @@
 #include "../InnerCore.h"
 struct RT_HAL_MAIN_WINDOW
 {
-    IWindow* main_window;
+    IWindow* main_window = nullptr;
 };
 
 b8 RT_HAL_Initialize(RT_HAL_MAIN_WINDOW& window, const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y);
 
 void RT_HAL_Terminate(RT_HAL_MAIN_WINDOW& window);
 
-void RT_HAL_PumpMessage(RT_HAL_MAIN_WINDOW& window);
+b8 RT_HAL_PumpMessage(RT_HAL_MAIN_WINDOW& window);
 
 void* RT_HAL_SYSAlloc(u64 uiSize);
 

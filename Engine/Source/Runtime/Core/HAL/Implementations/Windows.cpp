@@ -116,7 +116,7 @@ void RT_HAL_Terminate(RT_HAL_MAIN_WINDOW& window)
     UnregisterClassW(L"rt_base_window_class", GetModuleHandleW(0));
 }
 
-void RT_HAL_PumpMessage(RT_HAL_MAIN_WINDOW& window)
+b8 RT_HAL_PumpMessage(RT_HAL_MAIN_WINDOW& window)
 {
     MSG message;
     while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE))
@@ -124,7 +124,7 @@ void RT_HAL_PumpMessage(RT_HAL_MAIN_WINDOW& window)
         TranslateMessage(&message);
         DispatchMessageW(&message);
     }
-    // return true;
+    return true;
 }
 
 void* RT_HAL_SYSAlloc(u64 uiSize)

@@ -50,7 +50,7 @@ void RT_HAL_Terminate(RT_HAL_MAIN_WINDOW& window)
     }
 }
 
-void RT_HAL_PumpMessage(RT_HAL_MAIN_WINDOW& window);
+b8 RT_HAL_PumpMessage(RT_HAL_MAIN_WINDOW& window);
 
 void* RT_HAL_SYSAlloc(u64 uiSize)
 {

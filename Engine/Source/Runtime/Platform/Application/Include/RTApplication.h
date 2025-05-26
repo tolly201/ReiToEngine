@@ -1,6 +1,6 @@
 #ifndef CORE_APPLICATION_RTAPPLICATION_H
 #define CORE_APPLICATION_RTAPPLICATION_H
-#include "Platform/Enums/RTApplicationEnums.h"
+#include "../../Enums/RTApplicationEnums.h"
 #include "Platform/Singleton/SingletonFactory.h"
 #include "Platform/WindowsManager/Include/WindowsManager.h"
 #include "Platform/WindowsManager/WindowsManager.h"
@@ -8,7 +8,7 @@
 
 #include "Function/RenderManager/Include/RenderManager.h"
 #include "Core/MinimalCore.h"
-
+#include "Launch/GameTypes.h"
 namespace ReiToEngine{
 class RTENGINE_API RTApplication : public SingletonFactory
 {
@@ -18,9 +18,9 @@ public:
     static RTApplication& Instance();
     RTApplication();
     ~RTApplication();
-    virtual void Initialize(ApplicatonConfig&);
-    virtual void Run();
-    virtual void Tick();
+    virtual b8 Initialize(Game&);
+    virtual b8 StartGame();
+    virtual b8 Run();
     virtual void Terminate();
     const ApplicationState& GetConstApplicationState();
     ApplicationState& GetApplicationState();
@@ -32,8 +32,8 @@ public:
     InputSystem* inputSystem_ptr;
     RenderManager* renderManager_ptr;
 
-    ApplicatonConfig app_config;
-    RT_HAL_MAIN_WINDOW main_window;
+    b8 initialized = false;
+    Game game_instance;
 };
 }
 #endif

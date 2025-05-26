@@ -20,50 +20,96 @@ namespace ReiToEngine{
         return *instance_ptr;
     }
 
-    void RTApplication::Initialize(ApplicatonConfig& config)
+    b8 RTApplication::Initialize(Game& game_instance)
     {
-        RT_HAL_Initialize(main_window, config.name, config.start_width, config.start_height, config.start_pos_x, config.start_pos_y);
-        app_config = config;
-        app_state.height = config.start_height;
-        app_state.width = config.start_width;
-        app_state.pos_x = config.start_pos_x;
-        app_state.pos_y = config.start_pos_y;
+        if (initialized)
+        {
+            RTFATAL("Application already initialized");
+            return false;
+        }
+        this->game_instance = game_instance;
+
+        app_state.height = game_instance.app_config.start_height;
+        app_state.width = game_instance.app_config.start_width;
+        app_state.pos_x = game_instance.app_config.start_pos_x;
+        app_state.pos_y = game_instance.app_config.start_pos_y;
 
         app_state.is_paused = false;
         app_state.is_running = false;
         app_state.last_time = 0.;
 
-        // declear to make sure be initialzied firstly
+        // inputSystem_ptr->Initialize();
+        InitializeLog();
+        RTFATAL("test");
+        RTERROR("test");
+        RTDEBUG("test");
+        RTTRACE("test");
+        RTINFO("test");
+        RTWARN("test");
+
         GetSingletonManager();
+        // declear to make sure be initialzied firstly
         windowsManager_ptr = &WindowsManager::Instance();
         // inputSystem_ptr = &InputSystem::Instance();
         renderManager_ptr = &RenderManager::Instance();
 
-
-        // inputSystem_ptr->Initialize();
         windowsManager_ptr->Initialize();
         renderManager_ptr->Initialize();
 
-        printf("base init\n");
-        InitializeLog();
-
+        initialized = true;
+        return true;
     }
-    void RTApplication::Run()
+    b8 RTApplication::StartGame()
     {
+        if(!RT_HAL_Initialize(app_state.main_window, game_instance.app_config.name, game_instance.app_config.start_width, game_instance.app_config.start_height, game_instance.app_config.start_pos_x, game_instance.app_config.start_pos_y))
+        {
+            RTFATAL("Failed to START CREATE PLATFORM WINDOW.");
+            return false;
+        };
+
+        if (!game_instance.RT_GAME_Initialize(game_instance))
+        {
+            RTFATAL("Failed to initialize game instance.");
+            return false;
+        }
+        game_instance.RT_GAME_OnResize(game_instance, app_state.width, app_state.height);
+
         printf("base run\n");
         app_state.is_running = true;
         app_state.is_paused = false;
+        return true;
     }
 
-    void RTApplication::Tick()
+    b8 RTApplication::Run()
     {
-        RT_HAL_PumpMessage(
-            main_window
-        );
-        // inputSystem_ptr->Tick();
-        // std::vector<InputEvent> events = inputSystem_ptr->GetInputEvents();
-        // std::vector<systemEvent> events = inputSystem_ptr->GetInputEvents();
-        // Consoles_ptr->Tick();
+        while(app_state.is_running)
+        {
+            if (!RT_HAL_PumpMessage(app_state.main_window))
+            {
+                app_state.is_running = false;
+            }
+
+            if (!app_state.is_paused)
+            {
+                if (!game_instance.RT_GAME_LogicalTick(game_instance, 0.))
+                {
+                    RTFATAL("Game logical tick failed.");
+                    app_state.is_running = false;
+                    break;
+                }
+                {
+                    RTFATAL("Game logical tick failed.");
+                    app_state.is_running = false;
+                    break;
+                }
+                if (!game_instance.RT_GAME_RenderTick(game_instance, 0.))
+                {
+                    RTFATAL("Game render tick failed.");
+                    app_state.is_running = false;
+                    break;
+                }
+            }
+        }
     }
 
     void RTApplication::Terminate()
