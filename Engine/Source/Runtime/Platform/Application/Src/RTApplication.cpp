@@ -10,7 +10,7 @@
 namespace ReiToEngine{
     RTApplication::RTApplication() = default;
     RTApplication::~RTApplication() = default;
-    RTDebugHeapMemoryManager& RTApplication::GetMemoryManager()
+    RTCMemoryManager& RTApplication::GetMemoryManager()
     {
         return RTApplication::memoryManager;
     }
@@ -20,19 +20,19 @@ namespace ReiToEngine{
         return *instance_ptr;
     }
 
-    b8 RTApplication::Initialize(Game& game_instance)
+    b8 RTApplication::Initialize(IGame* game_instance)
     {
         if (initialized)
         {
-            RTFATAL("Application already initialized");
+            RT_LOG_FATAL("Application already initialized");
             return false;
         }
         this->game_instance = game_instance;
 
-        app_state.height = game_instance.app_config.start_height;
-        app_state.width = game_instance.app_config.start_width;
-        app_state.pos_x = game_instance.app_config.start_pos_x;
-        app_state.pos_y = game_instance.app_config.start_pos_y;
+        app_state.height = game_instance->app_config.start_height;
+        app_state.width = game_instance->app_config.start_width;
+        app_state.pos_x = game_instance->app_config.start_pos_x;
+        app_state.pos_y = game_instance->app_config.start_pos_y;
 
         app_state.is_paused = false;
         app_state.is_running = false;
@@ -40,12 +40,12 @@ namespace ReiToEngine{
 
         // inputSystem_ptr->Initialize();
         InitializeLog();
-        RTFATAL("test");
-        RTERROR("test");
-        RTDEBUG("test");
-        RTTRACE("test");
-        RTINFO("test");
-        RTWARN("test");
+        RT_LOG_FATAL("test");
+        RT_LOG_ERROR("test");
+        RT_LOG_DEBUG("test");
+        RT_LOG_TRACE("test");
+        RT_LOG_INFO("test");
+        RT_LOG_WARN("test");
 
         GetSingletonManager();
         // declear to make sure be initialzied firstly
@@ -59,20 +59,21 @@ namespace ReiToEngine{
         initialized = true;
         return true;
     }
+
     b8 RTApplication::StartGame()
     {
-        if(!RT_HAL_Initialize(app_state.main_window, game_instance.app_config.name, game_instance.app_config.start_width, game_instance.app_config.start_height, game_instance.app_config.start_pos_x, game_instance.app_config.start_pos_y))
+        if(!RT_HAL_Initialize(app_state.main_window, game_instance->app_config.name, game_instance->app_config.start_width, game_instance->app_config.start_height, game_instance->app_config.start_pos_x, game_instance->app_config.start_pos_y))
         {
-            RTFATAL("Failed to START CREATE PLATFORM WINDOW.");
+            RT_LOG_FATAL("Failed to START CREATE PLATFORM WINDOW.");
             return false;
         };
 
-        if (!game_instance.RT_GAME_Initialize(game_instance))
+        if (!game_instance->Initialize())
         {
-            RTFATAL("Failed to initialize game instance.");
+            RT_LOG_FATAL("Failed to initialize game instance.");
             return false;
         }
-        game_instance.RT_GAME_OnResize(game_instance, app_state.width, app_state.height);
+        game_instance->OnResize(app_state.width, app_state.height);
 
         printf("base run\n");
         app_state.is_running = true;
@@ -82,6 +83,7 @@ namespace ReiToEngine{
 
     b8 RTApplication::Run()
     {
+        RT_LOG_INFO(memoryManager.GetMemoryUsageReport());
         while(app_state.is_running)
         {
             if (!RT_HAL_PumpMessage(app_state.main_window))
@@ -91,20 +93,15 @@ namespace ReiToEngine{
 
             if (!app_state.is_paused)
             {
-                if (!game_instance.RT_GAME_LogicalTick(game_instance, 0.))
+                if (!game_instance->LogicalTick(0.))
                 {
-                    RTFATAL("Game logical tick failed.");
+                    RT_LOG_FATAL("Game logical tick failed.");
                     app_state.is_running = false;
                     break;
                 }
+                if (!game_instance->RenderTick(0.))
                 {
-                    RTFATAL("Game logical tick failed.");
-                    app_state.is_running = false;
-                    break;
-                }
-                if (!game_instance.RT_GAME_RenderTick(game_instance, 0.))
-                {
-                    RTFATAL("Game render tick failed.");
+                    RT_LOG_FATAL("Game render tick failed.");
                     app_state.is_running = false;
                     break;
                 }
@@ -116,6 +113,7 @@ namespace ReiToEngine{
     {
         ApplicationState& state = app_state;
         windowsManager_ptr->Terminate();
+        game_instance->Terminate();
     }
 
     const ApplicationState& RTApplication::GetConstApplicationState()

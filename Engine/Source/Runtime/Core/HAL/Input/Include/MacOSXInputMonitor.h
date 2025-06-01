@@ -78,7 +78,7 @@ protected:
     {0x2F, EINPUT_KEY_CODE::INPUT_KEYBOARD_PERIOD},        // '.' key
     {0x30, EINPUT_KEY_CODE::INPUT_KEYBOARD_TAB},           // Tab key
     {0x31, EINPUT_KEY_CODE::INPUT_KEYBOARD_SPACE},         // Space key
-    {0x32, EINPUT_KEY_CODE::INPUT_KEYBOARD_GRAVE_ACCENT},         // '`' key
+    {0x32, EINPUT_KEY_CODE::INPUT_KEYBOARD_GRAVE_ACCENT},  // '`' key
     {0x33, EINPUT_KEY_CODE::INPUT_KEYBOARD_BACKSPACE},     // Backspace key
     {0x35, EINPUT_KEY_CODE::INPUT_KEYBOARD_ESCAPE},        // Escape key
     // Add more mappings as needed

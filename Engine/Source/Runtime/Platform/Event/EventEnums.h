@@ -1,0 +1,28 @@
+#ifndef PLATFORM_EVENT_EVENT_ENUMS_H
+#define PLATFORM_EVENT_EVENT_ENUMS_H
+#include "Core/MinimalCore.h"
+
+enum class SYSTEM_EVENT_CODE : u8 {
+    UNKNOWN = 0x00,
+    APPLICATION_QUIT = 0x01,
+
+    KEY_PRESS = 0x02,
+    KEY_RELEASE = 0x03,
+    KEY_REPEAT = 0x04,
+
+    BUTTON_PRESS = 0x05,
+    BUTTON_RELEASE = 0x06,
+    BUTTON_REPEAT = 0x07,
+
+    MOUSE_MOVE = 0x08,
+    MOUSE_WHEEL = 0x09,
+
+    WINDOW_RESIZE = 0x0A,
+
+    DEVICE_CONNECTED = 0x0B,
+    DEVICE_DISCONNECTED = 0x0C,
+
+    MAX_EVENT_CODE = 0xFF
+};
+
+#endif

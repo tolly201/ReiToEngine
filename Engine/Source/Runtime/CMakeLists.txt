@@ -46,6 +46,9 @@ else()
 endif()
 
 target_compile_definitions(ReiToRuntime PRIVATE RT_EXPORTS)
+
+target_compile_definitions(ReiToRuntime PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
+
 target_include_directories(ReiToRuntime PRIVATE
 ${CMAKE_CURRENT_SOURCE_DIR}
 ${CMAKE_CURRENT_SOURCE_DIR}/../../Thirdparty/stb/

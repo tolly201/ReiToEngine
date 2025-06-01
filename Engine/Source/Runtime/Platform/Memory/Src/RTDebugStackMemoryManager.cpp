@@ -217,12 +217,18 @@ void RTDebugStackMemoryManager::deAllocateSystemCall(void* addr, uint32_t alignm
     RTSysFree(block, block->Size + sizeof(RTBlock));
 }
 
-void* RTDebugStackMemoryManager::allocateImpl(size_t, uint8_t, bool)
-{
+void* RTDebugStackMemoryManager::AllocateImpl(u64, u8, RT_MEMORY_TAG){
     return nullptr;
-}
-void RTDebugStackMemoryManager::deallocateImpl(void*, uint8_t, bool)
-{
-
-}
+};
+void RTDebugStackMemoryManager::FreeImpl(void*, u64, RT_MEMORY_TAG){
+};
+void* RTDebugStackMemoryManager::ZeroMemoryImpl(void*, u64){
+    return nullptr;
+};
+void* RTDebugStackMemoryManager::CopyMemoryImpl(void*, const void*, u64){
+    return nullptr;
+};
+void* RTDebugStackMemoryManager::SetMemoryImpl(void*, u8, u64){
+    return nullptr;
+};
 }

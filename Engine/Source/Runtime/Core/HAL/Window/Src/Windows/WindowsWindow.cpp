@@ -91,7 +91,7 @@ printf("Device pixel ratio: %f\n", device_pixel_ratio);
 
         MessageBoxW(NULL, L"Window Creation Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
 
-        RTFATAL("Window creation failed!");
+        RT_LOG_FATAL("Window creation failed!");
     }
     else {
         printf("Window created successfully!\n");

@@ -9,10 +9,7 @@ class InputMonitor
 public:
     InputMonitor() = default;
     virtual ~InputMonitor() = default;
-    virtual void AddInputCallback(InputCallback callback)
-    {
-        inputCallback = std::move(callback);
-    };
+    virtual void AddInputCallback();
     virtual void Activate()
     {
         isActive = true;
@@ -22,7 +19,6 @@ public:
         isActive = false;
     };
 protected:
-    InputCallback inputCallback;
     bool isActive;
 };
 

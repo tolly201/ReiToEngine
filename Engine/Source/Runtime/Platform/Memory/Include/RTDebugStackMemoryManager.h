@@ -1,9 +1,9 @@
-#ifndef CORE_HAL_MEMORY_RTDEBUGSTACKMEMORYALLOCATOR_H
-#define CORE_HAL_MEMORY_RTDEBUGSTACKMEMORYALLOCATOR_H
+#ifndef CORE_HAL_MEMORY_RT_LOG_DEBUGSTACKMEMORYALLOCATOR_H
+#define CORE_HAL_MEMORY_RT_LOG_DEBUGSTACKMEMORYALLOCATOR_H
 #include "IBlock.h"
 #include "IMemoryManager.h"
 #include <mutex>
-#include <cstddef> // for std::max_align_t
+#include <cstddef>
 
 namespace ReiToEngine
 {
@@ -19,8 +19,11 @@ public:
     void DumpMemoryLeaks();
 
 protected:
-    void* allocateImpl(size_t, uint8_t, bool) override;
-    void deallocateImpl(void*, uint8_t, bool) override;
+    void* AllocateImpl(u64, u8, RT_MEMORY_TAG) override;
+    void FreeImpl(void*, u64, RT_MEMORY_TAG) override;
+    void* ZeroMemoryImpl(void*, u64) override;
+    void* CopyMemoryImpl(void*, const void*, u64) override;
+    void* SetMemoryImpl(void*, u8, u64) override;
 private:
 
     void* allocatePoolCall(uint32_t, uint32_t);

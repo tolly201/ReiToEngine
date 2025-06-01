@@ -72,6 +72,15 @@ set(ENGINE_ROOT_DIR Engine)
 include_directories(
     ${ENGINE_ROOT_DIR}/Thirdparty/stb/
 )
+include_directories(
+    ${ENGINE_ROOT_DIR}/Source/Runtime/
+)
+include_directories(
+    ${ENGINE_ROOT_DIR}/Thirdparty/Assimp/include/
+)
+include_directories(
+    ${VULKAN_SDK}/include/
+)
 add_subdirectory(Engine/Source/Runtime)
 
 # 设置 Assimp 的构建选项
@@ -79,9 +88,7 @@ set(ASSIMP_BUILD_TESTS OFF)        # 禁用测试
 set(ASSIMP_BUILD_SAMPLES OFF)      # 禁用示例
 set(ASSIMP_BUILD_DOCS OFF)         # 禁用文档
 set(ASSIMP_WARNINGS_AS_ERRORS OFF)
-include_directories(
-    ${ENGINE_ROOT_DIR}/Thirdparty/Assimp/include/
-)
+
 # add_subdirectory(Engine/Thirdparty/Assimp)
 add_subdirectory(Engine/Source/Editor)
 

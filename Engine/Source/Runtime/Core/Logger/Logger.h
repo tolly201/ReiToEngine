@@ -68,39 +68,39 @@ void Log(E_LOG_LEVEL level, const char* message, Args&&... args)
 
 // 日志宏定义（根据日志级别控制是否启用）
 #if LOG_FATAL_ENABLED == 1
-    #define RTFATAL(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_FATAL, message, ##__VA_ARGS__)
+    #define RT_LOG_FATAL(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_FATAL, message, ##__VA_ARGS__)
 #else
-    #define RTFATAL(message, ...)
+    #define RT_LOG_FATAL(message, ...)
 #endif
 
 #if LOG_ERROR_ENABLED == 1
-    #define RTERROR(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_ERROR, message, ##__VA_ARGS__)
+    #define RT_LOG_ERROR(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_ERROR, message, ##__VA_ARGS__)
 #else
-    #define RTERROR(message, ...)
+    #define RT_LOG_ERROR(message, ...)
 #endif
 
 #if LOG_WARN_ENABLED == 1
-    #define RTWARN(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_WARN, message, ##__VA_ARGS__)
+    #define RT_LOG_WARN(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_WARN, message, ##__VA_ARGS__)
 #else
-    #define RTWARN(message, ...)
+    #define RT_LOG_WARN(message, ...)
 #endif
 
 #if LOG_INFO_ENABLED == 1
-    #define RTINFO(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_INFO, message, ##__VA_ARGS__)
+    #define RT_LOG_INFO(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_INFO, message, ##__VA_ARGS__)
 #else
-    #define RTINFO(message, ...)
+    #define RT_LOG_INFO(message, ...)
 #endif
 
 #if LOG_DEBUG_ENABLED == 1
-    #define RTDEBUG(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_DEBUG, message, ##__VA_ARGS__)
+    #define RT_LOG_DEBUG(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_DEBUG, message, ##__VA_ARGS__)
 #else
-    #define RTDEBUG(message, ...)
+    #define RT_LOG_DEBUG(message, ...)
 #endif
 
 #if LOG_TRACE_ENABLED == 1
-    #define RTTRACE(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_TRACE, message, ##__VA_ARGS__)
+    #define RT_LOG_TRACE(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_TRACE, message, ##__VA_ARGS__)
 #else
-    #define RTTRACE(message, ...)
+    #define RT_LOG_TRACE(message, ...)
 #endif
 
 #endif

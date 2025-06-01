@@ -1,216 +1,211 @@
 #ifndef PLATFORM_HAL_INPUT_ENUMS_H
 #define PLATFORM_HAL_INPUT_ENUMS_H
 
-#include <array>
-#include <cstdint>
-#include <functional>
+#include "Core/MinimalCore.h"
+#include "Platform/Event/EventEnums.h"
 namespace ReiToEngine {
 
-enum class EINPUT_DEVICE_TYPE : uint8_t {
-    DEVICE_UNKNOWN = 0,
-    DEVICE_KEYBOARD = 1,
-    DEVICE_MOUSE = 2,
-    DEVICE_GAMEPAD = 3,
-    DEVICE_TOUCH = 4,
+enum class INPUT_DEVICE_TYPE : u8 {
+    UNKNOWN = 0x00,
+    KEYBOARD = 0x01,
+    MOUSE = 0x02,
+    GAMEPAD = 0x03,
+    TOUCH = 0x04,
+    MAX = 0xFF
     //add
 };
 
-enum class EINPUT_EVENT_TYPE : uint8_t {
-    EVENT_UNKNOWN = 0,
-    EVENT_KEY_PRESS = 1,
-    EVENT_KEY_RELEASE = 2,
-    EVENT_KEY_REPEAT = 3,
-    EVENT_TEXT_INPUT = 4,
-    EVENT_POINTER_DOWN = 5,
-    EVENT_POINTER_UP = 6,
-    EVENT_POINTER_MOVE = 7,
-    EVENT_SCROLL = 8,
-    EVENT_DEVICE_CONNECTED = 9,
-    EVENT_DEVICE_DISCONNECTED = 10
+enum class KEY_CODE_KEYBOARD : u8 {
+    UNKNOWN       = 0x00,
+    SPACE         = 0x01,
+    APOSTROPHE    = 0x02,
+    COMMA         = 0x03,
+    MINUS         = 0x04,
+    PERIOD        = 0x05,
+    SLASH         = 0x06,
+    NUM_0         = 0x07,
+    NUM_1         = 0x08,
+    NUM_2         = 0x09,
+    NUM_3         = 0x0A,
+    NUM_4         = 0x0B,
+    NUM_5         = 0x0C,
+    NUM_6         = 0x0D,
+    NUM_7         = 0x0E,
+    NUM_8         = 0x0F,
+    NUM_9         = 0x10,
+    SEMICOLON     = 0x11,
+    EQUAL         = 0x12,
+    A             = 0x13,
+    B             = 0x14,
+    C             = 0x15,
+    D             = 0x16,
+    E             = 0x17,
+    F             = 0x18,
+    G             = 0x19,
+    H             = 0x1A,
+    I             = 0x1B,
+    J             = 0x1C,
+    K             = 0x1D,
+    L             = 0x1E,
+    M             = 0x1F,
+    N             = 0x20,
+    O             = 0x21,
+    P             = 0x22,
+    Q             = 0x23,
+    R             = 0x24,
+    S             = 0x25,
+    T             = 0x26,
+    U             = 0x27,
+    V             = 0x28,
+    W             = 0x29,
+    X             = 0x2A,
+    Y             = 0x2B,
+    Z             = 0x2C,
+    LEFT_BRACKET  = 0x2D,
+    BACKSLASH     = 0x2E,
+    RIGHT_BRACKET = 0x2F,
+    GRAVE_ACCENT  = 0x30,
+    WORLD_1       = 0x31,
+    WORLD_2       = 0x32,
+
+    ESCAPE        = 0x33,
+    ENTER         = 0x34,
+    TAB           = 0x35,
+    BACKSPACE     = 0x36,
+    INSERT        = 0x37,
+    DELETE        = 0x38,
+    RIGHT         = 0x39,
+    LEFT          = 0x3A,
+    DOWN          = 0x3B,
+    UP            = 0x3C,
+    PAGE_UP       = 0x3D,
+    PAGE_DOWN     = 0x3E,
+    HOME          = 0x3F,
+    END           = 0x40,
+    CAPS_LOCK     = 0x41,
+    SCROLL_LOCK   = 0x42,
+    NUM_LOCK      = 0x43,
+    PRINT_SCREEN  = 0x44,
+    PAUSE         = 0x45,
+    F1            = 0x46,
+    F2            = 0x47,
+    F3            = 0x48,
+    F4            = 0x49,
+    F5            = 0x4A,
+    F6            = 0x4B,
+    F7            = 0x4C,
+    F8            = 0x4D,
+    F9            = 0x4E,
+    F10           = 0x4F,
+    F11           = 0x50,
+    F12           = 0x51,
+    F13           = 0x52,
+    F14           = 0x53,
+    F15           = 0x54,
+    F16           = 0x55,
+    F17           = 0x56,
+    F18           = 0x57,
+    F19           = 0x58,
+    F20           = 0x59,
+    F21           = 0x5A,
+    F22           = 0x5B,
+    F23           = 0x5C,
+    F24           = 0x5D,
+    F25           = 0x5E,
+    KP_0          = 0x5F,
+    KP_1          = 0x60,
+    KP_2          = 0x61,
+    KP_3          = 0x62,
+    KP_4          = 0x63,
+    KP_5          = 0x64,
+    KP_6          = 0x65,
+    KP_7          = 0x66,
+    KP_8          = 0x67,
+    KP_9          = 0x68,
+    KP_DECIMAL    = 0x69,
+    KP_DIVIDE     = 0x6A,
+    KP_MULTIPLY   = 0x6B,
+    KP_SUBTRACT   = 0x6C,
+    KP_ADD        = 0x6D,
+    KP_ENTER      = 0x6E,
+    KP_EQUAL      = 0x6F,
+    LEFT_SHIFT    = 0x70,
+    LEFT_CONTROL  = 0x71,
+    LEFT_ALT      = 0x72,
+    LEFT_SUPER    = 0x73,
+    RIGHT_SHIFT   = 0x74,
+    RIGHT_CONTROL = 0x75,
+    RIGHT_ALT     = 0x76,
+    RIGHT_SUPER   = 0x77,
+    MENU          = 0x78,
+    MAX           = 0xFF
 };
-
-enum class EINPUT_KEY_CODE : uint16_t {
-    INPUT_UNKNOWN                = 0,
-    INPUT_KEYBOARD_SPACE         = 32,
-    INPUT_KEYBOARD_APOSTROPHE    = 39,
-    INPUT_KEYBOARD_COMMA         = 44,
-    INPUT_KEYBOARD_MINUS         = 45,
-    INPUT_KEYBOARD_PERIOD        = 46,
-    INPUT_KEYBOARD_SLASH         = 47,
-    INPUT_KEYBOARD_0             = 48,
-    INPUT_KEYBOARD_1             = 49,
-    INPUT_KEYBOARD_2             = 50,
-    INPUT_KEYBOARD_3             = 51,
-    INPUT_KEYBOARD_4             = 52,
-    INPUT_KEYBOARD_5             = 53,
-    INPUT_KEYBOARD_6             = 54,
-    INPUT_KEYBOARD_7             = 55,
-    INPUT_KEYBOARD_8             = 56,
-    INPUT_KEYBOARD_9             = 57,
-    INPUT_KEYBOARD_SEMICOLON     = 59,
-    INPUT_KEYBOARD_EQUAL         = 61,
-    INPUT_KEYBOARD_A             = 65,
-    INPUT_KEYBOARD_B             = 66,
-    INPUT_KEYBOARD_C             = 67,
-    INPUT_KEYBOARD_D             = 68,
-    INPUT_KEYBOARD_E             = 69,
-    INPUT_KEYBOARD_F             = 70,
-    INPUT_KEYBOARD_G             = 71,
-    INPUT_KEYBOARD_H             = 72,
-    INPUT_KEYBOARD_I             = 73,
-    INPUT_KEYBOARD_J             = 74,
-    INPUT_KEYBOARD_K             = 75,
-    INPUT_KEYBOARD_L             = 76,
-    INPUT_KEYBOARD_M             = 77,
-    INPUT_KEYBOARD_N             = 78,
-    INPUT_KEYBOARD_O             = 79,
-    INPUT_KEYBOARD_P             = 80,
-    INPUT_KEYBOARD_Q             = 81,
-    INPUT_KEYBOARD_R             = 82,
-    INPUT_KEYBOARD_S             = 83,
-    INPUT_KEYBOARD_T             = 84,
-    INPUT_KEYBOARD_U             = 85,
-    INPUT_KEYBOARD_V             = 86,
-    INPUT_KEYBOARD_W             = 87,
-    INPUT_KEYBOARD_X             = 88,
-    INPUT_KEYBOARD_Y             = 89,
-    INPUT_KEYBOARD_Z             = 90,
-    INPUT_KEYBOARD_LEFT_BRACKET  = 91,
-    INPUT_KEYBOARD_BACKSLASH     = 92,
-    INPUT_KEYBOARD_RIGHT_BRACKET = 93,
-    INPUT_KEYBOARD_GRAVE_ACCENT  = 96,
-    INPUT_KEYBOARD_WORLD_1       = 161,
-    INPUT_KEYBOARD_WORLD_2       = 162,
-
-    INPUT_KEYBOARD_ESCAPE        = 256,
-    INPUT_KEYBOARD_ENTER         = 257,
-    INPUT_KEYBOARD_TAB           = 258,
-    INPUT_KEYBOARD_BACKSPACE     = 259,
-    INPUT_KEYBOARD_INSERT        = 260,
-    INPUT_KEYBOARD_DELETE        = 261,
-    INPUT_KEYBOARD_RIGHT         = 262,
-    INPUT_KEYBOARD_LEFT          = 263,
-    INPUT_KEYBOARD_DOWN          = 264,
-    INPUT_KEYBOARD_UP            = 265,
-    INPUT_KEYBOARD_PAGE_UP       = 266,
-    INPUT_KEYBOARD_PAGE_DOWN     = 267,
-    INPUT_KEYBOARD_HOME          = 268,
-    INPUT_KEYBOARD_END           = 269,
-    INPUT_KEYBOARD_CAPS_LOCK     = 280,
-    INPUT_KEYBOARD_SCROLL_LOCK   = 281,
-    INPUT_KEYBOARD_NUM_LOCK      = 282,
-    INPUT_KEYBOARD_PRINT_SCREEN  = 283,
-    INPUT_KEYBOARD_PAUSE         = 284,
-    INPUT_KEYBOARD_F1            = 290,
-    INPUT_KEYBOARD_F2            = 291,
-    INPUT_KEYBOARD_F3            = 292,
-    INPUT_KEYBOARD_F4            = 293,
-    INPUT_KEYBOARD_F5            = 294,
-    INPUT_KEYBOARD_F6            = 295,
-    INPUT_KEYBOARD_F7            = 296,
-    INPUT_KEYBOARD_F8            = 297,
-    INPUT_KEYBOARD_F9            = 298,
-    INPUT_KEYBOARD_F10           = 299,
-    INPUT_KEYBOARD_F11           = 300,
-    INPUT_KEYBOARD_F12           = 301,
-    INPUT_KEYBOARD_F13           = 302,
-    INPUT_KEYBOARD_F14           = 303,
-    INPUT_KEYBOARD_F15           = 304,
-    INPUT_KEYBOARD_F16           = 305,
-    INPUT_KEYBOARD_F17           = 306,
-    INPUT_KEYBOARD_F18           = 307,
-    INPUT_KEYBOARD_F19           = 308,
-    INPUT_KEYBOARD_F20           = 309,
-    INPUT_KEYBOARD_F21           = 310,
-    INPUT_KEYBOARD_F22           = 311,
-    INPUT_KEYBOARD_F23           = 312,
-    INPUT_KEYBOARD_F24           = 313,
-    INPUT_KEYBOARD_F25           = 314,
-    INPUT_KEYBOARD_KP_0          = 320,
-    INPUT_KEYBOARD_KP_1          = 321,
-    INPUT_KEYBOARD_KP_2          = 322,
-    INPUT_KEYBOARD_KP_3          = 323,
-    INPUT_KEYBOARD_KP_4          = 324,
-    INPUT_KEYBOARD_KP_5          = 325,
-    INPUT_KEYBOARD_KP_6          = 326,
-    INPUT_KEYBOARD_KP_7          = 327,
-    INPUT_KEYBOARD_KP_8          = 328,
-    INPUT_KEYBOARD_KP_9          = 329,
-    INPUT_KEYBOARD_KP_DECIMAL    = 330,
-    INPUT_KEYBOARD_KP_DIVIDE     = 331,
-    INPUT_KEYBOARD_KP_MULTIPLY   = 332,
-    INPUT_KEYBOARD_KP_SUBTRACT   = 333,
-    INPUT_KEYBOARD_KP_ADD        = 334,
-    INPUT_KEYBOARD_KP_ENTER      = 335,
-    INPUT_KEYBOARD_KP_EQUAL      = 336,
-    INPUT_KEYBOARD_LEFT_SHIFT    = 340,
-    INPUT_KEYBOARD_LEFT_CONTROL  = 341,
-    INPUT_KEYBOARD_LEFT_ALT      = 342,
-    INPUT_KEYBOARD_LEFT_SUPER    = 343,
-    INPUT_KEYBOARD_RIGHT_SHIFT   = 344,
-    INPUT_KEYBOARD_RIGHT_CONTROL = 345,
-    INPUT_KEYBOARD_RIGHT_ALT     = 346,
-    INPUT_KEYBOARD_RIGHT_SUPER   = 347,
-    INPUT_KEYBOARD_MENU          = 348,
-    // reset until
-    // 0x0FFF-> 4095
-
+enum class KEY_CODE_MODIFIER : u8
+{
+    NONE      = 0x00,
+    SHIFT     = 0x01,
+    CONTROL   = 0x02,
+    ALT       = 0x04,
+    SUPER     = 0x08,
+    CAPS_LOCK = 0x10,
+    NUM_LOCK  = 0x20,
+    ALL       = 0xFF
+};
+enum class KEY_CODE_MOUSE : u8
+{
     // Mouse buttons
-    INPUT_MOUSE_BUTTON_LEFT = 0x1000,
-    INPUT_MOUSE_BUTTON_RIGHT,
-    INPUT_MOUSE_BUTTON_MIDDLE,
-    INPUT_MOUSE_BUTTON_4,
-    INPUT_MOUSE_BUTTON_5,
-    INPUT_MOUSE_BUTTON_6,
-
-    // Gamepad buttons could go here
-    INPUT_GAMEPAD_BUTTON_A = 0x2000,
-    //todo full input key and devices
-
+    NONE  = 0x00,
+    BUTTON_LEFT      = 0x01,
+    BUTTON_RIGHT     = 0x02,
+    BUTTON_MIDDLE    = 0x03,
+    BUTTON_4         = 0x04,
+    BUTTON_5         = 0x05,
+    BUTTON_6         = 0x06,
+    MAX              = 0xFF
 };
-
-// Modifier flags (same as before)
-enum class EINPUT_MODIFIER : uint16_t {
-    MOD_NONE = 0x0000,
-    MOD_KEYBOARD_SHIFT = 0x0001,
-    MOD_KEYBOARD_CONTROL = 0x0002,
-    MOD_KEYBOARD_ALT = 0x0004,
-    MOD_KEYBOARD_SUPER = 0x0008,
-    MOD_KEYBOARD_CAPS_LOCK = 0x0010,
-    MOD_KEYBOARD_NUM_LOCK = 0x0020
-};
-
-
-struct InputEvent
+enum class KEY_CODE_GAMEPAD : u8
 {
-    EINPUT_DEVICE_TYPE deviceType;
-    EINPUT_EVENT_TYPE eventType;
-    EINPUT_KEY_CODE inputCode;
-    EINPUT_MODIFIER modifiers;
-
-    struct position {
-        float x;
-        float y;
-    } ;
-    // Text input
-    uint32_t codepoint;
-
-    // Timestamp
-    uint64_t timestamp;
-    float scrollDeltaX;
-    float scrollDeltaY;
-    float positionX;
-    float positionY;
+    BUTTON_A       = 0x00,
 };
 
-constexpr std::array<EINPUT_DEVICE_TYPE, 4> ALL_DEVICE_TYPES=
-{
-    EINPUT_DEVICE_TYPE::DEVICE_KEYBOARD,
-    EINPUT_DEVICE_TYPE::DEVICE_MOUSE,
-    EINPUT_DEVICE_TYPE::DEVICE_GAMEPAD,
-    EINPUT_DEVICE_TYPE::DEVICE_TOUCH,
+struct KeyboardInputData {
+    KEY_CODE_KEYBOARD keyCode;
+};
+struct TextInputData{
+    u16 codepoint;
+};
+struct MouseInputData {
+    KEY_CODE_MOUSE mouseButton;
+    f32 scrollDeltaX;
+    f32 scrollDeltaY;
+    f32 positionX;
+    f32 positionY;
 };
 
-using InputCallback = std::function<void(const InputEvent& event)>;
-} // namespace ReiToEngine
+struct GamepadInputData {
+    KEY_CODE_GAMEPAD gamepadButton;
+};
+
+struct TouchInputData {
+    // TOUCH_EVENT_TYPE touchType;
+    u32 touchId;
+    f32 positionX;
+    f32 positionY;
+};
+union InputEventData {
+    KeyboardInputData keyboard;
+    TextInputData text;
+    MouseInputData mouse;
+    GamepadInputData gamepad;
+    TouchInputData touch;
+};
+
+struct InputEvent {
+    INPUT_DEVICE_TYPE deviceType;
+    SYSTEM_EVENT_CODE eventType;
+    KEY_CODE_MODIFIER modifiers;
+    InputEventData data;
+    u64 timestamp;
+};
+}
 #endif

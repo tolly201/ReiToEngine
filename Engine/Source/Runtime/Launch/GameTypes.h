@@ -2,20 +2,20 @@
 #define RUNTIME_LAUNCH_GAMETYPES_H
 #include "Core/MinimalCore.h"
 #include "Platform/Enums/RTApplicationEnums.h"
-
-struct Game
+class IGame
 {
-    Game() = default;
-    ~Game() = default;
+public:
+    IGame() = default;
+    ~IGame() = default;
     ReiToEngine::ApplicatonConfig app_config;
-    b8 (*RT_GAME_Initialize)(Game& game_instance);
-    b8 (*RT_GAME_LogicalTick)(Game& game_instance, f64 delta_time);
-    b8 (*RT_GAME_RenderTick)(Game& game_instance, f64 delta_time);
-    void (*RT_GAME_Terminate)(Game& game_instance);
-
-    void (*RT_GAME_OnResize)(Game& game_instance, i16 width, i16 height);
-
     void* GameState;
+
+    virtual b8 Initialize() = 0;
+    virtual b8 LogicalTick(f64 delta_time) = 0;
+    virtual b8 RenderTick(f64 delta_time) = 0;
+    virtual void Terminate() = 0;
+    virtual void OnResize(i16 width, i16 height) = 0;
+
 };
 
 #endif

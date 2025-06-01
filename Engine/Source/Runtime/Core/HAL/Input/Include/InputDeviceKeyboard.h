@@ -1,23 +1,18 @@
-#ifndef PLATFORM_HAL_INPUT_DEVICE_KEYBOARD_H
-#define PLATFORM_HAL_INPUT_DEVICE_KEYBOARD_H
+#ifndef CORE_HAL_INPUT_DEVICE_KEYBOARD_H
+#define CORE_HAL_INPUT_DEVICE_KEYBOARD_H
 #include "InputDevice.h"
 
 namespace ReiToEngine {
-// 键盘设备
-class KeyboardDevice : public InputDevice {
+class KeyboardDevice : public InputDevice<KeyboardDevice> {
+friend class InputDevice<KeyboardDevice>;
 public:
-    void Update() override;
-    void ProcessNativeEvent(void* nativeEvent) override;
-    bool IsConnected() const override { return true; }
+    void InnerProcessNativeEvent(void* nativeEvent)override{};
+    void InnerUpdate()override{};
 
-    // 键盘特有方法
-    bool IsKeyDown(int keyCode) const;
-    bool IsKeyPressed(int keyCode) const;
-    bool IsKeyReleased(int keyCode) const;
-
+    b8 IsKeyDown(u16 keyCode) const;
+    b8 IsKeyPressed(u16 keyCode) const;
+    b8 IsKeyReleased(u16 keyCode) const;
 private:
-    std::array<bool, 256> m_currentKeyStates;
-    std::array<bool, 256> m_previousKeyStates;
 };
 } // namespace ReiToEngine
 #endif

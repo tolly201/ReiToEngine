@@ -34,10 +34,15 @@ b8 RT_HAL_Initialize(RT_HAL_MAIN_WINDOW& window, const char* title, u32 width, u
     [appMenu addItem:quitMenuItem];
 
     [NSApp activateIgnoringOtherApps:YES];
-    printf("mac init\n");
+
     window.main_window = new MacOSXWindow();
     window.main_window->Create(title, width, height, pos_x, pos_y);
+    if (window.main_window == nullptr)
+    {
+        return false;
+    }
     window.main_window->ShowWindow();
+    return true;
 }
 
 void RT_HAL_Terminate(RT_HAL_MAIN_WINDOW& window)
@@ -50,7 +55,16 @@ void RT_HAL_Terminate(RT_HAL_MAIN_WINDOW& window)
     }
 }
 
-b8 RT_HAL_PumpMessage(RT_HAL_MAIN_WINDOW& window);
+b8 RT_HAL_PumpMessage(RT_HAL_MAIN_WINDOW& window){
+    NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
+                                        untilDate:[NSDate distantPast]
+                                           inMode:NSDefaultRunLoopMode
+                                          dequeue:YES];
+    if (event) {
+        [NSApp sendEvent:event];  // 分发事件
+    }
+    return true;
+}
 
 void* RT_HAL_SYSAlloc(u64 uiSize)
 {

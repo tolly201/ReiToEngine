@@ -35,6 +35,10 @@
                 "${workspaceFolder}/Engine/Source/Editor/**",
                 "${workspaceFolder}/Engine/Thirdparty/stb/**",
                 "${workspaceFolder}/Engine/Thirdparty/Assimp/include/**",
+                "${workspaceFolder}/Engine/Source/Runtime/",
+                "${workspaceFolder}/Engine/Source/Editor/",
+                "${workspaceFolder}/Engine/Thirdparty/stb/*",
+                "${workspaceFolder}/Engine/Thirdparty/Assimp/include/",
                 "${VULKAN_SDK}/include"
             ],
             "defines": [
@@ -46,8 +50,7 @@
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c23",
             "cppStandard": "c++23",
-            "intelliSenseMode": "clang-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "intelliSenseMode": "clang-x64"
         },
         {
             "name": "Win32",

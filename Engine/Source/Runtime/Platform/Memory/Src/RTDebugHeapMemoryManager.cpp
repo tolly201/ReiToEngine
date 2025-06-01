@@ -229,11 +229,22 @@ void RTDebugHeapMemoryManager::deAllocateSystemCall(void* addr, uint32_t alignme
     RTSysFree(block, size);
 }
 
-void* RTDebugHeapMemoryManager::allocateImpl(size_t size, uint8_t alignment, bool isArray) {
-    return allocateSystemCall(size, alignment, isArray);
+void* RTDebugHeapMemoryManager::AllocateImpl(u64 size, u8 alignment, RT_MEMORY_TAG tag)
+{
+    return allocateSystemCall(size, alignment, false);
 }
-void RTDebugHeapMemoryManager::deallocateImpl(void* ptr, uint8_t alignment, bool isArray) {
-    return deAllocateSystemCall(ptr, alignment, isArray);
+;
+void* RTDebugHeapMemoryManager::ZeroMemoryImpl(void*, u64){
+    return nullptr;
+};
+void* RTDebugHeapMemoryManager::CopyMemoryImpl(void*, const void*, u64){
+    return nullptr;
+};
+void* RTDebugHeapMemoryManager::SetMemoryImpl(void*, u8, u64){
+    return nullptr;
+};
+
+void RTDebugHeapMemoryManager::FreeImpl(void* ptr, u64 size, RT_MEMORY_TAG tag) {
+    return deAllocateSystemCall(ptr, 8, false);
 }
-// template class RTSingleton<RTMemoryManager<RTDebugHeapMemoryManager>>;
 }  // namespace ReiToEngine

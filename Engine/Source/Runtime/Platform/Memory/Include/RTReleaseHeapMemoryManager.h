@@ -19,8 +19,11 @@ namespace ReiToEngine
         void Deallocate(char *pcAddr, size_t uiAlignment, bool bIsArray);
 
     protected:
-        void* allocateImpl(size_t, uint8_t, bool) override;
-        void deallocateImpl(void*, uint8_t, bool) override;
+    void* AllocateImpl(u64, u8, RT_MEMORY_TAG) override;
+    void FreeImpl(void*, u64, RT_MEMORY_TAG) override;
+    void* ZeroMemoryImpl(void*, u64) override;
+    void* CopyMemoryImpl(void*, const void*, u64) override;
+    void* SetMemoryImpl(void*, u8, u64) override;
     private:
         // Counts.
         enum

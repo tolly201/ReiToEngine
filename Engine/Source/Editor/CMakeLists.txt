@@ -45,7 +45,8 @@ endif()
 
 target_compile_options(ReiToEditor PRIVATE -URT_EXPORTS)
 
-target_link_libraries(ReiToEditor assimp ReiToRuntime )
+target_link_libraries(ReiToEditor ReiToRuntime )
+# target_link_libraries(ReiToEditor assimp )
 # target_link_libraries(ReiToEditor )
 # Set compile flags for ReiToRuntime (important for custom delete)
 
@@ -53,7 +54,7 @@ target_include_directories(ReiToEditor PRIVATE
 ${CMAKE_CURRENT_SOURCE_DIR}/../Runtime
 ${CMAKE_CURRENT_SOURCE_DIR}
 ${CMAKE_CURRENT_SOURCE_DIR}/../../Thirdparty/stb
-${CMAKE_CURRENT_SOURCE_DIR}/../../Thirdparty/Assimp/include
+# ${CMAKE_CURRENT_SOURCE_DIR}/../../Thirdparty/Assimp/include
 ) # editor 需要包含 runtime 和 editor 的头文件
 
 # 假设你使用glslang来编译shader，这里只是一个示例，你需要根据实际情况修改

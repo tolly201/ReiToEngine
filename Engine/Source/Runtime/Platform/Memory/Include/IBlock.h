@@ -1,16 +1,41 @@
 #ifndef CORE_PLATFORM_MEMORY_IBLOCK_H
 #define CORE_PLATFORM_MEMORY_IBLOCK_H
-#include "Core/Macro/Macro.h"
+#include "Core/MinimalCore.h"
 #include <cstdint>
 namespace ReiToEngine
 {
-enum EBlock : uint64_t
+
+enum EBlock : u64
 {
 	BEGIN_MASK = 0xDEADC0DE,
 	END_MASK = 0xC0DEDEAD,
 	RECORD_NUM = 32,
 	CALLSTACK_NUM = 32
 };
+
+enum RT_MEMORY_TAG : u16
+{
+    UNKNOWN = 0,
+    ARRAY = 1,
+    DARRAY = 2,
+    DICT = 3,
+    QUEUE = 4,
+    BST = 5,
+    STRING = 6,
+    APPLICATION = 7,
+    JOB = 8,
+    TEXTURE = 9,
+    MATERIAL_INSTANCE = 10,
+    RENDERER = 11,
+    GAME = 12,
+    TRANSFORM = 13,
+    ENTITY = 14,
+    ENTITT_NODE = 15,
+    SCENE = 16,
+    AUDIO = 17,
+    MAX_TAG = 18
+};
+
 class RTBlock
 {
 public:

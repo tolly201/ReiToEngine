@@ -86,4 +86,9 @@ STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 #define I32_MIN (-I32_MAX - 1)
 #define I64_MIN (-I64_MAX - 1)
 
+#define TERABYTE 1099511627776UL
+#define GIGABYTE 1073741824UL
+#define MEGABYTE 1048576UL
+#define KILOBYTE 1024UL
+#define BYTE 1UL
 #endif

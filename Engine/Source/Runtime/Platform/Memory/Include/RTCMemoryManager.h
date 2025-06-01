@@ -7,12 +7,15 @@ class RTENGINE_API RTCMemoryManager : public RTMemoryManager<RTCMemoryManager>
 {
 friend class RTMemoryManager<RTCMemoryManager>;
 public:
-    ~RTCMemoryManager();
-protected:
-    void* allocateImpl(size_t, uint8_t, bool) override;
-    void deallocateImpl(void*, uint8_t, bool) override;
-private:
+    ~RTCMemoryManager() = default;
     RTCMemoryManager() = default;
+protected:
+    void* AllocateImpl(u64, u8, RT_MEMORY_TAG) override;
+    void FreeImpl(void*, u64, RT_MEMORY_TAG) override;
+    void* ZeroMemoryImpl(void*, u64) override;
+    void* CopyMemoryImpl(void*, const void*, u64) override;
+    void* SetMemoryImpl(void*, u8, u64) override;
+private:
 };
 }
 

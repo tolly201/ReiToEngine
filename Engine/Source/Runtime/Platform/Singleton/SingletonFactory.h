@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "Core/Macro/Macro.h"
-#include "Platform/Memory/Include/RTDebugHeapMemoryManager.h"
 #include "Platform/Memory/Memory.h"
 namespace ReiToEngine {
 struct SingletonWrapper {
@@ -21,9 +20,6 @@ class SingletonManager {
    private:
     SingletonWrapper* instances;
     std::mutex mutex;
-
-
-
    public:
     SingletonManager() = default;
     SingletonManager(const SingletonManager&) = delete;
@@ -65,7 +61,7 @@ class SingletonFactory {
         return singletonManager;
     };
    protected:
-    RTDebugHeapMemoryManager memoryManager;
+    RTCMemoryManager memoryManager;
 };
 
 

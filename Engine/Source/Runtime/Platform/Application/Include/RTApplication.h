@@ -14,11 +14,11 @@ class RTENGINE_API RTApplication : public SingletonFactory
 {
     friend class SingletonFactory;
 public:
-    RTDebugHeapMemoryManager& GetMemoryManager();
+    RTCMemoryManager& GetMemoryManager();
     static RTApplication& Instance();
     RTApplication();
     ~RTApplication();
-    virtual b8 Initialize(Game&);
+    virtual b8 Initialize(IGame*);
     virtual b8 StartGame();
     virtual b8 Run();
     virtual void Terminate();
@@ -26,6 +26,7 @@ public:
     ApplicationState& GetApplicationState();
 
     protected:
+    static RTApplication instance_raw;
     ApplicationState app_state;
     static RTApplication* instance_ptr;
     WindowsManager* windowsManager_ptr;
@@ -33,7 +34,7 @@ public:
     RenderManager* renderManager_ptr;
 
     b8 initialized = false;
-    Game game_instance;
+    IGame* game_instance;
 };
 }
 #endif

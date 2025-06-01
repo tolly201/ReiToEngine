@@ -15,33 +15,24 @@
         }
     }
 namespace ReiToEngine {
-void RTMacApplication::Initialize(ApplicatonConfig& config) {
-    RTApplication::Initialize(config);
+b8 RTMacApplication::Initialize(IGame* game) {
+    return RTApplication::Initialize(game);
 }
 
 void RTMacApplication::Tick() {
-    NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
-                                        untilDate:[NSDate distantPast]
-                                           inMode:NSDefaultRunLoopMode
-                                          dequeue:YES];
-    if (event) {
-        [NSApp sendEvent:event];  // 分发事件
-    }
-    RTApplication::Tick();
+
 }
 
-void RTMacApplication::Run() {
-    RTApplication::Run();
+b8 RTMacApplication::Run() {
+    return RTApplication::Run();
 
     // inputSystem_ptr->AddInputCallback(EINPUT_EVENT_TYPE::EVENT_KEY_PRESS,
     // testKeyDown);
-
-    printf("mac run\n");
 }
 
 void RTMacApplication::Terminate() {
-     RTApplication::Terminate();
      [NSApp terminate:nil];
+     RTApplication::Terminate();
 }
 }  // namespace ReiToEngine
 #endif

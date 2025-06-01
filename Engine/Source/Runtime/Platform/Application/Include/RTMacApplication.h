@@ -9,9 +9,9 @@ namespace ReiToEngine{
 class RTMacApplication : public RTApplication
 {
     friend RTApplication;
-    void Initialize(ApplicatonConfig&) override;
-    void Run() override;
-    void Tick() override;
+    b8 Initialize(IGame*) override;
+    b8 Run() override;
+    void Tick();
     void Terminate() override;
 protected:
     static RTMacApplication instance;

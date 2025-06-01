@@ -74,8 +74,11 @@ FPoolInfo* FFreeMem::GetPool()
     // return nullptr;
 	return (FPoolInfo*)((uintptr_t)this & 0xffff0000);
 }
+void* RTReleaseHeapMemoryManager::ZeroMemoryImpl(void*, u64) {};
+void* RTReleaseHeapMemoryManager::CopyMemoryImpl(void*, const void*, u64) {};
+void* RTReleaseHeapMemoryManager::SetMemoryImpl(void*, u8, u64) {};
 
-void* RTReleaseHeapMemoryManager::allocateImpl(size_t uiSize, uint8_t uiAlignment, bool bIsArray)
+void* RTReleaseHeapMemoryManager::AllocateImpl(u64 uiSize, uint8_t u8, RT_MEMORY_TAG tag)
 {
 	std::lock_guard<std::mutex> lock(MemoryMutex); // 加锁保证线程安全
 	FFreeMem* Free;
@@ -166,7 +169,7 @@ void* RTReleaseHeapMemoryManager::allocateImpl(size_t uiSize, uint8_t uiAlignmen
 	}
 	return Free;
 }
-void RTReleaseHeapMemoryManager::deallocateImpl(void* pcAddr, uint8_t uiAlignment,bool bIsArray)
+void RTReleaseHeapMemoryManager::FreeImpl(void* pcAddr, u64 size,RT_MEMORY_TAG tag)
 {
     std::lock_guard<std::mutex> lock(MemoryMutex); // 加锁保证线程安全
 	assert(pcAddr);

@@ -7,6 +7,9 @@ set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_C_COMPILER_TARGET x86_64-apple-darwin)
 set(CMAKE_CXX_COMPILER_TARGET x86_64-apple-darwin)
 
+# 设置构建类型为Debug
+set(CMAKE_BUILD_TYPE Debug)
+
 # 使用 LLD 作为链接器
 set(CMAKE_LINKER clang)
 
