@@ -74,9 +74,16 @@ FPoolInfo* FFreeMem::GetPool()
     // return nullptr;
 	return (FPoolInfo*)((uintptr_t)this & 0xffff0000);
 }
-void* RTReleaseHeapMemoryManager::ZeroMemoryImpl(void*, u64) {};
-void* RTReleaseHeapMemoryManager::CopyMemoryImpl(void*, const void*, u64) {};
-void* RTReleaseHeapMemoryManager::SetMemoryImpl(void*, u8, u64) {};
+void* RTReleaseHeapMemoryManager::ZeroMemoryImpl(void*, u64) {
+    return nullptr;
+};
+void* RTReleaseHeapMemoryManager::CopyMemoryImpl(void*, const void*, u64) {
+    return nullptr;
+};
+void* RTReleaseHeapMemoryManager::SetMemoryImpl(void* ptr, u8 val, u64 size) {
+	RT_HAL_SYSSetMemory(ptr, val, size);
+	return nullptr;
+};
 
 void* RTReleaseHeapMemoryManager::AllocateImpl(u64 uiSize, uint8_t u8, RT_MEMORY_TAG tag)
 {

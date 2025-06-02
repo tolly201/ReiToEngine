@@ -85,8 +85,8 @@ public:
             i32 length = snprintf(buffer + offset, 8000, "%s: %.2f %s\n", MemoryTags[i], amount, unit);
             offset += length;
         }
-        char* report = strdup(buffer);
-        return report;
+        // char* report = _strdup(buffer);
+        return buffer;
     }
 protected:
     virtual void* AllocateImpl(u64, u8, RT_MEMORY_TAG) = 0;

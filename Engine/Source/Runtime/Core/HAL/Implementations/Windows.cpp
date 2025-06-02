@@ -103,6 +103,7 @@ b8 RT_HAL_Initialize(RT_HAL_MAIN_WINDOW& window, const char* title, u32 width, u
     window.main_window = new WindowsWindow();
     window.main_window->Create(title, width, height, pos_x, pos_y);
     window.main_window->ShowWindow();
+    return true;
 }
 
 void RT_HAL_Terminate(RT_HAL_MAIN_WINDOW& window)
@@ -146,14 +147,14 @@ void RT_HAL_SYSFree(void* pMem, u64 uiSize)
     // }
 }
 
-void RT_HAL_SYSZeroMemory(void* pMem, u64 uiSize, u8 alignment, b8 aligned, b8 isArray)
+void RT_HAL_SYSZeroMemory(void* pMem, u64 uiSize)
 {
     if (pMem && uiSize > 0) {
         ZeroMemory(pMem, uiSize);
     }
 }
 
-void RT_HAL_SYSCopyMemory(void* pDest, const void* pSrc, u64 uiSize, u8 alignment, b8 aligned, b8 isArray)
+void RT_HAL_SYSCopyMemory(void* pDest, const void* pSrc, u64 uiSize)
 {
     if (pDest && pSrc && uiSize > 0) {
         CopyMemory(pDest, pSrc, uiSize);
@@ -167,7 +168,7 @@ void RT_HAL_SYSMoveMemory(void* pDest, const void* pSrc, u64 uiSize, u8 alignmen
     }
 }
 
-void RT_HAL_SYSSetMemory(void* pMem,u8 value, u64 uiSize, u8 alignment, b8 aligned, b8 isArray)
+void RT_HAL_SYSSetMemory(void* pMem,u8 value, u64 uiSize)
 {
     if (pMem && uiSize > 0) {
         FillMemory(pMem, uiSize, value);

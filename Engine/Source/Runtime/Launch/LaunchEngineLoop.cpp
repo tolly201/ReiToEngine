@@ -19,21 +19,36 @@ b8 CreateGameInstance(Game& game_instance)
 
 int RuntimeMainLoopEntry(int argc, const char* argv[])
 {
+    RT_LOG_DEBUG("test");
+    RT_LOG_ERROR("test");
+    RT_LOG_FATAL("test");
+    RT_LOG_INFO("test");
+    RT_LOG_TRACE("test");
+    RT_LOG_WARN("test");
+
     Game game_instance;
+    RT_LOG_DEBUG("start game instance");
     if (!CreateGameInstance(game_instance)) {
         RT_LOG_FATAL("Failed to create game instance");
         return -1;
     }
+
+    RT_LOG_DEBUG("pass game instance");
+    RT_LOG_DEBUG("start application initialize");
 
     if (!ReiToEngine::RTApplication::Instance().Initialize(&game_instance)) {
         RT_LOG_FATAL("Failed to initialize application");
         return -1;
     }
 
+    RT_LOG_DEBUG("start application start game");
+
     if (!ReiToEngine::RTApplication::Instance().StartGame()) {
         RT_LOG_FATAL("Failed to start game");
         return -1;
     }
+
+    RT_LOG_DEBUG("start application main loop");
 
     if (!ReiToEngine::RTApplication::Instance().Run())
     {

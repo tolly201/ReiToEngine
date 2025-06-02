@@ -3,27 +3,26 @@
 #ifdef RT_SYSTEM_WINDOWS
 using namespace ReiToEngine;
 
-
-
-void RTWindowsApplication::Initialize(ApplicatonConfig& app_config)
+b8 RTWindowsApplication::Initialize(IGame* game)
 {
-    RTApplication::Initialize(app_config);
-    hInstance = GetModuleHandleW(0);
+    return RTApplication::Initialize(game);
 }
 
-void RTWindowsApplication::Run()
+b8 RTWindowsApplication::Run()
 {
-    RTApplication::Run();
+   return RTApplication::Run();
 }
-void RTWindowsApplication::Tick()
-{
-    RTApplication::Tick();
 
-}
 void RTWindowsApplication::Terminate()
 {
 
     RTApplication::Terminate();
     // Unregister the window class
 }
+
+b8 RTWindowsApplication::StartGame()
+{
+    return RTApplication::StartGame();
+}
+
 #endif

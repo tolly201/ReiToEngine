@@ -1,8 +1,8 @@
 #ifndef PLATFORM_EVENT_EVENT_H
 #define PLATFORM_EVENT_EVENT_H
 #include "Core/MinimalCore.h"
-#include "../Singleton/RuntimeSingleton.h"
 #include "EventEnums.h"
+#include <vector>
 namespace ReiToEngine
 {
 struct event_context{
@@ -28,7 +28,7 @@ struct registered_event{
 };
 
 struct event_code_entry{
-    ReiToEngine::Vector<registered_event> events;
+    std::vector<registered_event> events;
 };
 
 

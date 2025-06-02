@@ -15,21 +15,25 @@
 
 namespace ReiToEngine {
 WindowsManager::WindowsManager() = default;
-void WindowsManager::Initialize() {}
-void WindowsManager::Terminate() {
+b8 WindowsManager::Initialize() {
+    return true;
+}
+b8 WindowsManager::Terminate() {
     for (IWindow*& window_ptr:windows)
     {
         window_ptr->CloseWindow();
         delete window_ptr;
     }
     windows.clear();
+    return true;
 }
-void WindowsManager::Tick() {
+b8 WindowsManager::Tick() {
     for (IWindow*& window_ptr:windows)
     {
         window_ptr->ShowWindow();
         window_ptr->Update(data, width, height);
     }
+    return true;
 }
 
 #ifdef RT_SYSTEM_APPLE

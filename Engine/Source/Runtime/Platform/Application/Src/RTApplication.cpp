@@ -40,21 +40,21 @@ namespace ReiToEngine{
 
         // inputSystem_ptr->Initialize();
         InitializeLog();
-        RT_LOG_FATAL("test");
-        RT_LOG_ERROR("test");
-        RT_LOG_DEBUG("test");
-        RT_LOG_TRACE("test");
-        RT_LOG_INFO("test");
-        RT_LOG_WARN("test");
 
+        RT_LOG_DEBUG("pass value finish");
         GetSingletonManager();
+        RT_LOG_DEBUG("singleton manager");
         // declear to make sure be initialzied firstly
         windowsManager_ptr = &WindowsManager::Instance();
+        RT_LOG_DEBUG("window manager");
         // inputSystem_ptr = &InputSystem::Instance();
         renderManager_ptr = &RenderManager::Instance();
-
+        RT_LOG_DEBUG("render manager");
         windowsManager_ptr->Initialize();
+        RT_LOG_DEBUG("win iniite manager");
+
         renderManager_ptr->Initialize();
+        RT_LOG_DEBUG("render init manager");
 
         initialized = true;
         return true;
@@ -62,18 +62,25 @@ namespace ReiToEngine{
 
     b8 RTApplication::StartGame()
     {
+        RT_LOG_DEBUG("APPLICATION STARTGAME");
         if(!RT_HAL_Initialize(app_state.main_window, game_instance->app_config.name, game_instance->app_config.start_width, game_instance->app_config.start_height, game_instance->app_config.start_pos_x, game_instance->app_config.start_pos_y))
         {
             RT_LOG_FATAL("Failed to START CREATE PLATFORM WINDOW.");
             return false;
         };
 
+        RT_LOG_DEBUG("APPLICATION Game Initialize");
+
         if (!game_instance->Initialize())
         {
             RT_LOG_FATAL("Failed to initialize game instance.");
             return false;
         }
+        RT_LOG_DEBUG("APPLICATION Game Initialize");
+
         game_instance->OnResize(app_state.width, app_state.height);
+
+        RT_LOG_DEBUG("APPLICATION Game Initialize");
 
         printf("base run\n");
         app_state.is_running = true;
@@ -107,6 +114,7 @@ namespace ReiToEngine{
                 }
             }
         }
+        return true;
     }
 
     void RTApplication::Terminate()

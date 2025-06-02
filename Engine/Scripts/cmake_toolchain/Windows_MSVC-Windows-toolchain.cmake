@@ -2,7 +2,7 @@
 set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
-set(RT_MSVC_PATH "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64")
+set(RT_MSVC_PATH "C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64")
 
 if(NOT DEFINED RT_MSVC_PATH)
     message(FATAL_ERROR "RT_MSVC_PATH is not defined.")

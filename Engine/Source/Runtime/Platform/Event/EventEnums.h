@@ -1,6 +1,6 @@
 #ifndef PLATFORM_EVENT_EVENT_ENUMS_H
 #define PLATFORM_EVENT_EVENT_ENUMS_H
-#include "Core/MinimalCore.h"
+#include "Core/InnerCore.h"
 
 enum class SYSTEM_EVENT_CODE : u8 {
     UNKNOWN = 0x00,

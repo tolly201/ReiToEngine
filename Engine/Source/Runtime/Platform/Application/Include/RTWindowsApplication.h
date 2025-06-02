@@ -7,9 +7,9 @@ namespace ReiToEngine{
 class RTENGINE_API RTWindowsApplication : public RTApplication
 {
     friend RTApplication;
-    void Initialize(ApplicatonConfig&) override;
-    void Run() override;
-    void Tick() override;
+    b8 Initialize(IGame*) override;
+    b8 StartGame() override;
+    b8 Run() override;
     void Terminate() override;
 protected:
     static RTWindowsApplication instance;

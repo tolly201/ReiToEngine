@@ -59,7 +59,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # 针对不同编译器的额外设置
 if(MSVC)
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 endif()
 
 # 资源文件输出目录

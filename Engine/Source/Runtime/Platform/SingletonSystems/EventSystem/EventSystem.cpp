@@ -20,8 +20,10 @@ b8 EventManager::Initialize(){
     return true;
 }
 b8 EventManager::Tick(){
+    return true;
 }
 b8 EventManager::Terminate(){
+    return true;
     //auto collected by container
 }
 b8 EventManager::RegisterEvent(u32 code, void* listener, PFN_on_event callback){

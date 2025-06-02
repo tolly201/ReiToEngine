@@ -1,7 +1,7 @@
 #ifndef PLATFORM_HAL_INPUT_ENUMS_H
 #define PLATFORM_HAL_INPUT_ENUMS_H
 
-#include "Core/MinimalCore.h"
+#include "../../../InnerCore.h"
 #include "Platform/Event/EventEnums.h"
 namespace ReiToEngine {
 
@@ -73,7 +73,7 @@ enum class KEY_CODE_KEYBOARD : u8 {
     TAB           = 0x35,
     BACKSPACE     = 0x36,
     INSERT        = 0x37,
-    DELETE        = 0x38,
+    KEY_DELETE        = 0x38,
     RIGHT         = 0x39,
     LEFT          = 0x3A,
     DOWN          = 0x3B,

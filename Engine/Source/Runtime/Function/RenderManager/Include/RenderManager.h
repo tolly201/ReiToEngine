@@ -11,9 +11,9 @@ class RenderManager : public Runtime_Singleton<RenderManager>
 public:
     RenderManager() = default;
     ~RenderManager() = default;
-    void Initialize() override {};
-    void Terminate() override {};
-    void Tick() override {};
+    b8 Initialize() override {return true;};
+    b8 Terminate() override {return true;};
+    b8 Tick() override {return true;};
     SoftRenderer softRenderer;
 private:
 };

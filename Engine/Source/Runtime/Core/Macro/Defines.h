@@ -90,5 +90,5 @@ STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 #define GIGABYTE 1073741824UL
 #define MEGABYTE 1048576UL
 #define KILOBYTE 1024UL
-#define BYTE 1UL
+#define SINGLEBYTE 1UL
 #endif

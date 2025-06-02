@@ -11,9 +11,9 @@ class WindowsManager : public Runtime_Singleton<WindowsManager>
 {
 public:
     WindowsManager();
-    void Initialize() override;
-    void Terminate() override;
-    void Tick() override;
+    b8 Initialize() override;
+    b8 Terminate() override;
+    b8 Tick() override;
     uint32_t RTCreateWindow(uint32_t width = 100, uint32_t height = 100, u32 pos_x = 100, u32 pos_y = 100, uint8_t channel = 4);
     void PassViewData(uint8_t* _data, size_t _size, size_t _width, size_t _height);
 private:
