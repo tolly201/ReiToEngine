@@ -69,7 +69,7 @@ b8 EventSystem::TriggerEvent(u32 code, void* sender, event_context context){
     for (u64 i = 0; i < size; ++i)
     {
         registered_event event = state.registered[code].events[i];
-        if(event.callback(code, sender, context))
+        if(event.callback(code, sender, state.registered[code].events[i].listener, context))
         {
             return true;
         }

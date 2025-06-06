@@ -2,7 +2,22 @@
 #include <functional>
 #include <vector>
 #include "L20_Platform/Include.h"
+
 namespace ReiToEngine{
+    b8 application_on_key(u16 code, void* sender, void* listener_inst, event_context context)
+    {
+        if (code == SYSTEM_EVENT_CODE::KEY_PRESS)
+        {
+            u8 key_code = context.data.u8[0];
+            RT_LOG_INFO("catch key event", key_code);
+            if (key_code == static_cast<u8>(KEY_CODE_KEYBOARD::ESCAPE))
+            {
+                RT_LOG_INFO("exit application");
+                RTApplication::Instance().GetApplicationState().is_running = false;
+            }
+        }
+    }
+
     RTApplication::RTApplication() = default;
     RTApplication::~RTApplication() = default;
     RTApplication& RTApplication::Instance()
@@ -80,6 +95,9 @@ namespace ReiToEngine{
         RT_LOG_DEBUG("APPLICATION Game Initialize");
 
         printf("base run\n");
+
+        event_system_ptr->RegisterEvent(SYSTEM_EVENT_CODE::KEY_PRESS, this, application_on_key);
+
         app_state.is_running = true;
         app_state.is_paused = false;
         return true;
@@ -121,7 +139,8 @@ namespace ReiToEngine{
         ApplicationState& state = app_state;
         //windowsManager_ptr->Terminate();
         game_instance->Terminate();
-        //input_system_ptr->Terminate();
+        event_system_ptr->UnregisterEvent(SYSTEM_EVENT_CODE::KEY_PRESS, this, application_on_key);
+        input_system_ptr->Terminate();
         event_system_ptr->Terminate();
     }
 

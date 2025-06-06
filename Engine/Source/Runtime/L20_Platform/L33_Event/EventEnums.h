@@ -43,7 +43,7 @@ struct event_context{
     } data;
 };
 struct event_system_state;
-using PFN_on_event = b8(*)(u32 code, void* listener, event_context context);
+using PFN_on_event = b8(*)(u16 code, void* sender, void* listener, event_context context);
 struct registered_event{
     void* listener;
     ReiToEngine::PFN_on_event callback;

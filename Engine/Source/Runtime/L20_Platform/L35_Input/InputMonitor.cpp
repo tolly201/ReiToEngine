@@ -59,6 +59,7 @@ void InputMonitor::ProcessKey(KEY_CODE_KEYBOARD keycode, b8 pressed) {
         cur_state.keys[static_cast<u8>(keycode)] = pressed;
 
         event_context content;
+        content.data.u8[0] = static_cast<u8>(keycode);
         EventSystem::Instance().TriggerEvent(
             pressed ? SYSTEM_EVENT_CODE::KEY_PRESS : SYSTEM_EVENT_CODE::KEY_RELEASE, this, content);
     }
@@ -124,6 +125,8 @@ void InputMonitor::ProcessMouseButton(KEY_CODE_MOUSE mouseButton, b8 pressed) {
 }
 void InputMonitor::ProcessMouseMove(f32 x, f32 y) {
     if (cur_state.mouseX != x || cur_state.mouseY != y) {
+
+        RT_LOG_INFO("Mouse Move: ", x, y);
         cur_state.mouseX = x;
         cur_state.mouseY = y;
         event_context content;
