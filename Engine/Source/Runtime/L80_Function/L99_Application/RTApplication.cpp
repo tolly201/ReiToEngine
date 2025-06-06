@@ -6,7 +6,7 @@
 namespace ReiToEngine{
     b8 application_on_key(u16 code, void* sender, void* listener_inst, event_context context)
     {
-        if (code == SYSTEM_EVENT_CODE::KEY_PRESS)
+        if (code == static_cast<u16>(SYSTEM_EVENT_CODE::KEY_PRESS))
         {
             u8 key_code = context.data.u8[0];
             RT_LOG_INFO("catch key event", key_code);
@@ -48,12 +48,19 @@ namespace ReiToEngine{
 
         RT_LOG_DEBUG("pass value finish");
         GetSingletonManager();
-        RT_LOG_DEBUG("singleton manager");
+        RT_LOG_INFO("EventSystem size: %d", 123);
+        RT_LOG_INFO("Hello %s, value=%f", "world", 3.14);
+        RT_LOG_INFO("Hello %s, value=%f", "world", 3.14);
+        RT_LOG_INFO("Hello, value=", "world", 3.14);
         // declear to make sure be initialzied firstly
 
         event_system_ptr = &EventSystem::Instance();
         input_system_ptr = &InputSystem::Instance();
 
+        RT_LOG_INFO(sizeof(EventSystem));
+        RT_LOG_INFO(sizeof(InputSystem));
+        RT_LOG_INFO(alignof(EventSystem));
+        RT_LOG_INFO(alignof(InputSystem));
         //windowsManager_ptr = &WindowsManager::Instance();
         RT_LOG_DEBUG("window manager");
         //renderManager_ptr = &RenderManager::Instance();
@@ -96,7 +103,7 @@ namespace ReiToEngine{
 
         printf("base run\n");
 
-        event_system_ptr->RegisterEvent(SYSTEM_EVENT_CODE::KEY_PRESS, this, application_on_key);
+        event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_PRESS), this, application_on_key);
 
         app_state.is_running = true;
         app_state.is_paused = false;
@@ -139,7 +146,7 @@ namespace ReiToEngine{
         ApplicationState& state = app_state;
         //windowsManager_ptr->Terminate();
         game_instance->Terminate();
-        event_system_ptr->UnregisterEvent(SYSTEM_EVENT_CODE::KEY_PRESS, this, application_on_key);
+        event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_PRESS), this, application_on_key);
         input_system_ptr->Terminate();
         event_system_ptr->Terminate();
     }

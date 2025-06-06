@@ -3,7 +3,7 @@
 #include "L0_Macro/Include.h"
 #include "L20_Platform/L32_Containers/Vector.h"
 namespace ReiToEngine {
-enum SYSTEM_EVENT_CODE : u8 {
+enum class SYSTEM_EVENT_CODE : u8 {
     UNKNOWN = 0x00,
     APPLICATION_QUIT = 0x01,
 
@@ -23,7 +23,7 @@ enum SYSTEM_EVENT_CODE : u8 {
     DEVICE_CONNECTED = 0x0B,
     DEVICE_DISCONNECTED = 0x0C,
 
-    MAX_EVENT_CODE = 0xFF
+    MAX_EVENT_CODE = 0x1F
 };
 
 
@@ -58,7 +58,9 @@ struct event_code_entry{
 };
 
 struct event_system_state{
-    event_code_entry registered[U16_MAX];
+    static constexpr u32 EventSize = static_cast<u32>(SYSTEM_EVENT_CODE::MAX_EVENT_CODE);
+
+    event_code_entry registered[EventSize];
     ~event_system_state() = default;
 };
 }

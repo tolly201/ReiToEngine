@@ -61,7 +61,7 @@ void InputMonitor::ProcessKey(KEY_CODE_KEYBOARD keycode, b8 pressed) {
         event_context content;
         content.data.u8[0] = static_cast<u8>(keycode);
         EventSystem::Instance().TriggerEvent(
-            pressed ? SYSTEM_EVENT_CODE::KEY_PRESS : SYSTEM_EVENT_CODE::KEY_RELEASE, this, content);
+            pressed ? static_cast<u32>(SYSTEM_EVENT_CODE::KEY_PRESS) : static_cast<u32>(SYSTEM_EVENT_CODE::KEY_RELEASE), this, content);
     }
 }
 
@@ -120,7 +120,7 @@ void InputMonitor::ProcessMouseButton(KEY_CODE_MOUSE mouseButton, b8 pressed) {
 
         event_context content;
         EventSystem::Instance().TriggerEvent(
-            pressed ? SYSTEM_EVENT_CODE::MOUSE_BUTTON_PRESS : SYSTEM_EVENT_CODE::MOUSE_BUTTON_RELEASE, this, content);
+            pressed ? static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_BUTTON_PRESS) : static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_BUTTON_RELEASE), this, content);
     }
 }
 void InputMonitor::ProcessMouseMove(f32 x, f32 y) {
@@ -132,7 +132,7 @@ void InputMonitor::ProcessMouseMove(f32 x, f32 y) {
         event_context content;
         content.data.f32[0] = x;
         content.data.f32[1] = y;
-        EventSystem::Instance().TriggerEvent(SYSTEM_EVENT_CODE::MOUSE_MOVE, this, content);
+        EventSystem::Instance().TriggerEvent(static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_MOVE), this, content);
     }
 }
 void InputMonitor::ProcessMouseScroll(f32 x, f32 y) {
@@ -142,7 +142,7 @@ void InputMonitor::ProcessMouseScroll(f32 x, f32 y) {
         event_context content;
         content.data.f32[0] = x;
         content.data.f32[1] = y;
-        EventSystem::Instance().TriggerEvent(SYSTEM_EVENT_CODE::MOUSE_WHEEL, this, content);
+        EventSystem::Instance().TriggerEvent(static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_WHEEL), this, content);
     }
 }
 } // namespace ReiToEngine

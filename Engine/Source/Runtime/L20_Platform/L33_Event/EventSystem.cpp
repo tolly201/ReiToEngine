@@ -9,7 +9,7 @@ b8 EventSystem::Initialize(){
         return false;
     }
 
-    for(u32 i = 0; i < U16_MAX; ++ i)
+    for(u32 i = 0; i < event_system_state::EventSize; ++ i)
     {
         state.registered[i].events.clear();
     }

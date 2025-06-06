@@ -46,60 +46,57 @@ bool InitializeLog();
 void TerminateLog();
 
 template <typename... Args>
-void Log(E_LOG_LEVEL level, const char* message, Args&&... args)
+void Log(E_LOG_LEVEL level, Args&&... args)
 {
     std::stringstream ss;
-    ss << level_strings[level] << message << std::endl;
-
+    ss << level_strings[level];
     ((ss << std::forward<Args>(args) << std::endl), ...);
 
     if (level < LOG_LEVEL_WARN)
     {
-        printf("level: %d\n", level);
         RT_Platform_ConsoleWriteError(ss.str().c_str(), level);
     }
     else
     {
-        printf("level: %d\n", level);
         RT_Platform_ConsoleWrite(ss.str().c_str(), level);
     }
 }
 
 // 日志宏定义（根据日志级别控制是否启用）
 #if LOG_FATAL_ENABLED == 1
-    #define RT_LOG_FATAL(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_FATAL, message, ##__VA_ARGS__)
+    #define RT_LOG_FATAL(...) Log(E_LOG_LEVEL::LOG_LEVEL_FATAL, ##__VA_ARGS__)
 #else
-    #define RT_LOG_FATAL(message, ...)
+    #define RT_LOG_FATAL(...)
 #endif
 
 #if LOG_ERROR_ENABLED == 1
-    #define RT_LOG_ERROR(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_ERROR, message, ##__VA_ARGS__)
+    #define RT_LOG_ERROR(...) Log(E_LOG_LEVEL::LOG_LEVEL_ERROR, ##__VA_ARGS__)
 #else
-    #define RT_LOG_ERROR(message, ...)
+    #define RT_LOG_ERROR(...)
 #endif
 
 #if LOG_WARN_ENABLED == 1
-    #define RT_LOG_WARN(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_WARN, message, ##__VA_ARGS__)
+    #define RT_LOG_WARN(...) Log(E_LOG_LEVEL::LOG_LEVEL_WARN, ##__VA_ARGS__)
 #else
-    #define RT_LOG_WARN(message, ...)
+    #define RT_LOG_WARN(...)
 #endif
 
 #if LOG_INFO_ENABLED == 1
-    #define RT_LOG_INFO(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_INFO, message, ##__VA_ARGS__)
+    #define RT_LOG_INFO(...) Log(E_LOG_LEVEL::LOG_LEVEL_INFO, ##__VA_ARGS__)
 #else
-    #define RT_LOG_INFO(message, ...)
+    #define RT_LOG_INFO(...)
 #endif
 
 #if LOG_DEBUG_ENABLED == 1
-    #define RT_LOG_DEBUG(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_DEBUG, message, ##__VA_ARGS__)
+    #define RT_LOG_DEBUG(...) Log(E_LOG_LEVEL::LOG_LEVEL_DEBUG, ##__VA_ARGS__)
 #else
-    #define RT_LOG_DEBUG(message, ...)
+    #define RT_LOG_DEBUG(...)
 #endif
 
 #if LOG_TRACE_ENABLED == 1
-    #define RT_LOG_TRACE(message, ...) Log(E_LOG_LEVEL::LOG_LEVEL_TRACE, message, ##__VA_ARGS__)
+    #define RT_LOG_TRACE(...) Log(E_LOG_LEVEL::LOG_LEVEL_TRACE, ##__VA_ARGS__)
 #else
-    #define RT_LOG_TRACE(message, ...)
+    #define RT_LOG_TRACE(...)
 #endif
 
 #endif
