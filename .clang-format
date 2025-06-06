@@ -1,8 +1,37 @@
 ---
-BasedOnStyle: Google
-IndentWidth: 4
+BasedOnStyle: LLVM
+IndentWidth: 4                            # 使用 4 空格缩进
+TabWidth: 4                               # Tab 等效为 4 空格
+UseTab: Never                             # 禁用 Tab，强制使用空格
+ColumnLimit: 120                          # 行宽限制为 120 列
+PointerAlignment: Left                    # 指针靠近类型（如 int* ptr）
+BreakBeforeBraces: Attach                 # 大括号与控制语句同一行
+AllowShortFunctionsOnASingleLine: Inline  # 短函数允许单行显示
+AllowShortIfStatementsOnASingleLine: true # 短 if 语句允许单行
+AllowShortLoopsOnASingleLine: true        # 短循环允许单行
+AlwaysBreakTemplateDeclarations: MultiLine # 模板声明分多行
+
+AlignConsecutiveAssignments: true         # 对齐连续赋值
+AlignConsecutiveDeclarations: true        # 对齐连续变量声明
+AlignTrailingComments: true               # 对齐尾部注释
+
+AlignAfterOpenBracket: Align              # 参数对齐到括号后
+BinPackArguments: false                   # 每个参数单独一行（仅超长时）
+BinPackParameters: false                  # 每个函数声明参数单独一行
+
+ObjCBlockIndentWidth: 4                   # Objective-C 块缩进
+ObjCSpaceBeforeProtocolList: true         # 协议列表前保留空格
+
+Cpp11BracedListStyle: true                # 启用 C++11 列表初始化样式
+IncludeBlocks: Regroup                    # include 分组
+IncludeCategories:                        # include 顺序分类
+  - Regex: '^<.*\.h>'                     # 标准库头文件
+    Priority: 1
+  - Regex: '^".*"'                        # 项目头文件
+    Priority: 2
+  - Regex: '^<.*>'                        # 其他系统头文件
+    Priority: 3
+
+CommentPragmas: '^\\s*TODO:|^\\s*FIXME:'  # 特殊注释标记
+ReflowComments: true                      # 自动格式化注释行
 ---
-Language: Cpp
-DerivePointerAlignment: false
-PointerAlignment: Left
-ColumnLimit:     120

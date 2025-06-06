@@ -27,7 +27,7 @@ public:
         }
 
         Stats.TotalUsedMemory += size;
-        Stats.TaggedAllocatedMemory[tag] += size;
+        Stats.TaggedAllocatedMemory[static_cast<u16>(tag)] += size;
         void* block = static_cast<T*>(this)->AllocateImpl(size, alignment, tag);
         ZeroMemory(block, size);
         return block;
@@ -40,7 +40,7 @@ public:
         }
 
         Stats.TotalUsedMemory -= size;
-        Stats.TaggedAllocatedMemory[tag] -= size;
+        Stats.TaggedAllocatedMemory[static_cast<u16>(tag)] -= size;
         static_cast<T*>(this)->FreeImpl(addr, size, tag);
     }
     void* ZeroMemory(void* addr, u64 size)
@@ -100,9 +100,9 @@ protected:
     MemoryStats Stats;
 
     const char* MemoryTags[static_cast<u16>(RT_MEMORY_TAG::MAX_TAG)] = {
-        "UNKNOWN", "ARRAY", "DARRAY", "DICT", "QUEUE", "BST", "STRING",
+        "UNKNOWN","CONTAINER" ,"ARRAY", "DARRAY", "DICT", "QUEUE", "BST", "STRING",
         "APPLICATION", "JOB", "TEXTURE", "MATERIAL_INSTANCE", "RENDERER",
-        "GAME", "TRANSFORM", "ENTITY", "ENTITT_NODE", "SCENE", "AUDIO"
+        "GAME", "TRANSFORM", "ENTITY", "ENTITT_NODE", "SCENE", "AUDIO", "SINGLETON"
     };
 };
 template <typename T>

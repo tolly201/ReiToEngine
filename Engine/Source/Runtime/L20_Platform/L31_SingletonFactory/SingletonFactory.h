@@ -83,13 +83,16 @@ class RTENGINE_API Singleton {
             wrapper->destructor_ptr = Singleton::destroy_instance;
             SingletonFactory::GetSingletonManager().register_instance(wrapper);
         } else {
-            instance_ptr = new T();
+            void * mem = SingletonFactory::GetMemoryManager().Allocate(sizeof(T), alignof(T), RT_MEMORY_TAG::SINGLETON);
+            instance_ptr = new(mem) T();
             SingletonFactory::GetSingletonManager().register_instance(instance_ptr, Singleton::destroy_instance);
         }
     }
 
     static void destroy_instance(void* ptr) {
-        delete static_cast<T*>(ptr);
+            static_cast<T*>(ptr)->~T();
+            SingletonFactory::GetMemoryManager().Free(ptr, sizeof(T), RT_MEMORY_TAG::SINGLETON);
+        // delete static_cast<T*>(ptr);
     }
 
     static SingletonWrapper* IndependentConstructor();

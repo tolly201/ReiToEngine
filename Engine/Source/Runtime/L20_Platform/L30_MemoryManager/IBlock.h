@@ -33,7 +33,9 @@ enum class RT_MEMORY_TAG : u16
     ENTITT_NODE = 16,
     SCENE = 17,
     AUDIO = 18,
-    MAX_TAG = 19
+
+    SINGLETON = 19,
+    MAX_TAG = 20
 };
 
 class RTBlock

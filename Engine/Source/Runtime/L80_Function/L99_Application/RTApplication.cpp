@@ -28,7 +28,7 @@ namespace ReiToEngine{
         app_state.is_running = false;
         app_state.last_time = 0.;
 
-        // InputMonitor_ptr->Initialize();
+        // InputSystem_ptr->Initialize();
         InitializeLog();
 
         RT_LOG_DEBUG("pass value finish");
@@ -37,15 +37,14 @@ namespace ReiToEngine{
         // declear to make sure be initialzied firstly
 
         event_system_ptr = &EventSystem::Instance();
-        // //input_system_ptr = &InputMonitor::Instance();
+        input_system_ptr = &InputSystem::Instance();
 
         //windowsManager_ptr = &WindowsManager::Instance();
         RT_LOG_DEBUG("window manager");
-        // InputMonitor_ptr = &InputMonitor::Instance();
         //renderManager_ptr = &RenderManager::Instance();
 
         event_system_ptr->Initialize();
-        //input_system_ptr->Initialize();
+        input_system_ptr->Initialize();
 
         RT_LOG_DEBUG("render manager");
         //windowsManager_ptr->Initialize();

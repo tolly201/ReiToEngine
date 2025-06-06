@@ -1,52 +1,57 @@
-#include "InputMonitor.h"
+#include "InputSystem.h"
 
 #include "L20_Platform/L23_Logger/Include.h"
 namespace ReiToEngine {
 
-InputMonitor::InputMonitor()  = default;
-InputMonitor::~InputMonitor() = default;
+InputSystem::InputSystem()  = default;
+InputSystem::~InputSystem() = default;
 
-b8 InputMonitor::Initialize() {
+b8 InputSystem::Initialize() {
     RT_Platform_SYSZeroMemory(&cur_state, sizeof(cur_state));
     RT_Platform_SYSZeroMemory(&prev_state, sizeof(prev_state));
+
+    input_monitor = new PlatformInputMonitor();
+    input_monitor->Initialize();
     initialized = true;
 
-    RT_LOG_INFO("InputMonitor Initialized.");
+    RT_LOG_INFO("InputSystem Initialized.");
 }
-b8 InputMonitor::Terminate() {
+b8 InputSystem::Terminate() {
+    input_monitor->Terminate();
     initialized = false;
 }
-b8 InputMonitor::Tick(f64) {
+b8 InputSystem::Tick(f64 tick) {
     if (!initialized) {
         RT_LOG_FATAL("Update when not initialized.");
         return false;
     }
+    input_monitor->Tick(tick);
     RT_Platform_SYSCopyMemory(&prev_state, &cur_state, sizeof(cur_state));
     return true;
 }
 
-b8 InputMonitor::IsKeyDown(KEY_CODE_KEYBOARD keyCode) {
+b8 InputSystem::IsKeyDown(KEY_CODE_KEYBOARD keyCode) {
     if (!initialized) {
         RT_LOG_ERROR("IsKeyDown when not initialized.");
         return false;
     }
     return cur_state.keys[static_cast<u8>(keyCode)];
 }
-b8 InputMonitor::IsKeyUp(KEY_CODE_KEYBOARD keyCode) {
+b8 InputSystem::IsKeyUp(KEY_CODE_KEYBOARD keyCode) {
     if (!initialized) {
         RT_LOG_ERROR("IsKeyDown when not initialized.");
         return false;
     }
     return !cur_state.keys[static_cast<u8>(keyCode)];
 }
-b8 InputMonitor::WasKeyDown(KEY_CODE_KEYBOARD keyCode) {
+b8 InputSystem::WasKeyDown(KEY_CODE_KEYBOARD keyCode) {
     if (!initialized) {
         RT_LOG_ERROR("IsKeyDown when not initialized.");
         return false;
     }
     return prev_state.keys[static_cast<u8>(keyCode)];
 }
-b8 InputMonitor::WasKeyUp(KEY_CODE_KEYBOARD keyCode) {
+b8 InputSystem::WasKeyUp(KEY_CODE_KEYBOARD keyCode) {
     if (!initialized) {
         RT_LOG_ERROR("IsKeyDown when not initialized.");
         return false;
@@ -54,7 +59,7 @@ b8 InputMonitor::WasKeyUp(KEY_CODE_KEYBOARD keyCode) {
     return !prev_state.keys[static_cast<u8>(keyCode)];
 }
 
-void InputMonitor::ProcessKey(KEY_CODE_KEYBOARD keycode, b8 pressed) {
+void InputSystem::ProcessKey(KEY_CODE_KEYBOARD keycode, b8 pressed) {
     if (cur_state.keys[static_cast<u8>(keycode)] != pressed) {
         cur_state.keys[static_cast<u8>(keycode)] = pressed;
 
@@ -64,35 +69,35 @@ void InputMonitor::ProcessKey(KEY_CODE_KEYBOARD keycode, b8 pressed) {
     }
 }
 
-b8 InputMonitor::IsMouseButtonDown(KEY_CODE_MOUSE mouseButton) {
+b8 InputSystem::IsMouseButtonDown(KEY_CODE_MOUSE mouseButton) {
     if (!initialized) {
         RT_LOG_ERROR("IsKeyDown when not initialized.");
         return false;
     }
     return cur_state.mouse_buttons[static_cast<u8>(mouseButton)];
 }
-b8 InputMonitor::IsMouseButtonUp(KEY_CODE_MOUSE mouseButton) {
+b8 InputSystem::IsMouseButtonUp(KEY_CODE_MOUSE mouseButton) {
     if (!initialized) {
         RT_LOG_ERROR("IsKeyDown when not initialized.");
         return false;
     }
     return !cur_state.mouse_buttons[static_cast<u8>(mouseButton)];
 }
-b8 InputMonitor::WasMouseButtonDown(KEY_CODE_MOUSE mouseButton) {
+b8 InputSystem::WasMouseButtonDown(KEY_CODE_MOUSE mouseButton) {
     if (!initialized) {
         RT_LOG_ERROR("IsKeyDown when not initialized.");
         return false;
     }
     return prev_state.mouse_buttons[static_cast<u8>(mouseButton)];
 }
-b8 InputMonitor::WasMouseButtonUp(KEY_CODE_MOUSE mouseButton) {
+b8 InputSystem::WasMouseButtonUp(KEY_CODE_MOUSE mouseButton) {
     if (!initialized) {
         RT_LOG_ERROR("IsKeyDown when not initialized.");
         return false;
     }
     return !prev_state.mouse_buttons[static_cast<u8>(mouseButton)];
 }
-void InputMonitor::GetMousePosition(f32& x, f32& y) {
+void InputSystem::GetMousePosition(f32& x, f32& y) {
     if (!initialized) {
         RT_LOG_ERROR("IsKeyDown when not initialized.");
         x = 0.0f;
@@ -102,7 +107,7 @@ void InputMonitor::GetMousePosition(f32& x, f32& y) {
     x = cur_state.mouseX;
     y = cur_state.mouseY;
 }
-void InputMonitor::GetPrevMousePosition(f32& x, f32& y) {
+void InputSystem::GetPrevMousePosition(f32& x, f32& y) {
     if (!initialized) {
         RT_LOG_ERROR("IsKeyDown when not initialized.");
         x = 0.0f;
@@ -113,7 +118,7 @@ void InputMonitor::GetPrevMousePosition(f32& x, f32& y) {
     y = prev_state.mouseY;
 }
 
-void InputMonitor::ProcessMouseButton(KEY_CODE_MOUSE mouseButton, b8 pressed) {
+void InputSystem::ProcessMouseButton(KEY_CODE_MOUSE mouseButton, b8 pressed) {
     if (cur_state.mouse_buttons[static_cast<u8>(mouseButton)] != pressed) {
         cur_state.mouse_buttons[static_cast<u8>(mouseButton)] = pressed;
 
@@ -122,7 +127,7 @@ void InputMonitor::ProcessMouseButton(KEY_CODE_MOUSE mouseButton, b8 pressed) {
             pressed ? SYSTEM_EVENT_CODE::MOUSE_BUTTON_PRESS : SYSTEM_EVENT_CODE::MOUSE_BUTTON_RELEASE, this, content);
     }
 }
-void InputMonitor::ProcessMouseMove(f32 x, f32 y) {
+void InputSystem::ProcessMouseMove(f32 x, f32 y) {
     if (cur_state.mouseX != x || cur_state.mouseY != y) {
         cur_state.mouseX = x;
         cur_state.mouseY = y;
@@ -132,7 +137,7 @@ void InputMonitor::ProcessMouseMove(f32 x, f32 y) {
         EventSystem::Instance().TriggerEvent(SYSTEM_EVENT_CODE::MOUSE_MOVE, this, content);
     }
 }
-void InputMonitor::ProcessMouseScroll(f32 x, f32 y) {
+void InputSystem::ProcessMouseScroll(f32 x, f32 y) {
     if (cur_state.mouse_scroll_x != x || cur_state.mouse_scroll_y != y) {
         cur_state.mouse_scroll_x = x;
         cur_state.mouse_scroll_x = y;

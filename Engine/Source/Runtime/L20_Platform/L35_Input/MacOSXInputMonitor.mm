@@ -1,247 +1,239 @@
-// #include "L0_Macro/Include.h"
-// #ifdef RT_SYSTEM_APPLE
-// #include "../Include/MacOSXInputMonitor.h"
-// #include <Foundation/Foundation.h>
-// #include "L60_Core/HAL/Input/Include/InputEnums.h"
-// #include "L60_Core/HAL/Input/Include/InputMonitor.h"
+#include "L0_Macro/Include.h"
+#ifdef RT_SYSTEM_APPLE
+#include <Foundation/Foundation.h>
 
+#include "MacOSXInputMonitor.h"
 
-// @implementation NSInputMonitor
-// - (id)init {
-//     self = [super init];
-//     return self;
-// }
+@implementation NSInputMonitor
+- (id)init {
+    self = [super init];
+    return self;
+}
 
-// - (void)addMonitor:(ReiToEngine::MacOSXInputMonitor*)monitor {
-//         _monitor = monitor;
-// }
+- (void)addMonitor:(ReiToEngine::MacOSXInputMonitor*)monitor {
+    _monitor = monitor;
+}
 
-// - (void)startMonitoring {
-//     NSEvent* (^handler)(NSEvent*) = ^NSEvent*(NSEvent* event) {
-//         NSLog(@"local event trigger");
-//         printf("catch local input event: %ld\n", (long)[event type]);
-//         printf("%ld\n", NSEventTypeScrollWheel);
-//         _monitor->InnerConvertNSEvent(event);
-//       return event;
-//     };
+- (void)startMonitoring {
+    NSEvent* (^handler)(NSEvent*) = ^NSEvent*(NSEvent* event) {
+        NSLog(@"local event trigger");
+        printf("catch local input event: %ld\n", (long)[event type]);
+        printf("%ld\n", NSEventTypeScrollWheel);
+        _monitor->InnerConvertNSEvent(event);
+        return event;
+    };
 
-//     // [NSEvent
-//     //     addGlobalMonitorForEventsMatchingMask:(NSEventMaskKeyDown | NSEventMaskKeyUp |
-//     //                                            NSEventMaskLeftMouseDown | NSEventMaskLeftMouseUp |
-//     //                                            NSEventMaskRightMouseDown | NSEventMaskRightMouseUp |
-//     //                                            NSEventMaskMouseMoved | NSEventMaskScrollWheel |
-//     //                                            NSEventMaskOtherMouseDown | NSEventMaskOtherMouseUp |
-//     //                                            NSEventMaskFlagsChanged)
-//     //                                   handler:^(NSEvent* event) {
-//     //                                     NSLog(@"global event trigger");
-//     //                                   }];
+    // [NSEvent
+    //     addGlobalMonitorForEventsMatchingMask:(NSEventMaskKeyDown | NSEventMaskKeyUp |
+    //                                            NSEventMaskLeftMouseDown | NSEventMaskLeftMouseUp |
+    //                                            NSEventMaskRightMouseDown | NSEventMaskRightMouseUp |
+    //                                            NSEventMaskMouseMoved | NSEventMaskScrollWheel |
+    //                                            NSEventMaskOtherMouseDown | NSEventMaskOtherMouseUp |
+    //                                            NSEventMaskFlagsChanged)
+    //                                   handler:^(NSEvent* event) {
+    //                                     NSLog(@"global event trigger");
+    //                                   }];
 
-//     [NSEvent
-//         addLocalMonitorForEventsMatchingMask:(NSEventMaskKeyDown | NSEventMaskKeyUp |
-//                                               NSEventMaskLeftMouseDown | NSEventMaskLeftMouseUp |
-//                                               NSEventMaskRightMouseDown | NSEventMaskRightMouseUp |
-//                                               NSEventMaskMouseMoved | NSEventMaskScrollWheel |
-//                                               NSEventMaskOtherMouseDown | NSEventMaskOtherMouseUp |
-//                                               NSEventMaskFlagsChanged)
-//                                      handler:handler];
+    [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskKeyDown | NSEventMaskKeyUp | NSEventMaskLeftMouseDown |
+                                                   NSEventMaskLeftMouseUp | NSEventMaskRightMouseDown |
+                                                   NSEventMaskRightMouseUp | NSEventMaskMouseMoved |
+                                                   NSEventMaskScrollWheel | NSEventMaskOtherMouseDown |
+                                                   NSEventMaskOtherMouseUp | NSEventMaskFlagsChanged)
+                                          handler:handler];
+}
 
+@end
 
-// }
+namespace ReiToEngine {
 
-// @end
+constexpr KEY_CODE_MODIFIER operator|(KEY_CODE_MODIFIER a, KEY_CODE_MODIFIER b) {
+    return static_cast<KEY_CODE_MODIFIER>(static_cast<std::underlying_type_t<KEY_CODE_MODIFIER>>(a) |
+                                          static_cast<std::underlying_type_t<KEY_CODE_MODIFIER>>(b));
+}
 
-// namespace ReiToEngine {
+KEY_CODE_MODIFIER& operator|=(KEY_CODE_MODIFIER& a, KEY_CODE_MODIFIER b) {
+    a = a | b;
+    return a;
+}
+MacOSXInputMonitor::MacOSXInputMonitor() {
+    // 创建并启动事件监听器
+    cocoaInputMonitor = [[NSInputMonitor alloc] init];
+    [cocoaInputMonitor addMonitor:this];
+    printf("macos input monitor created");
+    [cocoaInputMonitor startMonitoring];
+}
 
-// constexpr EINPUT_MODIFIER operator|(EINPUT_MODIFIER a, EINPUT_MODIFIER b) {
-//     return static_cast<EINPUT_MODIFIER>(
-//         static_cast<std::underlying_type_t<EINPUT_MODIFIER>>(a) |
-//         static_cast<std::underlying_type_t<EINPUT_MODIFIER>>(b)
-//     );
-// }
+MacOSXInputMonitor::~MacOSXInputMonitor() {
+    if (cocoaInputMonitor) {
+        [cocoaInputMonitor release];
+    }
+}
 
-// EINPUT_MODIFIER& operator|=(EINPUT_MODIFIER& a, EINPUT_MODIFIER b) {
-//     a = a | b;
-//     return a;
-// }
-// MacOSXInputMonitor::MacOSXInputMonitor() {
-//     // 创建并启动事件监听器
-//     cocoaInputMonitor = [[NSInputMonitor alloc] init];
-//     [cocoaInputMonitor addMonitor:this];
-//     printf("macos input monitor created");
-//     [cocoaInputMonitor startMonitoring];
-// }
+void MacOSXInputMonitor::InnerConvertNSEvent(NSEvent* event) {
+    InputEvent inputEvent;
 
-// MacOSXInputMonitor::~MacOSXInputMonitor() {
-//     if (cocoaInputMonitor) {
-//         [cocoaInputMonitor release];
-//     }
-// }
+    printf("catch local input event: %ld\n", (long)[event type]);
+    printf("%ld\n", NSEventTypeMouseMoved);
 
-// void MacOSXInputMonitor::InnerConvertNSEvent(NSEvent* event) {
-//     InputEvent inputEvent;
+    // Initialize the input event
+    inputEvent.deviceType = INPUT_DEVICE_TYPE::UNKNOWN;
+    inputEvent.eventType  = SYSTEM_EVENT_CODE::UNKNOWN;
+    inputEvent.modifiers  = KEY_CODE_MODIFIER::NONE;
 
-//     printf("catch local input event: %ld\n", (long)[event type]);
-//     printf("%ld\n", NSEventTypeMouseMoved);
+    switch ([event type]) {
+    // Key down event
+    case NSEventTypeKeyDown: {
+        inputEvent.deviceType = INPUT_DEVICE_TYPE::KEYBOARD;
+        inputEvent.eventType  = SYSTEM_EVENT_CODE::KEY_PRESS;
 
-//     // Initialize the input event
-//     inputEvent.deviceType = EINPUT_DEVICE_TYPE::DEVICE_UNKNOWN;
-//     inputEvent.eventType = EINPUT_EVENT_TYPE::EVENT_UNKNOWN;
-//     inputEvent.inputCode = EINPUT_KEY_CODE::INPUT_UNKNOWN;
-//     inputEvent.modifiers = EINPUT_MODIFIER::MOD_NONE;
-//     inputEvent.codepoint = 0;
+        // Extract key code
+        uint16_t keyCode                 = [event keyCode];
+        inputEvent.data.keyboard.keyCode = MapKeyCode(keyCode);
 
-//     switch ([event type]) {
-//         // Key down event
-//         case NSEventTypeKeyDown: {
-//             inputEvent.deviceType = EINPUT_DEVICE_TYPE::DEVICE_KEYBOARD;
-//             inputEvent.eventType = EINPUT_EVENT_TYPE::EVENT_KEY_PRESS;
+        // Extract codepoint (if available)
+        NSString* chars = [event characters];
+        if ([chars length] > 0) {
+        }
 
-//             // Extract key code
-//             uint16_t keyCode = [event keyCode];
-//             inputEvent.inputCode = MapKeyCode(keyCode);
+        // Handle modifier flags
+        NSEventModifierFlags flags = [event modifierFlags];
+        inputEvent.modifiers       = KEY_CODE_MODIFIER::NONE;
+        if (flags & NSEventModifierFlagShift) inputEvent.modifiers |= KEY_CODE_MODIFIER::SHIFT;
+        if (flags & NSEventModifierFlagControl) inputEvent.modifiers |= KEY_CODE_MODIFIER::CONTROL;
+        if (flags & NSEventModifierFlagOption) inputEvent.modifiers |= KEY_CODE_MODIFIER::ALT;
+        if (flags & NSEventModifierFlagCommand) inputEvent.modifiers |= KEY_CODE_MODIFIER::SUPER;
 
-//             // Extract codepoint (if available)
-//             NSString* chars = [event characters];
-//             if ([chars length] > 0) {
-//                 inputEvent.codepoint = [chars characterAtIndex:0];
-//             }
+        ProcessKey(inputEvent.data.keyboard.keyCode, true);
+        break;
+    }
 
-//             // Handle modifier flags
-//             NSEventModifierFlags flags = [event modifierFlags];
-//             inputEvent.modifiers = EINPUT_MODIFIER::MOD_NONE;
-//             if (flags & NSEventModifierFlagShift) inputEvent.modifiers |= EINPUT_MODIFIER::MOD_KEYBOARD_SHIFT;
-//             if (flags & NSEventModifierFlagControl) inputEvent.modifiers |= EINPUT_MODIFIER::MOD_KEYBOARD_CONTROL;
-//             if (flags & NSEventModifierFlagOption) inputEvent.modifiers |= EINPUT_MODIFIER::MOD_KEYBOARD_ALT;
-//             if (flags & NSEventModifierFlagCommand) inputEvent.modifiers |= EINPUT_MODIFIER::MOD_KEYBOARD_SUPER;
+    // Key up event
+    case NSEventTypeKeyUp: {
+        inputEvent.deviceType = INPUT_DEVICE_TYPE::KEYBOARD;
+        inputEvent.eventType  = SYSTEM_EVENT_CODE::KEY_RELEASE;
 
-//             break;
-//         }
+        // Extract key code
+        uint16_t keyCode                 = [event keyCode];
+        inputEvent.data.keyboard.keyCode = MapKeyCode(keyCode);
+        // Handle modifier flags (optional, for consistency)
+        NSEventModifierFlags flags = [event modifierFlags];
+        inputEvent.modifiers       = KEY_CODE_MODIFIER::NONE;
+        if (flags & NSEventModifierFlagShift) inputEvent.modifiers |= KEY_CODE_MODIFIER::SHIFT;
+        if (flags & NSEventModifierFlagControl) inputEvent.modifiers |= KEY_CODE_MODIFIER::CONTROL;
+        if (flags & NSEventModifierFlagOption) inputEvent.modifiers |= KEY_CODE_MODIFIER::ALT;
+        if (flags & NSEventModifierFlagCommand) inputEvent.modifiers |= KEY_CODE_MODIFIER::SUPER;
 
-//         // Key up event
-//         case NSEventTypeKeyUp: {
-//             inputEvent.deviceType = EINPUT_DEVICE_TYPE::DEVICE_KEYBOARD;
-//             inputEvent.eventType = EINPUT_EVENT_TYPE::EVENT_KEY_RELEASE;
+        ProcessKey(inputEvent.data.keyboard.keyCode, false);
+        break;
+    }
 
-//             // Extract key code
-//             uint16_t keyCode = [event keyCode];
-//             inputEvent.inputCode = MapKeyCode(keyCode);
-//             // Handle modifier flags (optional, for consistency)
-//             NSEventModifierFlags flags = [event modifierFlags];
-//             inputEvent.modifiers = EINPUT_MODIFIER::MOD_NONE;
-//             if (flags & NSEventModifierFlagShift) inputEvent.modifiers |= EINPUT_MODIFIER::MOD_KEYBOARD_SHIFT;
-//             if (flags & NSEventModifierFlagControl) inputEvent.modifiers |= EINPUT_MODIFIER::MOD_KEYBOARD_CONTROL;
-//             if (flags & NSEventModifierFlagOption) inputEvent.modifiers |= EINPUT_MODIFIER::MOD_KEYBOARD_ALT;
-//             if (flags & NSEventModifierFlagCommand) inputEvent.modifiers |= EINPUT_MODIFIER::MOD_KEYBOARD_SUPER;
+    // Modifier key changes (flags changed)
+    case NSEventTypeFlagsChanged: {
+        inputEvent.deviceType = INPUT_DEVICE_TYPE::KEYBOARD;
 
-//             break;
-//         }
+        // Determine if this is a press or release for modifier keys
+        static NSEventModifierFlags lastFlags = 0;
+        NSEventModifierFlags        flags     = [event modifierFlags];
 
-//         // Modifier key changes (flags changed)
-//         case NSEventTypeFlagsChanged: {
-//             inputEvent.deviceType = EINPUT_DEVICE_TYPE::DEVICE_KEYBOARD;
+        if (flags > lastFlags) {
+            inputEvent.eventType = SYSTEM_EVENT_CODE::KEY_PRESS;
+        } else {
+            inputEvent.eventType = SYSTEM_EVENT_CODE::KEY_RELEASE;
+        }
 
-//             // Determine if this is a press or release for modifier keys
-//             static NSEventModifierFlags lastFlags = 0;
-//             NSEventModifierFlags flags = [event modifierFlags];
+        // Update last flags
+        lastFlags = flags;
 
-//             if (flags > lastFlags) {
-//                 inputEvent.eventType = EINPUT_EVENT_TYPE::EVENT_KEY_PRESS;
-//             } else {
-//                 inputEvent.eventType = EINPUT_EVENT_TYPE::EVENT_KEY_RELEASE;
-//             }
+        // Map modifier keys
+        inputEvent.modifiers = KEY_CODE_MODIFIER::NONE;
+        if (flags & NSEventModifierFlagShift) inputEvent.modifiers |= KEY_CODE_MODIFIER::SHIFT;
+        if (flags & NSEventModifierFlagControl) inputEvent.modifiers |= KEY_CODE_MODIFIER::CONTROL;
+        if (flags & NSEventModifierFlagOption) inputEvent.modifiers |= KEY_CODE_MODIFIER::ALT;
+        if (flags & NSEventModifierFlagCommand) inputEvent.modifiers |= KEY_CODE_MODIFIER::SUPER;
 
-//             // Update last flags
-//             lastFlags = flags;
+        break;
+    }
 
-//             // Map modifier keys
-//             inputEvent.inputCode = EINPUT_KEY_CODE::INPUT_UNKNOWN; // Modifier keys don't map to a specific key code
-//             inputEvent.modifiers = EINPUT_MODIFIER::MOD_NONE;
-//             if (flags & NSEventModifierFlagShift) inputEvent.modifiers |= EINPUT_MODIFIER::MOD_KEYBOARD_SHIFT;
-//             if (flags & NSEventModifierFlagControl) inputEvent.modifiers |= EINPUT_MODIFIER::MOD_KEYBOARD_CONTROL;
-//             if (flags & NSEventModifierFlagOption) inputEvent.modifiers |= EINPUT_MODIFIER::MOD_KEYBOARD_ALT;
-//             if (flags & NSEventModifierFlagCommand) inputEvent.modifiers |= EINPUT_MODIFIER::MOD_KEYBOARD_SUPER;
+    // Mouse button events
+    case NSEventTypeLeftMouseDown: {
+        inputEvent.deviceType = INPUT_DEVICE_TYPE::MOUSE;
+        inputEvent.eventType  = SYSTEM_EVENT_CODE::MOUSE_BUTTON_PRESS;
 
-//             break;
-//         }
+        ProcessMouseButton(KEY_CODE_MOUSE::BUTTON_LEFT, true);
+        break;
+    }
+    case NSEventTypeLeftMouseUp: {
+        inputEvent.deviceType = INPUT_DEVICE_TYPE::MOUSE;
+        inputEvent.eventType  = SYSTEM_EVENT_CODE::MOUSE_BUTTON_RELEASE;
+        ProcessMouseButton(KEY_CODE_MOUSE::BUTTON_LEFT, false);
 
-//         // Mouse button events
-//         case NSEventTypeLeftMouseDown:
-//         {
-//             inputEvent.deviceType = EINPUT_DEVICE_TYPE::DEVICE_MOUSE;
-//                 inputEvent.inputCode = EINPUT_KEY_CODE::INPUT_MOUSE_BUTTON_LEFT;
-//                 inputEvent.eventType = EINPUT_EVENT_TYPE::EVENT_POINTER_DOWN;
-//             break;
-//         }
-//         case NSEventTypeLeftMouseUp:
-//                 {
-//             inputEvent.deviceType = EINPUT_DEVICE_TYPE::DEVICE_MOUSE;
-//                 inputEvent.inputCode = EINPUT_KEY_CODE::INPUT_MOUSE_BUTTON_LEFT;
-//                 inputEvent.eventType = EINPUT_EVENT_TYPE::EVENT_POINTER_UP;
-//             break;
-//         }
-//         case NSEventTypeRightMouseDown:
-//                         {
-//             inputEvent.deviceType = EINPUT_DEVICE_TYPE::DEVICE_MOUSE;
-//                 inputEvent.inputCode = EINPUT_KEY_CODE::INPUT_MOUSE_BUTTON_RIGHT;
-//                 inputEvent.eventType = EINPUT_EVENT_TYPE::EVENT_POINTER_DOWN;
-//             break;
-//         }
-//         case NSEventTypeRightMouseUp:
-//                         {
-//             inputEvent.deviceType = EINPUT_DEVICE_TYPE::DEVICE_MOUSE;
-//                 inputEvent.inputCode = EINPUT_KEY_CODE::INPUT_MOUSE_BUTTON_RIGHT;
-//                 inputEvent.eventType = EINPUT_EVENT_TYPE::EVENT_POINTER_UP;
-//             break;
-//         }
-//         case NSEventTypeOtherMouseDown:
-//         case NSEventTypeOtherMouseUp:
-//         // Mouse movement
-//         case NSEventTypeMouseMoved:
-//         {
-//             inputEvent.deviceType = EINPUT_DEVICE_TYPE::DEVICE_MOUSE;
-//             inputEvent.eventType = EINPUT_EVENT_TYPE::EVENT_POINTER_MOVE;
-//             NSPoint location = [event locationInWindow];
-//             inputEvent.positionX = static_cast<float>(location.x); // Also set positionX
-//             inputEvent.positionY = static_cast<float>(location.y); // Also set positionY
-//             break;
-//         }
+        break;
+    }
+    case NSEventTypeRightMouseDown: {
+        inputEvent.deviceType = INPUT_DEVICE_TYPE::MOUSE;
+        inputEvent.eventType  = SYSTEM_EVENT_CODE::MOUSE_BUTTON_PRESS;
+        ProcessMouseButton(KEY_CODE_MOUSE::BUTTON_RIGHT, true);
 
-//         case NSEventTypeLeftMouseDragged:
-//         case NSEventTypeRightMouseDragged:
-//         case NSEventTypeOtherMouseDragged:
-//         // Scroll wheel
-//         case NSEventTypeScrollWheel: {
-//             inputEvent.deviceType = EINPUT_DEVICE_TYPE::DEVICE_MOUSE;
-//             inputEvent.eventType = EINPUT_EVENT_TYPE::EVENT_SCROLL;
+        break;
+    }
+    case NSEventTypeRightMouseUp: {
+        inputEvent.deviceType = INPUT_DEVICE_TYPE::MOUSE;
+        inputEvent.eventType  = SYSTEM_EVENT_CODE::MOUSE_BUTTON_RELEASE;
+        ProcessMouseButton(KEY_CODE_MOUSE::BUTTON_RIGHT, false);
 
-//             // Extract scroll delta
-//             CGFloat deltaX = [event scrollingDeltaX];
-//             CGFloat deltaY = [event scrollingDeltaY];
-//             inputEvent.scrollDeltaX = static_cast<float>(deltaX);
-//             inputEvent.scrollDeltaY = static_cast<float>(deltaY);
-//             break;
-//         }
+        break;
+    }
+    case NSEventTypeOtherMouseDown:
+    case NSEventTypeOtherMouseUp:
+    // Mouse movement
+    case NSEventTypeMouseMoved: {
+        inputEvent.deviceType           = INPUT_DEVICE_TYPE::MOUSE;
+        inputEvent.eventType            = SYSTEM_EVENT_CODE::MOUSE_MOVE;
+        NSPoint location                = [event locationInWindow];
+        inputEvent.data.mouse.positionX = static_cast<float>(location.x); // Also set positionX
+        inputEvent.data.mouse.positionY = static_cast<float>(location.y); // Also set positionY
 
-//         // Unknown event type
-//         default: {
-//             inputEvent.deviceType = EINPUT_DEVICE_TYPE::DEVICE_UNKNOWN;
-//             inputEvent.eventType = EINPUT_EVENT_TYPE::EVENT_UNKNOWN;
-//             break;
-//         }
-//     }
+        ProcessMouseMove(inputEvent.data.mouse.positionX, inputEvent.data.mouse.positionY);
+        break;
+    }
 
-//     // Invoke the callback if active
-//     if (isActive && inputCallback != nullptr) {
-//         inputCallback(inputEvent);
-//     }
-// }
-// EINPUT_KEY_CODE MacOSXInputMonitor::MapKeyCode(uint16_t nsKeyCode) {
-//     auto it = keyCodeMap.find(nsKeyCode);
-//     if (it != keyCodeMap.end()) {
-//         return it->second;
-//     }
-//     return EINPUT_KEY_CODE::INPUT_UNKNOWN; // Default fallback for unmapped keys
-// }
+    case NSEventTypeLeftMouseDragged:
+    case NSEventTypeRightMouseDragged:
+    case NSEventTypeOtherMouseDragged:
+    // Scroll wheel
+    case NSEventTypeScrollWheel: {
+        inputEvent.deviceType = INPUT_DEVICE_TYPE::MOUSE;
+        inputEvent.eventType  = SYSTEM_EVENT_CODE::MOUSE_WHEEL;
 
-// }  // namespace ReiToEngine
-// #endif
+        // Extract scroll delta
+        CGFloat deltaX                     = [event scrollingDeltaX];
+        CGFloat deltaY                     = [event scrollingDeltaY];
+        inputEvent.data.mouse.scrollDeltaX = static_cast<float>(deltaX);
+        inputEvent.data.mouse.scrollDeltaY = static_cast<float>(deltaY);
+        ProcessMouseScroll(inputEvent.data.mouse.scrollDeltaX, inputEvent.data.mouse.scrollDeltaY);
+        break;
+    }
+
+    // Unknown event type
+    default: {
+        inputEvent.deviceType = INPUT_DEVICE_TYPE::UNKNOWN;
+        inputEvent.eventType  = SYSTEM_EVENT_CODE::UNKNOWN;
+        break;
+    }
+    }
+
+    // Invoke the callback if active
+    // if (isActive && inputCallback != nullptr) {
+    //     inputCallback(inputEvent);
+    // }
+}
+KEY_CODE_KEYBOARD MacOSXInputMonitor::MapKeyCode(uint16_t nsKeyCode) {
+    auto it = keyCodeMap.find(nsKeyCode);
+    if (it != keyCodeMap.end()) {
+        return it->second;
+    }
+    return KEY_CODE_KEYBOARD::UNKNOWN; // Default fallback for unmapped keys
+}
+
+} // namespace ReiToEngine
+#endif

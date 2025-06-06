@@ -23,7 +23,7 @@ public:
     ApplicationState app_state;
     static RTApplication* instance_ptr;
     EventSystem* event_system_ptr;
-    InputMonitor* input_system_ptr;
+    InputSystem* input_system_ptr;
 
     // RenderManager* renderManager_ptr;
     // WindowsManager* windowsManager_ptr;

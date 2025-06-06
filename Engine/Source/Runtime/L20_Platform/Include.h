@@ -10,7 +10,7 @@
 #include "L20_Platform/L31_SingletonFactory/SingletonFactory.h"
 #include "L20_Platform/L32_Containers/Vector.h"
 #include "L20_Platform/L33_Event/EventSystem.h"
-#include "L20_Platform/L35_Input/InputMonitor.h"
+#include "L20_Platform/L35_Input/Include.h"
 #include "L20_Platform/L37_Window/Functions.h"
 #include "L20_Platform/PlatformFunctions.h"
 #endif

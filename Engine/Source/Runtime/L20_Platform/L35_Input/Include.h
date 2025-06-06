@@ -6,4 +6,5 @@
 #include "InputDeviceKeyboard.h"
 #include "InputDeviceMouse.h"
 #include "InputMonitor.h"
+#include "InputSystem.h"
 #endif
