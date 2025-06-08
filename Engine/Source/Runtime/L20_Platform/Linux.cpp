@@ -11,7 +11,7 @@
 #include <unistd.h>  // For sysconf, _SC_PAGE_SIZE
 #endif
 
-b8 RT_Platform_Initialize(RT_Platform_MAIN_WINDOW& window, const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y)
+b8 RT_Platform_Initialize(RT_MAIN_WINDOW& window, const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y)
 {
     window.main_window = new WayLandWindow();
     window.main_window->Create(title, width, height, pos_x, pos_y);
@@ -19,7 +19,7 @@ b8 RT_Platform_Initialize(RT_Platform_MAIN_WINDOW& window, const char* title, u3
     return true;
 }
 
-void RT_Platform_Terminate(RT_Platform_MAIN_WINDOW& window)
+void RT_Platform_Terminate(RT_MAIN_WINDOW& window)
 {
     if (window.main_window != nullptr)
     {
@@ -29,7 +29,7 @@ void RT_Platform_Terminate(RT_Platform_MAIN_WINDOW& window)
     }
 }
 
-b8 RT_Platform_PumpMessage(RT_Platform_MAIN_WINDOW& window)
+b8 RT_Platform_PumpMessage(RT_MAIN_WINDOW& window)
 {}
 
 void* RT_Platform_SYSAlloc(u64 uiSize, u8 alignment, b8 aligned, b8 isArray)

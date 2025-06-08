@@ -6,7 +6,7 @@
 #include "InputMonitor.h"
 #ifdef RT_SYSTEM_WINDOWS
     #include "WindowsInputMonitor.h"
-    using PlatformInputMonitor = WindowsInputMonitor;
+    using PlatformInputMonitor = ReiToEngine::WindowsInputMonitor;
 #elif defined(RT_SYSTEM_APPLE)
     #include "MacOSXInputMonitor.h"
     using PlatformInputMonitor = ReiToEngine::MacOSXInputMonitor;

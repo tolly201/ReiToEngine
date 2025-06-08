@@ -15,7 +15,7 @@ RTENGINE_API void report_assertion_failure(const char* expression, const char* m
 #define debugBreak() ((void)0) // 如果无法定义，则为空实现
 #endif
 
-#define RTASSERT(expr)                                               \
+#define RT_ASSERT(expr)                                               \
     {                                                                \
         if (expr) {                                                  \
         } else {                                                     \
@@ -24,7 +24,7 @@ RTENGINE_API void report_assertion_failure(const char* expression, const char* m
         }                                                            \
     }
 
-#define RTASSERT_MESSAGE(expr, message)                                   \
+#define RT_ASSERT_MESSAGE(expr, message)                                   \
     {                                                                     \
         if (expr) {                                                       \
         } else {                                                          \
@@ -34,7 +34,7 @@ RTENGINE_API void report_assertion_failure(const char* expression, const char* m
     }
 
 #ifdef _DEBUG
-#define RTASSERT_DEBUG(expr)                                         \
+#define RT_ASSERT_DEBUG(expr)                                         \
     {                                                                \
         if (expr) {                                                  \
         } else {                                                     \
@@ -45,9 +45,9 @@ RTENGINE_API void report_assertion_failure(const char* expression, const char* m
 #endif
 #else
 #define debugBreak()
-#define RTASSERT(expr)
-#define RTASSERT_MESSAGE(expr, message)
-#define RTASSERT_DEBUG(expr)
+#define RT_ASSERT(expr)
+#define RT_ASSERT_MESSAGE(expr, message)
+#define RT_ASSERT_DEBUG(expr)
 #endif
 
 #endif

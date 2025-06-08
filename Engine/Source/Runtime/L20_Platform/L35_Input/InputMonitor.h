@@ -1,6 +1,6 @@
 // Engine/Source/Runtime/Core/HAL/Input/Include/IInputMonitor.h
-#ifndef CORE_HAL_INPUT_MONITOR_H
-#define CORE_HAL_INPUT_MONITOR_H
+#ifndef PLATFORM_INPUT_MONITOR_H
+#define PLATFORM_INPUT_MONITOR_H
 #include "L0_Macro/Include.h"
 #include "InputEnums.h"
 namespace ReiToEngine {

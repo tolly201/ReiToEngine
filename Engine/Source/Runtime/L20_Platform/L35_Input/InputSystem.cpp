@@ -15,10 +15,12 @@ b8 InputSystem::Initialize() {
     initialized = true;
 
     RT_LOG_INFO("InputSystem Initialized.");
+    return true;
 }
 b8 InputSystem::Terminate() {
     input_monitor->Terminate();
     initialized = false;
+    return true;
 }
 b8 InputSystem::Tick(f64 tick) {
     if (!initialized) {
@@ -63,7 +65,7 @@ void InputSystem::ProcessKey(KEY_CODE_KEYBOARD keycode, b8 pressed) {
     if (cur_state.keys[static_cast<u8>(keycode)] != pressed) {
         cur_state.keys[static_cast<u8>(keycode)] = pressed;
 
-        event_context content;
+        event_context content{};
         EventSystem::Instance().TriggerEvent(
             pressed ? static_cast<u32>(SYSTEM_EVENT_CODE::KEY_PRESS) : static_cast<u32>(SYSTEM_EVENT_CODE::KEY_RELEASE), this, content);
     }
@@ -122,7 +124,7 @@ void InputSystem::ProcessMouseButton(KEY_CODE_MOUSE mouseButton, b8 pressed) {
     if (cur_state.mouse_buttons[static_cast<u8>(mouseButton)] != pressed) {
         cur_state.mouse_buttons[static_cast<u8>(mouseButton)] = pressed;
 
-        event_context content;
+        event_context content{};
         EventSystem::Instance().TriggerEvent(
             pressed ? static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_BUTTON_PRESS) : static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_BUTTON_RELEASE), this, content);
     }

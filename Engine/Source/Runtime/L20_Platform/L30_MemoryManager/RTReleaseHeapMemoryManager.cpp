@@ -11,7 +11,7 @@ RTReleaseHeapMemoryManager::RTReleaseHeapMemoryManager()
 {
 	SystemPageSize = 0 ;
 	SystemPageSize = 64;
-	assert((SystemPageSize&(SystemPageSize-1)) == 0 && "SystemPageSize is not 2^n");
+	RT_ASSERT((SystemPageSize&(SystemPageSize-1)) == 0 && "SystemPageSize is not 2^n");
 
 	// Init tables.
 	OsTable.FirstPool    = nullptr;
@@ -37,14 +37,14 @@ RTReleaseHeapMemoryManager::RTReleaseHeapMemoryManager()
 	{
 		size_t Index;
 		for( Index=0; PoolTable[Index].BlockSize<i; Index++ );
-		assert(Index < POOL_COUNT && "POOL MAX OVERSIZE.");
+		RT_ASSERT(Index < POOL_COUNT && "POOL MAX OVERSIZE.");
 		MemSizeToPoolTable[i] = &PoolTable[Index];
 	}
 	for(size_t i=0; i < 32 ; i++)
 	{
 		PoolIndirect[i] = nullptr;
 	}
-	assert(POOL_MAX - 1 == PoolTable[POOL_COUNT - 1].BlockSize && "Pool Max Size Error. Initialize Memory Pool Failed.");
+	RT_ASSERT(POOL_MAX - 1 == PoolTable[POOL_COUNT - 1].BlockSize && "Pool Max Size Error. Initialize Memory Pool Failed.");
 }
 
 RTReleaseHeapMemoryManager::~RTReleaseHeapMemoryManager()
@@ -92,15 +92,15 @@ void* RTReleaseHeapMemoryManager::AllocateImpl(u64 uiSize, uint8_t u8, RT_MEMORY
 	{
 		// Allocate from pool.
 		FPoolTable* Table = MemSizeToPoolTable[uiSize];
-		assert(uiSize<=Table->BlockSize && "Memory Size To Pool Check Error.");
+		RT_ASSERT(uiSize<=Table->BlockSize && "Memory Size To Pool Check Error.");
 		FPoolInfo* Pool = Table->FirstPool;
 		if( !Pool )
 		{
 			// Must create a new pool.
 			uint32_t Blocks  = 65536 / Table->BlockSize;
 			uint32_t Bytes   = Blocks * Table->BlockSize;
-			assert(Blocks>=1 && "Blocks Counting Error.");
-			assert(Blocks*Table->BlockSize<=Bytes && "Bytes Counting Error.");
+			RT_ASSERT(Blocks>=1 && "Blocks Counting Error.");
+			RT_ASSERT(Blocks*Table->BlockSize<=Bytes && "Bytes Counting Error.");
 
 			// Allocate memory.
 			Free = (FFreeMem*)RT_Platform_SYSAlloc(Bytes);
@@ -133,8 +133,8 @@ void* RTReleaseHeapMemoryManager::AllocateImpl(u64 uiSize, uint8_t u8, RT_MEMORY
 
 		// Pick first available block and unlink it.
 		Pool->RefCount++;
-		assert(Pool->FirstMem && "allocation failed.");
-		assert(Pool->FirstMem->Blocks > 0 && "allocation failed.");
+		RT_ASSERT(Pool->FirstMem && "allocation failed.");
+		RT_ASSERT(Pool->FirstMem->Blocks > 0 && "allocation failed.");
 		Free = (FFreeMem*)((char*)Pool->FirstMem + --Pool->FirstMem->Blocks * Table->BlockSize);
 		if( Pool->FirstMem->Blocks==0 )
 		{
@@ -156,7 +156,7 @@ void* RTReleaseHeapMemoryManager::AllocateImpl(u64 uiSize, uint8_t u8, RT_MEMORY
 		{
 			return nullptr;
 		}
-		assert(!((size_t)Free&65535));
+		RT_ASSERT(!((size_t)Free&65535));
 
 		// Create indirect.
 		FPoolInfo*& Indirect = PoolIndirect[((uintptr_t)Free>>27)];
@@ -178,10 +178,10 @@ void* RTReleaseHeapMemoryManager::AllocateImpl(u64 uiSize, uint8_t u8, RT_MEMORY
 void RTReleaseHeapMemoryManager::FreeImpl(void* pcAddr, u64 size,RT_MEMORY_TAG tag)
 {
     std::lock_guard<std::mutex> lock(MemoryMutex); // 加锁保证线程安全
-	assert(pcAddr);
+	RT_ASSERT(pcAddr);
 	// Windows version.
 	FPoolInfo* Pool = &PoolIndirect[(uintptr_t)pcAddr>>27][((uintptr_t)pcAddr>>16)&2047];
-	assert(Pool->Bytes!=0);
+	RT_ASSERT(Pool->Bytes!=0);
 	if( Pool->Table!=&OsTable )
 	{
 		// If this pool was exhausted, move to available list.
@@ -199,7 +199,7 @@ void RTReleaseHeapMemoryManager::FreeImpl(void* pcAddr, u64 size,RT_MEMORY_TAG t
 
 
 		// Free this pool.
-		assert(Pool->RefCount>=1);
+		RT_ASSERT(Pool->RefCount>=1);
 		if( --Pool->RefCount == 0 )
 		{
 			// Free the OS memory.

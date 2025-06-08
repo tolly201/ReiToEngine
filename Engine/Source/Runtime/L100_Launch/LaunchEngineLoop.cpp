@@ -17,6 +17,7 @@ b8 CreateGameInstance(ReiToEngine::Game& game_instance)
 
 int RuntimeMainLoopEntry(int argc, const char* argv[])
 {
+    std::cout << "test" << std::endl;
     RT_LOG_DEBUG("test");
     RT_LOG_ERROR("test");
     RT_LOG_FATAL("test");

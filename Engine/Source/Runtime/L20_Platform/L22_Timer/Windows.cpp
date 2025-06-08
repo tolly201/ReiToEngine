@@ -1,13 +1,21 @@
 #include "Functions.h"
-#ifdef RT_SYSTEM_WINDOWS
+#ifdef  RT_SYSTEM_WINDOWS
 #include <windows.h>
 
-f64 RT_Platform_AbsoluteTime(){return 0.0f;}
-void RT_Platform_InitTime(){}
-void RT_Platform_Sleep(u64 ms)
+static f64 clock_frequency = 0.0;
+static LARGE_INTEGER frequency;
+static LARGE_INTEGER start_time;
+
+f64 RT_Platform_AbsoluteTime()
 {
-    Sleep(ms);
+    LARGE_INTEGER now_time;
+    QueryPerformanceCounter(&now_time);
+    return (f64)now_time.QuadPart * clock_frequency;
 }
-
-
+void RT_Platform_InitTime()
+{
+    QueryPerformanceFrequency(&frequency);
+    clock_frequency = 1 / (f64)frequency.QuadPart;
+    QueryPerformanceCounter(&start_time);
+}
 #endif

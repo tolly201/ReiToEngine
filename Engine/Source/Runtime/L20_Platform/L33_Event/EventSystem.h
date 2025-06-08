@@ -4,6 +4,7 @@
 #include "L20_Platform/L31_SingletonFactory/RuntimeSingleton.h"
 #include "L20_Platform/L23_Logger/Logger.h"
 #include "Event.h"
+#include "EventEnums.h"
 namespace ReiToEngine
 {
 class RTENGINE_API EventSystem : public Runtime_Singleton<EventSystem>

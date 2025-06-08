@@ -16,6 +16,7 @@ namespace ReiToEngine{
                 RTApplication::Instance().GetApplicationState().is_running = false;
             }
         }
+        return true;
     }
 
     RTApplication::RTApplication() = default;

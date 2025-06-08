@@ -71,7 +71,7 @@ class SingletonFactory {
 
 
 template <typename T>
-class RTENGINE_API Singleton {
+class Singleton {
    private:
     static std::once_flag once_flag;
     static T* instance_ptr;
@@ -126,7 +126,7 @@ T* Singleton<T>::instance_ptr = nullptr;
 template <typename T>
 std::once_flag Singleton<T>::once_flag;
 
-RT_FORCEINLINE MemoryManager& GetMemoryManager();
+MemoryManager& GetMemoryManager();
 }  // namespace ReiToEngine
 
 

@@ -2,7 +2,7 @@
 
 #ifdef RT_SYSTEM_WINDOWS
 #include <windows.h>
-
+#include "L20_Platform/L23_Logger/Logger.h"
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     // Handle window messages here
@@ -21,7 +21,7 @@ WindowsWindow::WindowsWindow()
 
 IWindow* WindowsWindow::Create(const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y)
 {
-    printf("Creating Windows window...\n");
+    RT_LOG_INFO("Creating Windows window...\n");
     // Create window
 
     i32 client_x = pos_x;
@@ -54,7 +54,7 @@ IWindow* WindowsWindow::Create(const char* title, u32 width, u32 height, u32 pos
     window_height += border_rect.bottom - border_rect.top;
 
 
-    printf("Window size: %d x %d\n", window_width, window_height);
+    RT_LOG_INFO("Window size: %d x %d\n", window_width, window_height);
     if (title) {
         delete[] this->title;
         this->title = new char[strlen(title) + 1];
@@ -71,30 +71,30 @@ IWindow* WindowsWindow::Create(const char* title, u32 width, u32 height, u32 pos
     this->position_y = client_y;
 
     f32 device_pixel_ratio = 1.0f;
-printf("Device pixel ratio: %f\n", device_pixel_ratio);
+RT_LOG_INFO("Device pixel ratio: %f\n", device_pixel_ratio);
     WCHAR wtitle[256];
     int len = MultiByteToWideChar(CP_UTF8, 0, this->title, -1, wtitle, 256);
     if (!len) {
     }
 
-    printf("Window title: %ls\n", wtitle);
-    printf("ready to create\n");
+    RT_LOG_INFO("Window title: %ls\n", this->title);
+    RT_LOG_INFO("ready to create\n");
 
     hwnd = CreateWindowExW(
         window_ex_style, L"rt_base_window_class", wtitle,
         window_style, window_x, window_y, window_width, window_height,
         0, 0, GetModuleHandleW(0), 0);
 
-    printf("Window handle: %p\n", hwnd);
+    RT_LOG_INFO("Window handle: %p\n", hwnd);
     if (hwnd == 0) {
-        printf("Window creation failed!\n");
+        RT_LOG_INFO("Window creation failed!\n");
 
         MessageBoxW(NULL, L"Window Creation Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
 
         RT_LOG_FATAL("Window creation failed!");
     }
     else {
-        printf("Window created successfully!\n");
+        RT_LOG_INFO("Window created successfully!\n");
     }
 
     return this;

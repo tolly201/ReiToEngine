@@ -14,7 +14,7 @@ struct MemoryStats
 };
 
 template <typename T>
-class RTENGINE_API RTMemoryManager
+class RTMemoryManager
 {
 public:
     RTMemoryManager() = default;
@@ -29,7 +29,7 @@ public:
         Stats.TotalUsedMemory += size;
         Stats.TaggedAllocatedMemory[static_cast<u16>(tag)] += size;
         void* block = static_cast<T*>(this)->AllocateImpl(size, alignment, tag);
-        ZeroMemory(block, size);
+        ZeroMemoryReiTo(block, size);
         return block;
     }
     void Free(void* addr, u64 size, RT_MEMORY_TAG tag)
@@ -43,11 +43,11 @@ public:
         Stats.TaggedAllocatedMemory[static_cast<u16>(tag)] -= size;
         static_cast<T*>(this)->FreeImpl(addr, size, tag);
     }
-    void* ZeroMemory(void* addr, u64 size)
+    void* ZeroMemoryReiTo(void* addr, u64 size)
     {
         return static_cast<T*>(this)->ZeroMemoryImpl(addr, size);
     }
-    void* CopyMemory(void* dest, const void* src, u64 size)
+    void* CopyMemoryReiTo(void* dest, const void* src, u64 size)
     {
         return static_cast<T*>(this)->CopyMemoryImpl(dest, src, size);
     }

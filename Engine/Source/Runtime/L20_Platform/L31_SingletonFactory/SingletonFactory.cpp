@@ -1,6 +1,6 @@
 #include "./SingletonFactory.h"
 namespace ReiToEngine {
-RT_FORCEINLINE MemoryManager& GetMemoryManager()
+MemoryManager& GetMemoryManager()
 {
     return SingletonFactory::GetMemoryManager();
 }

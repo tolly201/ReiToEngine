@@ -1,8 +1,9 @@
 #include "PlatformFunctions.h"
 #ifdef RT_SYSTEM_WINDOWS
 #include <windows.h>
-#include "../Window/Include/Windows/WindowsWindow.h"
-#include "../Input/Input.h"
+#include "L20_Platform/L37_Window/Functions.h"
+#include "L20_Platform/L37_Window/Windows/WindowsWindow.h"
+#include "L20_Platform/L35_Input/Include.h"
 namespace {
     LRESULT CALLBACK win32_process_message(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam){
         switch (msg)
@@ -97,7 +98,7 @@ namespace {
     }
 }
 
-b8 RT_Platform_Initialize(RT_Platform_MAIN_WINDOW& window, const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y)
+b8 RT_Platform_Initialize(RT_MAIN_WINDOW& window, const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y)
 {
     HINSTANCE hInstance = GetModuleHandleW(0);
     RegisterBaseWindowClass(hInstance);
@@ -107,7 +108,7 @@ b8 RT_Platform_Initialize(RT_Platform_MAIN_WINDOW& window, const char* title, u3
     return true;
 }
 
-void RT_Platform_Terminate(RT_Platform_MAIN_WINDOW& window)
+void RT_Platform_Terminate(RT_MAIN_WINDOW& window)
 {
     if (window.main_window != nullptr)
     {
@@ -118,7 +119,7 @@ void RT_Platform_Terminate(RT_Platform_MAIN_WINDOW& window)
     UnregisterClassW(L"rt_base_window_class", GetModuleHandleW(0));
 }
 
-b8 RT_Platform_PumpMessage(RT_Platform_MAIN_WINDOW& window)
+b8 RT_Platform_PumpMessage(RT_MAIN_WINDOW& window)
 {
     MSG message;
     while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE))
@@ -128,97 +129,5 @@ b8 RT_Platform_PumpMessage(RT_Platform_MAIN_WINDOW& window)
     }
     return true;
 }
-
-void* RT_Platform_SYSAlloc(u64 uiSize)
-{
-    void* ptr = VirtualAlloc(nullptr, uiSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-    // if (ptr == nullptr)
-    // {
-    //     return nullptr;
-    // }
-    return ptr;
-    return VirtualAlloc(nullptr, uiSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-}
-
-void RT_Platform_SYSFree(void* pMem, u64 uiSize)
-{
-    // if (pMem != nullptr)
-    // {
-        VirtualFree(pMem, 0, MEM_RELEASE);
-    // }
-}
-
-void RT_Platform_SYSZeroMemory(void* pMem, u64 uiSize)
-{
-    if (pMem && uiSize > 0) {
-        ZeroMemory(pMem, uiSize);
-    }
-}
-
-void RT_Platform_SYSCopyMemory(void* pDest, const void* pSrc, u64 uiSize)
-{
-    if (pDest && pSrc && uiSize > 0) {
-        CopyMemory(pDest, pSrc, uiSize);
-    }
-}
-
-void RT_Platform_SYSMoveMemory(void* pDest, const void* pSrc, u64 uiSize, u8 alignment, b8 aligned, b8 isArray)
-{
-    if (pDest && pSrc && uiSize > 0) {
-        MoveMemory(pDest, pSrc, uiSize);
-    }
-}
-
-void RT_Platform_SYSSetMemory(void* pMem,u8 value, u64 uiSize)
-{
-    if (pMem && uiSize > 0) {
-        FillMemory(pMem, uiSize, value);
-    }
-}
-
-void RT_Platform_ConsoleWrite(const char* message, u8 color)
-{
-    static u8 color_levels[6] = {0x0c | 0x40, 0x0c, 0x0E, 0x0A, 0x0B, 0x07};
-    HANDLE console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo(console_handle, &csbi);
-    WORD original_attributes = csbi.wAttributes;
-
-    SetConsoleTextAttribute(console_handle, color_levels[color]);
-
-    OutputDebugStringA(message);
-    u64 length = strlen(message);
-    LPDWORD number_written = 0;
-    WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), message, (DWORD)length, number_written, nullptr);
-    SetConsoleTextAttribute(console_handle, original_attributes);
-}
-
-void RT_Platform_ConsoleWriteError(const char* message, u8 color)
-{
-    static u8 color_levels[6] = {0x0c | 0x40, 0x0c, 0x0E, 0x0A, 0x0B, 0x07};
-    HANDLE console_handle = GetStdHandle(STD_ERROR_HANDLE);
-
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo(console_handle, &csbi);
-    WORD original_attributes = csbi.wAttributes;
-
-    SetConsoleTextAttribute(console_handle, color_levels[color]);
-
-    OutputDebugStringA(message);
-    u64 length = strlen(message);
-    LPDWORD number_written = 0;
-    WriteConsoleA(GetStdHandle(STD_ERROR_HANDLE), message, (DWORD)length, number_written, nullptr);
-
-    SetConsoleTextAttribute(console_handle, original_attributes);
-}
-
-// f64 RT_Platform_AbsoluteTime();
-// void RT_Platform_InitTime();
-void RT_Platform_Sleep(u64 ms)
-{
-    Sleep(ms);
-}
-
 
 #endif

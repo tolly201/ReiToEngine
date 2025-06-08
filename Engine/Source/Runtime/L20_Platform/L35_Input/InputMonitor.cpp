@@ -12,9 +12,11 @@ b8 InputMonitor::Initialize() {
     initialized = true;
 
     RT_LOG_INFO("InputMonitor Initialized.");
+    return true;
 }
 b8 InputMonitor::Terminate() {
     initialized = false;
+    return true;
 }
 b8 InputMonitor::Tick(f64) {
     if (!initialized) {
@@ -118,7 +120,7 @@ void InputMonitor::ProcessMouseButton(KEY_CODE_MOUSE mouseButton, b8 pressed) {
     if (cur_state.mouse_buttons[static_cast<u8>(mouseButton)] != pressed) {
         cur_state.mouse_buttons[static_cast<u8>(mouseButton)] = pressed;
 
-        event_context content;
+        event_context content{};
         EventSystem::Instance().TriggerEvent(
             pressed ? static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_BUTTON_PRESS) : static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_BUTTON_RELEASE), this, content);
     }

@@ -1,7 +1,8 @@
 #ifndef PLATFORM_CONTAINERS_ICONTAINER_H
 #define PLATFORM_CONTAINERS_ICONTAINER_H
 #include "L0_Macro/Include.h"
-#include "../L31_SingletonFactory/SingletonFactory.h"
+#include "L20_Platform/L23_Logger/Include.h"
+#include "L20_Platform/L31_SingletonFactory/SingletonFactory.h"
 namespace ReiToEngine
 {
     template <typename T>
