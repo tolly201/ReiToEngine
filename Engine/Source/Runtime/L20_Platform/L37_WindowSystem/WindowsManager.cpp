@@ -1,4 +1,4 @@
-#include "../Include/WindowsManager.h"
+#include "WindowsManager.h"
 #include <cstring>
 
 #include "L20_Platform/L37_Window/IWindow.h"
