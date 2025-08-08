@@ -1,9 +1,8 @@
 #ifndef PLATFORM_INCLUDE_WINDOWS_MANAGER_H
 #define PLATFORM_INCLUDE_WINDOWS_MANAGER_H
-#include "L20_Platform/Include.h"
-#include <cstddef>
-#include <vector>
-#include <cstdint>
+#include "L20_Platform/L37_Window/IWindow.h"
+#include "L20_Platform/L31_SingletonFactory/RuntimeSingleton.h"
+#include <L20_Platform/L32_Containers/Vector.h>
 namespace ReiToEngine{
 
 class WindowsManager : public Runtime_Singleton<WindowsManager>
