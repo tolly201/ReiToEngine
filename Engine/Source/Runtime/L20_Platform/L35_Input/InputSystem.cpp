@@ -7,15 +7,15 @@ InputSystem::InputSystem()  = default;
 InputSystem::~InputSystem() = default;
 
 b8 InputSystem::Initialize() {
-    global_input_monitor = new PlatformInputMonitor();
-    global_input_monitor->Initialize();
+    // global_input_monitor = new PlatformInputMonitor();
+    // global_input_monitor->Initialize();
     initialized = true;
 
     RT_LOG_INFO("InputSystem Initialized.");
     return true;
 }
 b8 InputSystem::Terminate() {
-    global_input_monitor->Terminate();
+    // global_input_monitor->Terminate();
     for(auto& monitor : input_monitors) {
         monitor.second->Terminate();
     }
@@ -28,27 +28,27 @@ b8 InputSystem::Tick(f64 tick) {
         RT_LOG_FATAL("Update when not initialized.");
         return false;
     }
-    global_input_monitor->Tick(tick);
+    // global_input_monitor->Tick(tick);
     return true;
 }
 
-b8 InputSystem::CreateOrGetMonitor(NativeHandle handle)
+PlatformInputMonitor* InputSystem::CreateOrGetMonitor(void* window)
 {
-    input_monitors[handle] = new PlatformInputMonitor();
-    if (!input_monitors[handle]->Initialize()) {
-        RT_LOG_ERROR("Failed to initialize input monitor for handle: ", handle);
-        return false;
+    input_monitors[window] = new PlatformInputMonitor();
+    if (!input_monitors[window]->Initialize()) {
+        RT_LOG_ERROR("Failed to initialize input monitor for handle: ", window);
+        return nullptr;
     }
-    return true;
+    return input_monitors[window];
 }
-b8 InputSystem::DestroyMonitor(NativeHandle handle)
+b8 InputSystem::DestroyMonitor(void* window)
 {
-    PlatformInputMonitor* monitor = input_monitors[handle];
+    PlatformInputMonitor* monitor = input_monitors[window];
     if (monitor) {
         monitor->Terminate();
         delete monitor;
-        input_monitors.erase(handle);
-        RT_LOG_INFO("Input monitor for handle: ", handle, " destroyed.");
+        input_monitors.erase(window);
+        RT_LOG_INFO("Input monitor for handle: ", window, " destroyed.");
         return true;
     }
 }

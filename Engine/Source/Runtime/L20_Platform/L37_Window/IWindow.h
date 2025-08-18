@@ -2,7 +2,7 @@
 #define PLATFORM_WINDOW_IWINDOW_H
 #include "L0_Macro/Include.h"
 #include "WindowEnums.h"
-
+#include "L20_Platform/L35_Input/InputSystem.h"
 class RTENGINE_API IWindow
 {
 public:
@@ -21,6 +21,7 @@ public:
 
     virtual void ProcessEvents() = 0;
 
+    virtual void SetInputMonitor(PlatformInputMonitor* monitor) = 0;
     virtual void Update(const u8* buffer, u32 width, u32 height) = 0;
 protected:
     char* title;

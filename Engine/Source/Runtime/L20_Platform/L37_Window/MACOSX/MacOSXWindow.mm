@@ -196,4 +196,14 @@ void MacOSXWindow::Update(const u8* buffer, u32 width, u32 height)
         cocoaView->SetHeight(600);
         cocoaView->Draw();
 }
+
+void MacOSXWindow::SetInputMonitor(PlatformInputMonitor* monitor)
+{
+    inputMonitor = monitor;
+}
+
+PlatformInputMonitor* MacOSXWindow::GetInputMonitor() const
+{
+    return inputMonitor;
+}
 #endif

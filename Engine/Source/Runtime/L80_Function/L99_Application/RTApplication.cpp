@@ -6,6 +6,11 @@
 namespace ReiToEngine{
     b8 application_on_key(u16 code, void* sender, void* listener_inst, event_context context)
     {
+        if (sender != RTApplication::Instance().GetApplicationState().main_window.window_ptr->GetInputMonitor())
+        {
+            RT_LOG_DEBUG("application_on_key: sender is not the main window input monitor.");
+            return true;
+        }
         if (code == static_cast<u16>(SYSTEM_EVENT_CODE::KEY_PRESS))
         {
             u8 key_code = context.data.u8[0];

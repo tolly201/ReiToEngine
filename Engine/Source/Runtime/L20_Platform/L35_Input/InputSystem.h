@@ -17,9 +17,6 @@
 #endif
 
 namespace ReiToEngine {
-
-using NativeHandle = void*;
-
 class RTENGINE_API InputSystem : public Runtime_Singleton<InputSystem> {
 friend class Runtime_Singleton<InputSystem>;
 public:
@@ -30,15 +27,13 @@ public:
     b8 Terminate();
     b8 Tick(f64);
 
-    b8 CreateOrGetMonitor(NativeHandle handle);
-    b8 DestroyMonitor(NativeHandle handle);
+    PlatformInputMonitor* CreateOrGetMonitor(void* window);
+    b8 DestroyMonitor(void* window);
 
    private:
     b8 initialized = false;
 
-    ReiToEngine::map<NativeHandle, PlatformInputMonitor*> input_monitors;
-
-    PlatformInputMonitor* global_input_monitor = nullptr;
+    ReiToEngine::map<void*, PlatformInputMonitor*> input_monitors;
 };
 
 }  // namespace ReiToEngine

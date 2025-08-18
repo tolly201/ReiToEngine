@@ -10,13 +10,6 @@ namespace ReiToEngine {
 class MacOSXInputMonitor;
 }
 
-@interface NSInputMonitor : NSObject {
-    ReiToEngine::MacOSXInputMonitor *_monitor;
-}
-- (void)addMonitor:(ReiToEngine::MacOSXInputMonitor *)Monitor;
-- (void)startMonitoring;
-@end
-
 namespace ReiToEngine {
 class MacOSXInputMonitor : public InputMonitor {
   public:
@@ -25,8 +18,6 @@ class MacOSXInputMonitor : public InputMonitor {
     void InnerConvertNSEvent(NSEvent *event);
 
   protected:
-    NSInputMonitor *cocoaInputMonitor;
-
     const ReiToEngine::map<u16, KEY_CODE_KEYBOARD> keyCodeMap = {
         {0x00, KEY_CODE_KEYBOARD::A},             // 'A' key
         {0x01, KEY_CODE_KEYBOARD::S},             // 'S' key

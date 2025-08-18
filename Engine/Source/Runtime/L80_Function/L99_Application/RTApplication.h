@@ -19,7 +19,9 @@ public:
     ApplicationState& GetApplicationState();
     void CreateWindow()
     {
-        windowsManager_ptr->RTCreateWindow(400,400, 100, 100, 4);
+        u32 index = windowsManager_ptr->RTCreateWindow(400,400, 100, 100, 4);
+        PlatformInputMonitor* monitor = input_system_ptr->CreateOrGetMonitor(windowsManager_ptr->GetWindow(index));
+        windowsManager_ptr->GetWindow(index)->SetInputMonitor(monitor);
     }
 
     protected:
@@ -38,6 +40,9 @@ public:
     void CreateMainWindow()
     {
         app_state.main_window.window_ptr = windowsManager_ptr->GetWindow(        windowsManager_ptr->RTCreateWindow(app_state.width, app_state.height, app_state.pos_x, app_state.pos_y, 4));
+
+        PlatformInputMonitor* monitor = input_system_ptr->CreateOrGetMonitor(app_state.main_window.window_ptr);
+        app_state.main_window.window_ptr->SetInputMonitor(monitor);
     }
 };
 }

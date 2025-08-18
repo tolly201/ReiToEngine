@@ -4,46 +4,6 @@
 
 #include "MacOSXInputMonitor.h"
 
-@implementation NSInputMonitor
-- (id)init {
-    self = [super init];
-    return self;
-}
-
-- (void)addMonitor:(ReiToEngine::MacOSXInputMonitor*)monitor {
-    _monitor = monitor;
-}
-
-- (void)startMonitoring {
-    NSEvent* (^handler)(NSEvent*) = ^NSEvent*(NSEvent* event) {
-        NSLog(@"local event trigger");
-        printf("catch local input event: %ld\n", (long)[event type]);
-        printf("%ld\n", NSEventTypeScrollWheel);
-        _monitor->InnerConvertNSEvent(event);
-        return event;
-    };
-
-    // [NSEvent
-    //     addGlobalMonitorForEventsMatchingMask:(NSEventMaskKeyDown | NSEventMaskKeyUp |
-    //                                            NSEventMaskLeftMouseDown | NSEventMaskLeftMouseUp |
-    //                                            NSEventMaskRightMouseDown | NSEventMaskRightMouseUp |
-    //                                            NSEventMaskMouseMoved | NSEventMaskScrollWheel |
-    //                                            NSEventMaskOtherMouseDown | NSEventMaskOtherMouseUp |
-    //                                            NSEventMaskFlagsChanged)
-    //                                   handler:^(NSEvent* event) {
-    //                                     NSLog(@"global event trigger");
-    //                                   }];
-
-    [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskKeyDown | NSEventMaskKeyUp | NSEventMaskLeftMouseDown |
-                                                   NSEventMaskLeftMouseUp | NSEventMaskRightMouseDown |
-                                                   NSEventMaskRightMouseUp | NSEventMaskMouseMoved |
-                                                   NSEventMaskScrollWheel | NSEventMaskOtherMouseDown |
-                                                   NSEventMaskOtherMouseUp | NSEventMaskFlagsChanged)
-                                          handler:handler];
-}
-
-@end
-
 namespace ReiToEngine {
 
 constexpr KEY_CODE_MODIFIER operator|(KEY_CODE_MODIFIER a, KEY_CODE_MODIFIER b) {
@@ -56,17 +16,9 @@ KEY_CODE_MODIFIER& operator|=(KEY_CODE_MODIFIER& a, KEY_CODE_MODIFIER b) {
     return a;
 }
 MacOSXInputMonitor::MacOSXInputMonitor() {
-    // 创建并启动事件监听器
-    cocoaInputMonitor = [[NSInputMonitor alloc] init];
-    [cocoaInputMonitor addMonitor:this];
-    printf("macos input monitor created");
-    [cocoaInputMonitor startMonitoring];
 }
 
 MacOSXInputMonitor::~MacOSXInputMonitor() {
-    if (cocoaInputMonitor) {
-        [cocoaInputMonitor release];
-    }
 }
 
 void MacOSXInputMonitor::InnerConvertNSEvent(NSEvent* event) {

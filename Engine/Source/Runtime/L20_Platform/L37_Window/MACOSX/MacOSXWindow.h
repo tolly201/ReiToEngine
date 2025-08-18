@@ -7,6 +7,7 @@
 #include "../IWindow.h"
 #include "MacOSXView.h"
 #include <cstdint>
+#include "L20_Platform/L35_Input/MacOSXInputMonitor.h"
 @interface OSXWindow : NSWindow<NSWindowDelegate>
 {
     NSView              *childContentView;
@@ -38,12 +39,15 @@ public:
     void HideWindow() override;
     void CloseWindow() override;
     void ProcessEvents() override;
+    void SetInputMonitor(PlatformInputMonitor* monitor) override;
+    PlatformInputMonitor* GetInputMonitor() const;
     void Update(const u8* buffer, u32 width, u32 height) override;
 
     MacOSXView* cocoaView;
 protected:
 private:
     OSXWindow*  cocoaWindow; // 假设你使用现有的 OSXWindow (NSWindow 子类)
+    ReiToEngine::MacOSXInputMonitor* inputMonitor; // 输入监控器
 };
 #endif
 #endif

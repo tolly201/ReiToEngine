@@ -97,6 +97,11 @@
 - (NSUInteger)characterIndexForPoint:(NSPoint)point {
     return 0;
 }
+- (void) keyDown:(NSEvent *)event {
+    RT_LOG_DEBUG("KeyDown event received in OSXView");
+    self->ownerWindow->GetInputMonitor()->InnerConvertNSEvent(event);
+    [super keyDown:event];
+}
 @end
 
 MacOSXView::MacOSXView() = default;
