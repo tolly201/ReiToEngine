@@ -4,6 +4,10 @@
 #include "L20_Platform/Include.h"
 #include "L40_HAL/Include.h"
 namespace ReiToEngine{
+struct RT_MAIN_WINDOW
+{
+    PlatformWindow* window_ptr = nullptr;
+};
 struct ApplicationState
 {
     ApplicationState() = default;

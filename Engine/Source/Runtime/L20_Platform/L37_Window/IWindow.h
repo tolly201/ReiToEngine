@@ -19,9 +19,9 @@ public:
     virtual void HideWindow() = 0;
     virtual void CloseWindow() = 0;
 
-    virtual void ProcessEvents() = 0; // 处理窗口事件
+    virtual void ProcessEvents() = 0;
 
-    virtual void Update(const u8* buffer, u32 width, u32 height) = 0; // 更新显示 buffer
+    virtual void Update(const u8* buffer, u32 width, u32 height) = 0;
 protected:
     char* title;
     u32 width;

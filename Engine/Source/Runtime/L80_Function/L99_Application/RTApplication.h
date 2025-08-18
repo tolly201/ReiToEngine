@@ -17,6 +17,10 @@ public:
     virtual void Terminate();
     const ApplicationState& GetConstApplicationState();
     ApplicationState& GetApplicationState();
+    void CreateWindow()
+    {
+        windowsManager_ptr->RTCreateWindow(400,400, 100, 100, 4);
+    }
 
     protected:
     static RTApplication instance_raw;
@@ -26,10 +30,15 @@ public:
     InputSystem* input_system_ptr;
 
     // RenderManager* renderManager_ptr;
-    // WindowsManager* windowsManager_ptr;
+    WindowsManager* windowsManager_ptr;
 
     b8 initialized = false;
     IGame* game_instance;
+    private:
+    void CreateMainWindow()
+    {
+        app_state.main_window.window_ptr = windowsManager_ptr->GetWindow(        windowsManager_ptr->RTCreateWindow(app_state.width, app_state.height, app_state.pos_x, app_state.pos_y, 4));
+    }
 };
 }
 #endif

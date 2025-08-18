@@ -7,7 +7,7 @@
 #include <cstdio>
 
 
-b8 RT_Platform_Initialize(RT_MAIN_WINDOW& window, const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y)
+b8 RT_Platform_Initialize()
 {
    // macOS 特定初始化
     [NSApplication sharedApplication];
@@ -35,27 +35,14 @@ b8 RT_Platform_Initialize(RT_MAIN_WINDOW& window, const char* title, u32 width, 
 
     [NSApp activateIgnoringOtherApps:YES];
 
-    window.main_window = new MacOSXWindow();
-    window.main_window->Create(title, width, height, pos_x, pos_y);
-    if (window.main_window == nullptr)
-    {
-        return false;
-    }
-    window.main_window->ShowWindow();
     return true;
 }
 
-void RT_Platform_Terminate(RT_MAIN_WINDOW& window)
+void RT_Platform_Terminate()
 {
-    if (window.main_window != nullptr)
-    {
-        window.main_window->CloseWindow();
-        delete window.main_window;
-        window.main_window = nullptr;
-    }
 }
 
-b8 RT_Platform_PumpMessage(RT_MAIN_WINDOW& window){
+b8 RT_Platform_PumpMessage(){
     NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                         untilDate:[NSDate distantPast]
                                            inMode:NSDefaultRunLoopMode

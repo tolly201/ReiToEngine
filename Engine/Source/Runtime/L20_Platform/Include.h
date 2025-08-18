@@ -12,5 +12,6 @@
 #include "L20_Platform/L33_Event/EventSystem.h"
 #include "L20_Platform/L35_Input/Include.h"
 #include "L20_Platform/L37_Window/Functions.h"
+#include "L20_Platform/L37_WindowSystem/WindowsManager.h"
 #include "L20_Platform/PlatformFunctions.h"
 #endif

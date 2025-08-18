@@ -4,7 +4,7 @@
 namespace ReiToEngine
 {
 template <typename T>
-class RTENGINE_API stack : public IContainer<T>
+class RTENGINE_API stack : public IContainer<stack<T>>
 {
 private:
     constexpr static u32 GROWTH_FACTOR = 10;

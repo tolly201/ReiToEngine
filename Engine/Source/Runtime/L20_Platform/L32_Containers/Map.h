@@ -5,50 +5,83 @@
 #include <map>
 namespace ReiToEngine
 {
-template <typename T>
-class RTENGINE_API map : public IContainer<T>
+template <typename Key, typename Value>
+class RTENGINE_API map : public IContainer<map<Key, Value>>
 {
 private:
     constexpr static u32 GROWTH_FACTOR = 10;
 public:
     map() = default;
     ~map() = default;
+
+    map(std::initializer_list<std::pair<const Key, Value>> init) {
+        for (const auto& kv : init) {
+            data[kv.first] = kv.second;
+        }
+    }
     void clear(){data.clear();}
-    template <typename... Args>
-    T& emplace_back(Args&&... args){
-        return data.emplace_back(std::forward<Args>(args)...);
+    // 插入或更新
+    void insert(const Key& key, const Value& value) {
+        data[key] = value;
     }
-    T& push_back(const T& value)
-    {
-        return data.push_back(value);
+
+    // 查找，返回指针，找不到返回nullptr
+    // Value* find(const Key& key) {
+    //     auto it = data.find(key);
+    //     if (it != data.end())
+    //         return &(it->second);
+    //     return nullptr;
+    // }
+
+    // const Value* find(const Key& key) const {
+    //     auto it = data.find(key);
+    //     if (it != data.end())
+    //         return &(it->second);
+    //     return nullptr;
+    // }
+
+    // 下标操作符，插入新值或返回已有值
+    Value& operator[](const Key& key) {
+        return data[key];
     }
-    T& at(u64 index)
-    {
-        return data.at(index);
+
+    // at方法，找不到会抛异常
+    Value& at(const Key& key) {
+        return data.at(key);
     }
-    T& operator[](u64 index)
-    {
-        return data[index];
+
+    // 删除
+    void erase(const Key& key) {
+        data.erase(key);
     }
-    T& front()
-    {
-        return data.front();
-    }
-    T& back()
-    {
-        return data.back();
-    }
-    u64 size() const
-    {
+
+    // 大小
+    u64 size() const {
         return data.size();
     }
-    b8 empty() const
-    {
+
+    // 是否为空
+    b8 empty() const {
         return data.empty();
     }
+
+    // 迭代器支持
+    auto begin() { return data.begin(); }
+    auto end() { return data.end(); }
+    auto begin() const { return data.begin(); }
+    auto end() const { return data.end(); }
+    auto find(const Key& key) {
+        return data.find(key);
+    }
+
+    auto find(const Key& key) const {
+        return data.find(key);
+    }
+
+
 protected:
     u64 length;
-    std::map<T> data;
+    std::map<Key, Value> data;
 };
 }
 

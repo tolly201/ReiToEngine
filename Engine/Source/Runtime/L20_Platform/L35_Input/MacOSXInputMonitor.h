@@ -1,6 +1,7 @@
-#ifndef CORE_PLATFORM_HAL_MACOSX_INPUT_MONITOR_H
-#define CORE_PLATFORM_HAL_MACOSX_INPUT_MONITOR_H
+#ifndef PLATFORM_MACOSX_INPUT_MONITOR_H
+#define PLATFORM_MACOSX_INPUT_MONITOR_H
 #include "L0_Macro/Include.h"
+#include "L20_Platform/L32_Containers/Map.h"
 #ifdef RT_SYSTEM_APPLE
 #include "InputMonitor.h"
 #import <Cocoa/Cocoa.h>
@@ -26,7 +27,7 @@ class MacOSXInputMonitor : public InputMonitor {
   protected:
     NSInputMonitor *cocoaInputMonitor;
 
-    const std::unordered_map<uint16_t, KEY_CODE_KEYBOARD> keyCodeMap = {
+    const ReiToEngine::map<u16, KEY_CODE_KEYBOARD> keyCodeMap = {
         {0x00, KEY_CODE_KEYBOARD::A},             // 'A' key
         {0x01, KEY_CODE_KEYBOARD::S},             // 'S' key
         {0x02, KEY_CODE_KEYBOARD::D},             // 'D' key

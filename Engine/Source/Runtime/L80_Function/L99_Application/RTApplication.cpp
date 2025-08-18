@@ -15,7 +15,14 @@ namespace ReiToEngine{
                 RT_LOG_INFO("exit application");
                 RTApplication::Instance().GetApplicationState().is_running = false;
             }
+
+            if (key_code == static_cast<u8>(KEY_CODE_KEYBOARD::N))
+            {
+                RTApplication::Instance().CreateWindow();
+                RT_LOG_INFO("create new window");
+            }
         }
+
         return true;
     }
 
@@ -62,7 +69,7 @@ namespace ReiToEngine{
         RT_LOG_INFO(sizeof(InputSystem));
         RT_LOG_INFO(alignof(EventSystem));
         RT_LOG_INFO(alignof(InputSystem));
-        //windowsManager_ptr = &WindowsManager::Instance();
+        windowsManager_ptr = &WindowsManager::Instance();
         RT_LOG_DEBUG("window manager");
         //renderManager_ptr = &RenderManager::Instance();
 
@@ -70,7 +77,7 @@ namespace ReiToEngine{
         input_system_ptr->Initialize();
 
         RT_LOG_DEBUG("render manager");
-        //windowsManager_ptr->Initialize();
+        windowsManager_ptr->Initialize();
         RT_LOG_DEBUG("win iniite manager");
 
         //renderManager_ptr->Initialize();
@@ -83,7 +90,8 @@ namespace ReiToEngine{
     b8 RTApplication::StartGame()
     {
         RT_LOG_DEBUG("APPLICATION STARTGAME");
-        if(!RT_Platform_Initialize(app_state.main_window, game_instance->app_config.name, game_instance->app_config.start_width, game_instance->app_config.start_height, game_instance->app_config.start_pos_x, game_instance->app_config.start_pos_y))
+        // if(!RT_Platform_Initialize(app_state.main_window, game_instance->app_config.name, game_instance->app_config.start_width, game_instance->app_config.start_height, game_instance->app_config.start_pos_x, game_instance->app_config.start_pos_y))
+        if(!RT_Platform_Initialize())
         {
             RT_LOG_FATAL("Failed to START CREATE PLATFORM WINDOW.");
             return false;
@@ -103,6 +111,7 @@ namespace ReiToEngine{
         RT_LOG_DEBUG("APPLICATION Game Initialize");
 
         printf("base run\n");
+        CreateMainWindow();
 
         event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_PRESS), this, application_on_key);
 
@@ -116,13 +125,20 @@ namespace ReiToEngine{
         RT_LOG_INFO(memoryManager.GetMemoryUsageReport());
         while(app_state.is_running)
         {
-            if (!RT_Platform_PumpMessage(app_state.main_window))
+            if (!RT_Platform_PumpMessage())
             {
                 app_state.is_running = false;
             }
 
             if (!app_state.is_paused)
             {
+                if (!windowsManager_ptr->Tick(0.))
+                {
+                    RT_LOG_FATAL("WindowsManager tick failed.");
+                    app_state.is_running = false;
+                    break;
+                }
+
                 if (!game_instance->LogicalTick(0.))
                 {
                     RT_LOG_FATAL("Game logical tick failed.");
@@ -145,7 +161,7 @@ namespace ReiToEngine{
     void RTApplication::Terminate()
     {
         ApplicationState& state = app_state;
-        //windowsManager_ptr->Terminate();
+        windowsManager_ptr->Terminate();
         game_instance->Terminate();
         event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_PRESS), this, application_on_key);
         input_system_ptr->Terminate();

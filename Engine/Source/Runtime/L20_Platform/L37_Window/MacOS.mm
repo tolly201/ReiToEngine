@@ -3,7 +3,7 @@
 #include <AppKit/AppKit.h>
 #include "./MACOSX/MacOSXWindow.h"
 
-b8 RT_Platform_CreateMainWindow(RT_MAIN_WINDOW& window, const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y)
+b8 RT_Platform_MainWindowInitialize()
 {
    // macOS 特定初始化
     [NSApplication sharedApplication];
@@ -30,28 +30,14 @@ b8 RT_Platform_CreateMainWindow(RT_MAIN_WINDOW& window, const char* title, u32 w
     [appMenu addItem:quitMenuItem];
 
     [NSApp activateIgnoringOtherApps:YES];
-
-    window.main_window = new MacOSXWindow();
-    window.main_window->Create(title, width, height, pos_x, pos_y);
-    if (window.main_window == nullptr)
-    {
-        return false;
-    }
-    window.main_window->ShowWindow();
     return true;
 }
 
-void RT_Platform_CloseMainWindow(RT_MAIN_WINDOW& window)
+void RT_Platform_MainWindowTerminate()
 {
-    if (window.main_window != nullptr)
-    {
-        window.main_window->CloseWindow();
-        delete window.main_window;
-        window.main_window = nullptr;
-    }
 }
 
-b8 RT_Platform_MainWindowPumpMessage(RT_MAIN_WINDOW& window){
+b8 RT_Platform_MainWindowPumpMessage(){
     NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                         untilDate:[NSDate distantPast]
                                            inMode:NSDefaultRunLoopMode

@@ -1,56 +1,44 @@
 #include "WindowsManager.h"
 #include <cstring>
-
-#include "L20_Platform/L37_Window/IWindow.h"
-#include "L20_Platform/L37_Window/IWindowView.h"
-
-#ifdef RT_SYSTEM_APPLE
-#include "L20_Platform/L37_Window/MACOSX/MacOSXView.h"
-#include "L20_Platform/L37_Window/MACOSX/MacOSXWindow.h"
-#endif
-
-#ifdef RT_SYSTEM_WINDOWS
-#include "L20_Platform/L37_Window/Windows/WindowsWindow.h"
-#endif
-
+#include "L20_Platform/L37_Window/Functions.h"
 namespace ReiToEngine {
 WindowsManager::WindowsManager() = default;
+
 b8 WindowsManager::Initialize() {
     return true;
 }
 b8 WindowsManager::Terminate() {
-    for (IWindow*& window_ptr:windows)
+    for (int i = 0; i < windows.size(); ++i)
     {
-        window_ptr->CloseWindow();
-        delete window_ptr;
+        windows[i]->CloseWindow();
     }
     windows.clear();
     return true;
 }
 b8 WindowsManager::Tick(f64) {
-    for (IWindow*& window_ptr:windows)
+    for (int i = 0; i < windows.size(); ++i)
     {
-        window_ptr->ShowWindow();
-        window_ptr->Update(data, width, height);
+        // windows[i].ShowWindow();
+        // windows[i]->Update(data, width, height);
     }
     return true;
 }
 
 #ifdef RT_SYSTEM_APPLE
-IWindow* InnerCreateWindowMacOSX(uint32_t width, uint32_t height, uint8_t channel) {
+MacOSXWindow* InnerCreateWindowMacOSX(u32 width, u32 height,u32 pos_x, u32 pos_y, u8 channel) {
     MacOSXWindow* window = new MacOSXWindow();
-    uint8_t* buffer = new uint8[width * height * channel];
-    for (size_t i = 0; i < width * height * channel; ++i) {
-        buffer[i] = 0;
-        if ((i + 1) % 4 == 0) buffer[i] = 255;
-    }
-    window->Create("test", width, height, 100,100);
-    window->cocoaView->SetHeight(height);
-    window->cocoaView->SetWidth(width);
-    window->cocoaView->SetChannel(channel);
-    window->cocoaView->SetBuffer(buffer);
+    // u8* buffer = new u8[width * height * channel];
+    // for (size_t i = 0; i < width * height * channel; ++i) {
+    //     buffer[i] = 0;
+    //     if ((i + 1) % 4 == 0) buffer[i] = 255;
+    // }
+    window->Create("test", width, height, pos_x, pos_y);
+    // window.cocoaView->SetHeight(height);
+    // window.cocoaView->SetWidth(width);
+    // window.cocoaView->SetChannel(channel);
+    // window.cocoaView->SetBuffer(buffer);
     window->ShowWindow();
-    return static_cast<IWindow*>(window);
+    return window;
 };
 #endif
 
@@ -63,17 +51,19 @@ IWindow* InnerCreateWindowWindows(uint32_t width, uint32_t height, u32 pos_x, u3
 };
 #endif
 
-uint32_t WindowsManager::RTCreateWindow(uint32_t width, uint32_t height, u32 pos_x, u32 pos_y, uint8_t channel) {
-    IWindow* instance = nullptr;
-    uint32_t index = windows.size();
-#ifdef RT_SYSTEM_APPLE
-    instance = InnerCreateWindowMacOSX(width, height, channel);
-#endif
-#ifdef RT_SYSTEM_WINDOWS
-    instance = InnerCreateWindowWindows(width, height, pos_x, pos_y, channel);
-#endif
+u32 WindowsManager::RTCreateWindow(u32 width, u32 height, u32 pos_x, u32 pos_y, uint8_t channel) {
+    #ifdef RT_SYSTEM_APPLE
+    PlatformWindow* instance = InnerCreateWindowMacOSX(width, height,pos_x, pos_y, channel);
+    u32 index = windows.size();
     windows.push_back(instance);
     return index;
+#endif
+#ifdef RT_SYSTEM_WINDOWS
+    PlatformWindow instance = InnerCreateWindowWindows(width, height, pos_x, pos_y, channel);
+    u32 index = windows.size();
+    windows.push_back(instance);
+    return index;
+#endif
 }
 
 void WindowsManager::PassViewData(uint8_t* _data, size_t _size, size_t _width, size_t _height)
@@ -83,5 +73,13 @@ void WindowsManager::PassViewData(uint8_t* _data, size_t _size, size_t _width, s
     std::memcpy(data, _data, _size);
     width = _width;
     height = _height;
+}
+
+PlatformWindow* WindowsManager::GetWindow(u32 index) {
+    if (index < windows.size()) {
+        return windows[index];
+    }
+    RT_LOG_ERROR("Index out of bounds when getting window: ", index);
+    return nullptr;
 }
 }  // namespace ReiToEngine
