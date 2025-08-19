@@ -9,6 +9,7 @@ class RTENGINE_API WindowsInputMonitor : public InputMonitor{
 public:
     WindowsInputMonitor();
     ~WindowsInputMonitor();
+    ProcessNativeEvent(MSG* msg);
 };
 
 }  // namespace ReiToEngine

@@ -5,6 +5,7 @@
 
 #include "../IWindow.h"
 #include <windows.h>
+#include "L20_Platform/L35_Input/WindowsInputMonitor.h"
 
 class WindowsWindow : public IWindow
 {
@@ -23,12 +24,14 @@ public:
     virtual void ShowWindow() override;
     virtual void HideWindow() override;
     virtual void CloseWindow() override;
-
+    void SetInputMonitor(PlatformInputMonitor* monitor) override;
+    PlatformInputMonitor* GetInputMonitor() const;
     virtual void ProcessEvents() override;
     virtual void Update(const u8* buffer, u32 width, u32 height) override;
 
 private:
     HWND hwnd;
+    ReiToEngine::WindowsInputMonitor* inputMonitor; // 新增成员
 };
 
 #endif

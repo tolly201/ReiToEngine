@@ -18,7 +18,7 @@
 //         NSLog(@"local event trigger");
 //         printf("catch local input event: %ld\n", (long)[event type]);
 //         printf("%ld\n", NSEventTypeScrollWheel);
-//         _monitor->InnerConvertNSEvent(event);
+//         _monitor->ProcessNativeEvent(event);
 //         return event;
 //     };
 
@@ -67,7 +67,7 @@
 //     }
 // }
 
-// void MacOSXGlobalInputMonitor::InnerConvertNSEvent(NSEvent* event) {
+// void MacOSXGlobalInputMonitor::ProcessNativeEvent(NSEvent* event) {
 //     InputEvent inputEvent;
 
 //     printf("catch local input event: %ld\n", (long)[event type]);

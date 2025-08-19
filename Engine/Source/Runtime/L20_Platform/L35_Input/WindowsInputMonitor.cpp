@@ -5,17 +5,12 @@
 
 namespace ReiToEngine {
 
-WindowsInputMonitor::WindowsInputMonitor(HWND hwnd)
-    : hwnd_(hwnd)
+WindowsInputMonitor::WindowsInputMonitor()
 {
-    // 可以在这里注册原生窗口过程（或保存回调）
-    // 例如：SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
-    // 或者在窗口消息循环中调用 ProcessNativeEvent
 }
 
 WindowsInputMonitor::~WindowsInputMonitor()
 {
-    // 清理资源（如取消窗口过程等）
 }
 
 void WindowsInputMonitor::ProcessNativeEvent(MSG* msg)
@@ -91,11 +86,6 @@ void WindowsInputMonitor::ProcessNativeEvent(MSG* msg)
     default:
         break;
     }
-
-    // 可在此处调用输入系统的回调
-    // if (isActive && inputCallback != nullptr) {
-    //     inputCallback(inputEvent);
-    // }
 }
 
 KEY_CODE_KEYBOARD WindowsInputMonitor::MapKeyCode(WPARAM wParam)
@@ -107,7 +97,60 @@ KEY_CODE_KEYBOARD WindowsInputMonitor::MapKeyCode(WPARAM wParam)
     {
     case 'A': return KEY_CODE_KEYBOARD::A;
     case 'B': return KEY_CODE_KEYBOARD::B;
-    // ...补充其他键
+    case 'C': return KEY_CODE_KEYBOARD::C;
+    case 'D': return KEY_CODE_KEYBOARD::D;
+    case 'E': return KEY_CODE_KEYBOARD::E;
+    case 'F': return KEY_CODE_KEYBOARD::F;
+    case 'G': return KEY_CODE_KEYBOARD::G;
+    case 'H': return KEY_CODE_KEYBOARD::H;
+    case 'I': return KEY_CODE_KEYBOARD::I;
+    case 'J': return KEY_CODE_KEYBOARD::J;
+    case 'K': return KEY_CODE_KEYBOARD::K;
+    case 'L': return KEY_CODE_KEYBOARD::L;
+    case 'M': return KEY_CODE_KEYBOARD::M;
+    case 'N': return KEY_CODE_KEYBOARD::N;
+    case 'O': return KEY_CODE_KEYBOARD::O;
+    case 'P': return KEY_CODE_KEYBOARD::P;
+    case 'Q': return KEY_CODE_KEYBOARD::Q;
+    case 'R': return KEY_CODE_KEYBOARD::R;
+    case 'S': return KEY_CODE_KEYBOARD::S;
+    case 'T': return KEY_CODE_KEYBOARD::T;
+    case 'U': return KEY_CODE_KEYBOARD::U;
+    case 'V': return KEY_CODE_KEYBOARD::V;
+    case 'W': return KEY_CODE_KEYBOARD::W;
+    case 'X': return KEY_CODE_KEYBOARD::X;
+    case 'Y': return KEY_CODE_KEYBOARD::Y;
+    case 'Z': return KEY_CODE_KEYBOARD::Z;
+    case '0': return KEY_CODE_KEYBOARD::NUM_0;
+    case '1': return KEY_CODE_KEYBOARD::NUM_1;
+    case '2': return KEY_CODE_KEYBOARD::NUM_2;
+    case '3': return KEY_CODE_KEYBOARD::NUM_3;
+    case '4': return KEY_CODE_KEYBOARD::NUM_4;
+    case '5': return KEY_CODE_KEYBOARD::NUM_5;
+    case '6': return KEY_CODE_KEYBOARD::NUM_6;
+    case '7': return KEY_CODE_KEYBOARD::NUM_7;
+    case '8': return KEY_CODE_KEYBOARD::NUM_8;
+    case '9': return KEY_CODE_KEYBOARD::NUM_9;
+    case VK_SPACE: return KEY_CODE_KEYBOARD::SPACE;
+    case VK_RETURN: return KEY_CODE_KEYBOARD::ENTER;
+    case VK_ESCAPE: return KEY_CODE_KEYBOARD::ESCAPE;
+    case VK_TAB: return KEY_CODE_KEYBOARD::TAB;
+    case VK_BACK: return KEY_CODE_KEYBOARD::BACKSPACE;
+    case VK_SHIFT: return KEY_CODE_KEYBOARD::LEFT_SHIFT;
+    case VK_CONTROL: return KEY_CODE_KEYBOARD::LEFT_CONTROL;
+    case VK_MENU: return KEY_CODE_KEYBOARD::LEFT_ALT;
+    case VK_LWIN: return KEY_CODE_KEYBOARD::LEFT_SUPER;
+    case VK_RWIN: return KEY_CODE_KEYBOARD::RIGHT_SUPER;
+    case VK_LEFT: return KEY_CODE_KEYBOARD::LEFT;
+    case VK_RIGHT: return KEY_CODE_KEYBOARD::RIGHT;
+    case VK_UP: return KEY_CODE_KEYBOARD::UP;
+    case VK_DOWN: return KEY_CODE_KEYBOARD::DOWN;
+    case VK_DELETE: return KEY_CODE_KEYBOARD::DELETE;
+    case VK_HOME: return KEY_CODE_KEYBOARD::HOME;
+    case VK_END: return KEY_CODE_KEYBOARD::END;
+    case VK_PRIOR: return KEY_CODE_KEYBOARD::PAGE_UP;
+    case VK_NEXT: return KEY_CODE_KEYBOARD::PAGE_DOWN;
+    // 可继续补充其他键
     default: return KEY_CODE_KEYBOARD::UNKNOWN;
     }
 }

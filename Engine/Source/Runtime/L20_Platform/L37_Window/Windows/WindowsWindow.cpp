@@ -6,6 +6,12 @@
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     // Handle window messages here
+    PlatformInputMonitor* monitor = reinterpret_cast<PlatformInputMonitor*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+    if (monitor) {
+        MSG msg = { hwnd, uMsg, wParam, lParam };
+        monitor->ProcessNativeEvent();
+    }
+
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
@@ -161,5 +167,16 @@ void WindowsWindow::ProcessEvents()
 void WindowsWindow::Update(const u8* buffer, uint32_t width, uint32_t height)
 {
     // Update the display buffer if necessary
+}
+
+void WindowsWindow::SetInputMonitor(PlatformInputMonitor* monitor)
+{
+    inputMonitor = monitor;
+    SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(inputMonitor));
+}
+
+PlatformInputMonitor* WindowsWindow::GetInputMonitor() const
+{
+    return inputMonitor;
 }
 #endif

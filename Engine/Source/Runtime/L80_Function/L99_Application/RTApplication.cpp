@@ -144,6 +144,13 @@ namespace ReiToEngine{
                     break;
                 }
 
+                if (!input_system_ptr->Tick(0.))
+                {
+                    RT_LOG_FATAL("InputSystem tick failed.");
+                    app_state.is_running = false;
+                    break;
+                }
+
                 if (!game_instance->LogicalTick(0.))
                 {
                     RT_LOG_FATAL("Game logical tick failed.");

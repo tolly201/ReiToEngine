@@ -15,7 +15,7 @@ class MacOSXInputMonitor : public InputMonitor {
   public:
     MacOSXInputMonitor();
     ~MacOSXInputMonitor();
-    void InnerConvertNSEvent(NSEvent *event);
+    void ProcessNativeEvent(NSEvent *event);
 
   protected:
     const ReiToEngine::map<u16, KEY_CODE_KEYBOARD> keyCodeMap = {

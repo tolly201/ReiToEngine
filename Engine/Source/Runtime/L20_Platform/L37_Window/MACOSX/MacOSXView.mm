@@ -99,7 +99,7 @@
 }
 - (void) keyDown:(NSEvent *)event {
     RT_LOG_DEBUG("KeyDown event received in OSXView");
-    self->ownerWindow->GetInputMonitor()->InnerConvertNSEvent(event);
+    self->ownerWindow->GetInputMonitor()->ProcessNativeEvent(event);
     [super keyDown:event];
 }
 @end

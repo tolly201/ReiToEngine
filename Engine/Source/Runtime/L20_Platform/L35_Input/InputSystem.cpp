@@ -28,6 +28,11 @@ b8 InputSystem::Tick(f64 tick) {
         RT_LOG_FATAL("Update when not initialized.");
         return false;
     }
+    for (auto& monitor : input_monitors) {
+        if (!monitor.second->Tick(tick)) {
+            RT_LOG_ERROR("Failed to tick input monitor for handle: ", monitor.first);
+        }
+    }
     // global_input_monitor->Tick(tick);
     return true;
 }

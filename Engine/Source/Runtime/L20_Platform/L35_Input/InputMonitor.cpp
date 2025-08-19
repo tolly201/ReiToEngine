@@ -24,6 +24,7 @@ b8 InputMonitor::Tick(f64) {
         return false;
     }
     RT_Platform_SYSCopyMemory(&prev_state, &cur_state, sizeof(cur_state));
+    RT_Platform_SYSZeroMemory(&cur_state, sizeof(cur_state));
     return true;
 }
 

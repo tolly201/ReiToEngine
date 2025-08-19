@@ -22,7 +22,7 @@
 //   public:
 //     MacOSXGlobalInputMonitor();
 //     ~MacOSXGlobalInputMonitor();
-//     void InnerConvertNSEvent(NSEvent *event);
+//     void ProcessNativeEvent(NSEvent *event);
 
 //   protected:
 //     NSGlobalInputMonitor *cocoaInputMonitor;

@@ -21,7 +21,7 @@ MacOSXInputMonitor::MacOSXInputMonitor() {
 MacOSXInputMonitor::~MacOSXInputMonitor() {
 }
 
-void MacOSXInputMonitor::InnerConvertNSEvent(NSEvent* event) {
+void MacOSXInputMonitor::ProcessNativeEvent(NSEvent* event) {
     InputEvent inputEvent;
 
     printf("catch local input event: %ld\n", (long)[event type]);
