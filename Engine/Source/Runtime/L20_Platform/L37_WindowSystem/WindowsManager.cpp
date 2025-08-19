@@ -43,11 +43,11 @@ MacOSXWindow* InnerCreateWindowMacOSX(u32 width, u32 height,u32 pos_x, u32 pos_y
 #endif
 
 #ifdef RT_SYSTEM_WINDOWS
-IWindow* InnerCreateWindowWindows(uint32_t width, uint32_t height, u32 pos_x, u32 pos_y, uint8_t channel) {
+WindowsWindow* InnerCreateWindowWindows(uint32_t width, uint32_t height, u32 pos_x, u32 pos_y, uint8_t channel) {
     WindowsWindow* window = new WindowsWindow();
     window->Create("test", width, height, pos_x, pos_y);
     window->ShowWindow();
-    return static_cast<IWindow*>(window);
+    return window;
 };
 #endif
 
@@ -59,7 +59,7 @@ u32 WindowsManager::RTCreateWindow(u32 width, u32 height, u32 pos_x, u32 pos_y, 
     return index;
 #endif
 #ifdef RT_SYSTEM_WINDOWS
-    PlatformWindow instance = InnerCreateWindowWindows(width, height, pos_x, pos_y, channel);
+    PlatformWindow* instance = InnerCreateWindowWindows(width, height, pos_x, pos_y, channel);
     u32 index = windows.size();
     windows.push_back(instance);
     return index;

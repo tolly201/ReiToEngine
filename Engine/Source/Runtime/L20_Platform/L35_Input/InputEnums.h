@@ -140,7 +140,7 @@ enum class KEY_CODE_KEYBOARD : u8 {
     MENU          = 0x78,
     MAX           = 0xFF
 };
-enum KEY_CODE_MODIFIER : u8
+enum class KEY_CODE_MODIFIER : u8
 {
     NONE      = 0x00,
     SHIFT     = 0x01,
@@ -151,6 +151,19 @@ enum KEY_CODE_MODIFIER : u8
     NUM_LOCK  = 0x20,
     ALL       = 0xFF
 };
+
+inline KEY_CODE_MODIFIER operator|(KEY_CODE_MODIFIER a, KEY_CODE_MODIFIER b)
+{
+    return static_cast<KEY_CODE_MODIFIER>(
+        static_cast<u8>(a) | static_cast<u8>(b)
+    );
+}
+inline KEY_CODE_MODIFIER& operator|=(KEY_CODE_MODIFIER& a, KEY_CODE_MODIFIER b)
+{
+    a = a | b;
+    return a;
+}
+
 enum class KEY_CODE_MOUSE : u8
 {
     // Mouse buttons

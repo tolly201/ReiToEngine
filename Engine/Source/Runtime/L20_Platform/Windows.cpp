@@ -98,28 +98,12 @@ namespace {
     }
 }
 
-b8 RT_Platform_Initialize(RT_MAIN_WINDOW& window, const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y)
+b8 RT_Platform_Initialize(){return true;}
+void RT_Platform_Terminate()
 {
-    HINSTANCE hInstance = GetModuleHandleW(0);
-    RegisterBaseWindowClass(hInstance);
-    window.main_window = new WindowsWindow();
-    window.main_window->Create(title, width, height, pos_x, pos_y);
-    window.main_window->ShowWindow();
-    return true;
 }
 
-void RT_Platform_Terminate(RT_MAIN_WINDOW& window)
-{
-    if (window.main_window != nullptr)
-    {
-        window.main_window->CloseWindow();
-        delete window.main_window;
-        window.main_window = nullptr;
-    }
-    UnregisterClassW(L"rt_base_window_class", GetModuleHandleW(0));
-}
-
-b8 RT_Platform_PumpMessage(RT_MAIN_WINDOW& window)
+b8 RT_Platform_PumpMessage()
 {
     MSG message;
     while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE))

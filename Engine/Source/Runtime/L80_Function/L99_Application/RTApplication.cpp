@@ -23,7 +23,7 @@ namespace ReiToEngine{
 
             if (key_code == static_cast<u8>(KEY_CODE_KEYBOARD::N))
             {
-                RTApplication::Instance().CreateWindow();
+                RTApplication::Instance().RTCreateWindow();
                 RT_LOG_INFO("create new window");
             }
         }

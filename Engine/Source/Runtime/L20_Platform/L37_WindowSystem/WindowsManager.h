@@ -15,7 +15,7 @@ using PlatformWindow = MacOSXWindow;
 
 #ifdef RT_SYSTEM_WINDOWS
 #include "L20_Platform/L37_Window/Windows/WindowsWindow.h"
-using PlatformWindow = ReiToEngine::WindowsWindow;
+using PlatformWindow = WindowsWindow;
 #endif
 
 namespace ReiToEngine{

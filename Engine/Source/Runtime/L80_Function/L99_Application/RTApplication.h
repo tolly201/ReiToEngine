@@ -3,6 +3,7 @@
 #include "L20_Platform/Include.h"
 #include "RTApplicationEnums.h"
 #include "L80_function/L99_Game/Game.h"
+
 namespace ReiToEngine{
 class RTENGINE_API RTApplication : public SingletonFactory
 {
@@ -17,7 +18,7 @@ public:
     virtual void Terminate();
     const ApplicationState& GetConstApplicationState();
     ApplicationState& GetApplicationState();
-    void CreateWindow()
+    void RTCreateWindow()
     {
         u32 index = windowsManager_ptr->RTCreateWindow(400,400, 100, 100, 4);
         PlatformInputMonitor* monitor = input_system_ptr->CreateOrGetMonitor(windowsManager_ptr->GetWindow(index));
