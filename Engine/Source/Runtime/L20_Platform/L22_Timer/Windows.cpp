@@ -18,4 +18,9 @@ void RT_Platform_InitTime()
     clock_frequency = 1 / (f64)frequency.QuadPart;
     QueryPerformanceCounter(&start_time);
 }
+
+void RT_Platform_Sleep(u64 ms)
+{
+    Sleep((DWORD)ms);
+}
 #endif

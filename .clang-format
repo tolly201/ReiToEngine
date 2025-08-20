@@ -15,9 +15,9 @@ AlignConsecutiveAssignments: true         # 对齐连续赋值
 AlignConsecutiveDeclarations: true        # 对齐连续变量声明
 AlignTrailingComments: true               # 对齐尾部注释
 
-AlignAfterOpenBracket: Align              # 参数对齐到括号后
-BinPackArguments: false                   # 每个参数单独一行（仅超长时）
-BinPackParameters: false                  # 每个函数声明参数单独一行
+AllowAllParametersOfDeclarationOnNextLine: false
+BinPackParameters: true
+BinPackArguments: true
 
 ObjCBlockIndentWidth: 4                   # Objective-C 块缩进
 ObjCSpaceBeforeProtocolList: true         # 协议列表前保留空格

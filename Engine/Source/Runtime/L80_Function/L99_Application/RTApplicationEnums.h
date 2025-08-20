@@ -19,6 +19,7 @@ struct ApplicationState
     f64 last_time;
     i16 pos_x;
     i16 pos_y;
+    Timer timer;
     RT_MAIN_WINDOW main_window;
 };
 

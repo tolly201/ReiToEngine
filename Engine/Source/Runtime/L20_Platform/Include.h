@@ -3,7 +3,7 @@
 #include "L0_Macro/Include.h"
 #include "L20_Platform/L20_Memory/Include.h"
 #include "L20_Platform/L21_Console/Functions.h"
-#include "L20_Platform/L22_Timer/Functions.h"
+#include "L20_Platform/L22_Timer/Timer.h"
 #include "L20_Platform/L23_Logger/Include.h"
 #include "L20_Platform/L30_MemoryManager/Memory.h"
 #include "L20_Platform/L31_SingletonFactory/RuntimeSingleton.h"

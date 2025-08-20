@@ -34,7 +34,6 @@ public:
 
     // RenderManager* renderManager_ptr;
     WindowsManager* windowsManager_ptr;
-
     b8 initialized = false;
     IGame* game_instance;
     private:

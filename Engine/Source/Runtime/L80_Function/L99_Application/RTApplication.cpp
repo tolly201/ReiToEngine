@@ -94,6 +94,9 @@ namespace ReiToEngine{
 
     b8 RTApplication::StartGame()
     {
+        app_state.timer.Initialize();
+        app_state.timer.Tick();
+        app_state.timer.SetFrameCount(60);
         RT_LOG_DEBUG("APPLICATION STARTGAME");
         // if(!RT_Platform_Initialize(app_state.main_window, game_instance->app_config.name, game_instance->app_config.start_width, game_instance->app_config.start_height, game_instance->app_config.start_pos_x, game_instance->app_config.start_pos_y))
         if(!RT_Platform_Initialize())
@@ -137,34 +140,43 @@ namespace ReiToEngine{
 
             if (!app_state.is_paused)
             {
-                if (!windowsManager_ptr->Tick(0.))
+                app_state.timer.Tick();
+                f64 frame_start_time = app_state.timer.time;
+                if (!windowsManager_ptr->Tick(app_state.timer.deltaTime))
                 {
                     RT_LOG_FATAL("WindowsManager tick failed.");
                     app_state.is_running = false;
                     break;
                 }
 
-                if (!input_system_ptr->Tick(0.))
-                {
-                    RT_LOG_FATAL("InputSystem tick failed.");
-                    app_state.is_running = false;
-                    break;
-                }
-
-                if (!game_instance->LogicalTick(0.))
+                if (!game_instance->LogicalTick(app_state.timer.deltaTime))
                 {
                     RT_LOG_FATAL("Game logical tick failed.");
                     app_state.is_running = false;
                     break;
                 }
-                if (!game_instance->RenderTick(0.))
+                if (!game_instance->RenderTick(app_state.timer.deltaTime))
                 {
                     RT_LOG_FATAL("Game render tick failed.");
                     app_state.is_running = false;
                     break;
                 }
 
-                //input_system_ptr->Tick(0.);
+                app_state.timer.Tick();
+                f64 frame_end_time = app_state.timer.time;
+                f64 frame_duration = frame_end_time - frame_start_time;
+                if (frame_duration < app_state.timer.targetFrameTime)
+                {
+                    f64 sleep_time = app_state.timer.targetFrameTime - frame_duration;
+                    RT_Platform_Sleep(static_cast<u64>(sleep_time * 1000.0)); // Convert to milliseconds
+                }
+
+                if (!input_system_ptr->Tick(app_state.timer.deltaTime))
+                {
+                    RT_LOG_FATAL("InputSystem tick failed.");
+                    app_state.is_running = false;
+                    break;
+                }
             }
         }
         return true;

@@ -5,16 +5,6 @@
 #include "MacOSXInputMonitor.h"
 
 namespace ReiToEngine {
-
-constexpr KEY_CODE_MODIFIER operator|(KEY_CODE_MODIFIER a, KEY_CODE_MODIFIER b) {
-    return static_cast<KEY_CODE_MODIFIER>(static_cast<std::underlying_type_t<KEY_CODE_MODIFIER>>(a) |
-                                          static_cast<std::underlying_type_t<KEY_CODE_MODIFIER>>(b));
-}
-
-KEY_CODE_MODIFIER& operator|=(KEY_CODE_MODIFIER& a, KEY_CODE_MODIFIER b) {
-    a = a | b;
-    return a;
-}
 MacOSXInputMonitor::MacOSXInputMonitor() {
 }
 

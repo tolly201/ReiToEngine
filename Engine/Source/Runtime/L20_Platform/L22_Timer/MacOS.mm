@@ -4,8 +4,21 @@
 #include <time.h>
 #else
 #include <unistd.h>
+#include <sys/time.h>
 #endif
-f64 RT_Platform_AbsoluteTime(){return 0.0;}
+f64 RT_Platform_AbsoluteTime()
+{
+#if _POSIX_C_SOURCE >= 199309L
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return ts.tv_sec + ts.tv_nsec / 1e9;
+#else
+    struct timeval tv;
+    gettimeofday(&tv, nullptr);
+    return tv.tv_sec + tv.tv_usec / 1e6;
+#endif
+}
+
 void RT_Platform_InitTime(){}
 void RT_Platform_Sleep(u64 ms)
 {
