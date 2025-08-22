@@ -1,13 +1,13 @@
-#ifndef RHI_RENDERER_FRONTEND_H
-#define RHI_RENDERER_FRONTEND_H
+#ifndef RHI_IRENDERER_FRONTEND_H
+#define RHI_IRENDERER_FRONTEND_H
 
 #include "L0_Macro/Include.h"
-#include "RendererBackEnd.h"
+#include "IRendererBackEnd.h"
 namespace ReiToEngine {
-class RendererFrontend {
+class IRendererFrontend {
 public:
-    RendererFrontend() = default;
-    virtual ~RendererFrontend() = default;
+    IRendererFrontend() = default;
+    virtual ~IRendererFrontend() = default;
     virtual b8 Initialize(const char* application_name, struct platform_state* plat_state) = 0;
     virtual b8 Terminate() = 0;
     virtual b8 Tick() = 0;

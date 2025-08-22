@@ -1,18 +1,18 @@
-#ifndef PLATFORM_CONTAINERS_VECTOR_H
-#define PLATFORM_CONTAINERS_VECTOR_H
+#ifndef PLATFORM_CONTAINERS_LIST_H
+#define PLATFORM_CONTAINERS_LIST_H
 #include "IContainer.h"
 #include <utility>
 #include <vector>
 namespace ReiToEngine
 {
 template <typename T>
-class RTENGINE_API vector : public IContainer<vector<T>>
+class RTENGINE_API List : public IContainer<List<T>>
 {
 private:
     constexpr static u32 GROWTH_FACTOR = 10;
 public:
-    vector() = default;
-    ~vector() = default;
+    List() = default;
+    ~List() = default;
     void clear(){data.clear();}
     template <typename... Args>
     T& emplace_back(Args&&... args){
@@ -47,6 +47,12 @@ public:
     {
         return data.empty();
     }
+
+    auto begin() { return data.begin(); }
+    auto end()   { return data.end(); }
+    auto begin() const { return data.begin(); }
+    auto end()   const { return data.end(); }
+
 protected:
     u64 length;
     std::vector<T> data;

@@ -33,7 +33,7 @@ public:
    private:
     b8 initialized = false;
 
-    ReiToEngine::map<void*, PlatformInputMonitor*> input_monitors;
+    ReiToEngine::Map<void*, PlatformInputMonitor*> input_monitors;
 };
 
 }  // namespace ReiToEngine

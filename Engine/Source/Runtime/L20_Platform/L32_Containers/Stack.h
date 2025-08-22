@@ -4,13 +4,13 @@
 namespace ReiToEngine
 {
 template <typename T>
-class RTENGINE_API stack : public IContainer<stack<T>>
+class RTENGINE_API Stack : public IContainer<Stack<T>>
 {
 private:
     constexpr static u32 GROWTH_FACTOR = 10;
 public:
-    stack();
-    ~stack();
+    Stack();
+    ~Stack();
     vold clear();
     u64 size() const;
     T& emplace_back(Args&&... args);

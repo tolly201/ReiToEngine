@@ -6,15 +6,15 @@
 namespace ReiToEngine
 {
 template <typename Key, typename Value>
-class RTENGINE_API map : public IContainer<map<Key, Value>>
+class RTENGINE_API Map : public IContainer<Map<Key, Value>>
 {
 private:
     constexpr static u32 GROWTH_FACTOR = 10;
 public:
-    map() = default;
-    ~map() = default;
+    Map() = default;
+    ~Map() = default;
 
-    map(std::initializer_list<std::pair<const Key, Value>> init) {
+    Map(std::initializer_list<std::pair<const Key, Value>> init) {
         for (const auto& kv : init) {
             data[kv.first] = kv.second;
         }

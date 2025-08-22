@@ -27,7 +27,7 @@
 //   protected:
 //     NSGlobalInputMonitor *cocoaInputMonitor;
 
-//     const ReiToEngine::map<u16, KEY_CODE_KEYBOARD> keyCodeMap = {
+//     const ReiToEngine::Map<u16, KEY_CODE_KEYBOARD> keyCodeMap = {
 //         {0x00, KEY_CODE_KEYBOARD::A},             // 'A' key
 //         {0x01, KEY_CODE_KEYBOARD::S},             // 'S' key
 //         {0x02, KEY_CODE_KEYBOARD::D},             // 'D' key

@@ -2,7 +2,7 @@
 #define PLATFORM_INCLUDE_WINDOWS_MANAGER_H
 #include "L20_Platform/L37_Window/IWindow.h"
 #include "L20_Platform/L31_SingletonFactory/RuntimeSingleton.h"
-#include <L20_Platform/L32_Containers/Vector.h>
+#include "L20_Platform/L32_Containers/List.h"
 
 #include "L20_Platform/L37_Window/IWindow.h"
 #include "L20_Platform/L37_Window/IWindowView.h"
@@ -30,7 +30,7 @@ public:
     void PassViewData(uint8_t* _data, size_t _size, size_t _width, size_t _height);
     PlatformWindow* GetWindow(u32 index);
 private:
-    vector<PlatformWindow*> windows;
+    ReiToEngine::List<PlatformWindow*> windows;
     uint8_t* data = nullptr;
     size_t size = 0;
     size_t width = 0;

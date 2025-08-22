@@ -1,7 +1,7 @@
 #ifndef PLATFORM_EVENT_EVENT_ENUMS_H
 #define PLATFORM_EVENT_EVENT_ENUMS_H
 #include "L0_Macro/Include.h"
-#include "L20_Platform/L32_Containers/Vector.h"
+#include "L20_Platform/L32_Containers/List.h"
 namespace ReiToEngine {
 enum class SYSTEM_EVENT_CODE : u8 {
     UNKNOWN = 0x00,
@@ -53,7 +53,7 @@ struct registered_event{
 };
 
 struct event_code_entry{
-    ReiToEngine::vector<registered_event> events;
+    ReiToEngine::List<registered_event> events;
     ~event_code_entry() = default;
 };
 
