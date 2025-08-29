@@ -77,9 +77,11 @@ namespace ReiToEngine{
         windowsManager_ptr = &WindowsManager::Instance();
         RT_LOG_DEBUG("window manager");
         //renderManager_ptr = &RenderManager::Instance();
+        renderer_system_ptr = &RendererSystem::Instance();
 
         event_system_ptr->Initialize();
         input_system_ptr->Initialize();
+        renderer_system_ptr->Initialize();
 
         RT_LOG_DEBUG("render manager");
         windowsManager_ptr->Initialize();
@@ -155,6 +157,14 @@ namespace ReiToEngine{
                     app_state.is_running = false;
                     break;
                 }
+
+                if (!renderer_system_ptr->Tick(app_state.timer.deltaTime))
+                {
+                    RT_LOG_FATAL("RendererSystem tick failed.");
+                    app_state.is_running = false;
+                    break;
+                }
+
                 if (!game_instance->RenderTick(app_state.timer.deltaTime))
                 {
                     RT_LOG_FATAL("Game render tick failed.");
@@ -185,6 +195,7 @@ namespace ReiToEngine{
     void RTApplication::Terminate()
     {
         ApplicationState& state = app_state;
+        renderer_system_ptr->Terminate();
         windowsManager_ptr->Terminate();
         game_instance->Terminate();
         event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_PRESS), this, application_on_key);

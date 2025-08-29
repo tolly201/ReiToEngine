@@ -5,11 +5,11 @@
 #include "RendererTypes.h"
 namespace ReiToEngine {
 
-class IRendererBackEnd {
+class IRendererBackend {
     PlatformState* platform_state;
     public:
-    IRendererBackEnd() = default;
-    virtual ~IRendererBackEnd() = default;
+    IRendererBackend() = default;
+    virtual ~IRendererBackend() = default;
 
     virtual b8 Initialize(ERenderBackendType renderer_type, const char* application_name, PlatformState* plat_state) = 0;
     virtual b8 Terminate() = 0;

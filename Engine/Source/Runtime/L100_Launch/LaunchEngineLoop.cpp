@@ -54,5 +54,8 @@ int RuntimeMainLoopEntry(int argc, const char* argv[])
         RT_LOG_FATAL("Game Exit State Wrong");
         return -2;
     }
+
+    ReiToEngine::RTApplication::Instance().Terminate();
+
     return 0;
 }

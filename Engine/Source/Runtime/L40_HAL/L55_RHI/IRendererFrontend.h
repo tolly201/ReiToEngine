@@ -2,7 +2,7 @@
 #define RHI_IRENDERER_FRONTEND_H
 
 #include "L0_Macro/Include.h"
-#include "IRendererBackEnd.h"
+#include "IRendererBackend.h"
 namespace ReiToEngine {
 class IRendererFrontend {
 public:
@@ -13,6 +13,8 @@ public:
     virtual b8 Tick() = 0;
     virtual b8 Resized(u32 width, u32 height) = 0;
     virtual b8 DrawFrame(render_packet* packet) = 0;
+    virtual b8 BeginFrame(render_packet& packet, RenderData& data) = 0;
+    virtual b8 EndFrame(render_packet& packet, RenderData& data) = 0;
 };
 }
 #endif

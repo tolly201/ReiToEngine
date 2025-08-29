@@ -12,7 +12,7 @@ struct RendererPipelineDesc{
 
 struct RendererPipeline {
     RendererPipelineDesc desc;
-    IRendererBackEnd* backend;
+    IRendererBackend* backend;
     IRendererFrontend* frontend;
 };
 
@@ -26,12 +26,12 @@ class RendererSystem : public Runtime_Singleton<RendererSystem> {
     b8 Terminate() override;
 
     b8 CreateRendererBackend(ERenderBackendType type, const char* application_name, PlatformState* plat_state);
-    b8 CreateRendererFrontend(ERenderFrontendType type, const char* application_name, PlatformState* plat_state);
+    b8 CreateRendererFrontend(ERenderFrontendType type, const char* application_name, PlatformState* plat_state){};
 
     b8 CreateRendererPipeline(const RendererPipelineDesc&& desc, ERenderBackendType backend_type, ERenderFrontendType frontend_type);
 private:
-    ReiToEngine::Map<ERenderBackendType, IRendererBackEnd*> backends;
-    ReiToEngine::Map<ERenderFrontendType, IRendererBackEnd*> frontends;
+    ReiToEngine::Map<ERenderBackendType, IRendererBackend*> backends;
+    ReiToEngine::Map<ERenderFrontendType, IRendererBackend*> frontends;
     ReiToEngine::List<RendererPipeline> pipelines;
 };
 }

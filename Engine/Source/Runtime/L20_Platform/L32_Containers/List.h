@@ -13,49 +13,59 @@ private:
 public:
     List() = default;
     ~List() = default;
-    void clear(){data.clear();}
+    void clear(){_data.clear();}
     template <typename... Args>
     T& emplace_back(Args&&... args){
-        return data.emplace_back(std::forward<Args>(args)...);
+        return _data.emplace_back(std::forward<Args>(args)...);
     }
     void push_back(const T& value)
     {
-        data.push_back(value);
+        _data.push_back(value);
         return ;
     }
     T& at(u64 index)
     {
-        return data.at(index);
+        return _data.at(index);
     }
     T& operator[](u64 index)
     {
-        return data[index];
+        return _data[index];
     }
     T& front()
     {
-        return data.front();
+        return _data.front();
     }
     T& back()
     {
-        return data.back();
+        return _data.back();
     }
     u64 size() const
     {
-        return data.size();
+        return _data.size();
     }
     b8 empty() const
     {
-        return data.empty();
+        return _data.empty();
     }
 
-    auto begin() { return data.begin(); }
-    auto end()   { return data.end(); }
-    auto begin() const { return data.begin(); }
-    auto end()   const { return data.end(); }
+    auto begin() { return _data.begin(); }
+    auto end()   { return _data.end(); }
+    auto begin() const { return _data.begin(); }
+    auto end()   const { return _data.end(); }
+    T* data() {
+        return _data.empty() ? nullptr : _data.data();
+    }
+    const T* data() const {
+        return _data.empty() ? nullptr : _data.data();
+    }
 
+    void resize(u32 new_size)
+    {
+        _data.resize(new_size);
+    }
 protected:
     u64 length;
-    std::vector<T> data;
+    std::vector<T> _data;
 };
 }
 

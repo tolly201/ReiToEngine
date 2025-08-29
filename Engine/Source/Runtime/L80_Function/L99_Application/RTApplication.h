@@ -1,6 +1,7 @@
 #ifndef CORE_APPLICATION_RTAPPLICATION_H
 #define CORE_APPLICATION_RTAPPLICATION_H
 #include "L20_Platform/Include.h"
+#include "L40_HAL/Include.h"
 #include "RTApplicationEnums.h"
 #include "L80_function/L99_Game/Game.h"
 
@@ -31,6 +32,7 @@ public:
     static RTApplication* instance_ptr;
     EventSystem* event_system_ptr;
     InputSystem* input_system_ptr;
+    RendererSystem* renderer_system_ptr;
 
     // RenderManager* renderManager_ptr;
     WindowsManager* windowsManager_ptr;

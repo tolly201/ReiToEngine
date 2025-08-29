@@ -57,6 +57,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+find_package(Vulkan REQUIRED)
+
 # 针对不同编译器的额外设置
 if(MSVC)
 else()
@@ -80,9 +82,9 @@ include_directories(
 include_directories(
     ${ENGINE_ROOT_DIR}/Thirdparty/Assimp/include/
 )
-include_directories(
-    ${VULKAN_SDK}/include/
-)
+
+include_directories(${Vulkan_INCLUDE_DIRS})
+
 add_subdirectory(Engine/Source/Runtime)
 
 # 设置 Assimp 的构建选项

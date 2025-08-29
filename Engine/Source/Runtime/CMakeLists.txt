@@ -36,7 +36,7 @@ elseif(APPLE)
     -ObjC++
     )
 
-    target_link_libraries(ReiToRuntime
+    target_link_libraries(ReiToRuntime PRIVATE
         "-framework Foundation"
         "-framework Cocoa"
     )
@@ -54,6 +54,8 @@ ${CMAKE_CURRENT_SOURCE_DIR}
 ${CMAKE_CURRENT_SOURCE_DIR}/../../Thirdparty/stb/
 ${CMAKE_CURRENT_SOURCE_DIR}/../../Thirdparty/Assimp/include
 )
+
+target_link_libraries(ReiToRuntime PRIVATE ${Vulkan_LIBRARIES})
 
 # 创建导出目标列表
 install(TARGETS ReiToRuntime

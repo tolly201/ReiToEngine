@@ -16,6 +16,7 @@ protected:
     RTWindowsApplication() = default;
     ~RTWindowsApplication() = default;
     HINSTANCE hInstance;
+
 };
 
 }
