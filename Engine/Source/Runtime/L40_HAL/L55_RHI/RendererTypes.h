@@ -2,7 +2,7 @@
 #define RHI_RENDERER_TYPES_H
 
 #include "L0_Macro/Include.h"
-
+#include "L20_Platform/Include.h"
 namespace ReiToEngine {
 
 enum class ERenderBackendType : u8 {
@@ -28,6 +28,12 @@ struct render_packet {
 };
 
 struct RenderData {
+};
+
+struct SurfaceDesc {
+    IWindow* p_window;
+    u32 width;
+    u32 height;
 };
 
 enum class ESceneDataType : u8 {

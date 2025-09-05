@@ -23,6 +23,8 @@ public:
 
     virtual void SetInputMonitor(PlatformInputMonitor* monitor) = 0;
     virtual void Update(const u8* buffer, u32 width, u32 height) = 0;
+
+    virtual void* GetNativeWindowHandle() const = 0;
 protected:
     char* title;
     u32 width;

@@ -3,6 +3,9 @@
 #include "../IRendererBackend.h"
 #include "vulkan/vulkan.h"
 #include "VulkanRendererPlatform.h"
+#include "L20_Platform/Include.h"
+#include "VulkanExtensions.h"
+#include "VulkanDevices.h"
 namespace ReiToEngine
 {
 class VulkanRenderBackend : public IRendererBackend {
@@ -17,6 +20,10 @@ public:
 
     b8 BeginFrame(f64 delta_time) override;
     b8 EndFrame(f64 delta_time) override;
+
+    b8 CreateSwapChain(RT_Platform_State& platform_state, SurfaceDesc& desc) override;
+    b8 CreateSurface(RT_Platform_State& platform_state, SurfaceDesc& desc) override;
+
 private:
     VkInstance instance;
     VkAllocationCallbacks* allocator;
@@ -24,9 +31,10 @@ private:
     b8 debugger_enabled;
     VkDebugUtilsMessengerEXT debug_messenger;
 
-    VkPhysicalDevice physical_device;
-    VkDevice logical_device;
+    List<VulkanDeviceCombination> devices;
 
+    List<VulkanSwapchainContext> swapchains;
+    Map<IWindow*, VulkanSwapchainContext*> swapchain_map;
 };
 
 }

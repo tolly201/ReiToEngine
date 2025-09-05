@@ -1,6 +1,7 @@
 #include "VulkanRendererBackend.h"
 #include "L20_Platform/Include.h"
-
+#include "VulkanExtensions.h"
+#include "VulkanDevices.h"
 namespace ReiToEngine
 {
 
@@ -9,7 +10,7 @@ b8 get_vulkan_validation_layers(u32& out_layer_count, ReiToEngine::List<const ch
 
 b8 create_debugger(VkInstance& instance, VkAllocationCallbacks*& allocator, VkDebugUtilsMessengerEXT& debug_messenger);
 
-VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,VkDebugUtilsMessageTypeFlagsEXT              messageTypes,const VkDebugUtilsMessengerCallbackDataEXT*  pCallbackData,void*                                        pUserData);
+VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,VkDebugUtilsMessageTypeFlagsEXT              messageTypes,const VkDebugUtilsMessengerCallbackDataEXT*  pCallbackData, void* pUserData);
 
 b8 VulkanRenderBackend::Initialize(ERenderBackendType renderer_type, const char* application_name, PlatformState* plat_state) {
     allocator = nullptr;
@@ -44,13 +45,29 @@ b8 VulkanRenderBackend::Initialize(ERenderBackendType renderer_type, const char*
     // #ifdef RT_SYSTEM_APPLE
     create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
     // #endif
-    RT_ASSERT(vkCreateInstance(&create_info, allocator, &instance) == VK_SUCCESS);
+    RT_VK_CHECK(vkCreateInstance(&create_info, allocator, &instance));
     debugger_enabled = create_debugger(instance, allocator, debug_messenger);
+
+    vulkan_initalize_physical_devices(instance, devices);
 
     RT_LOG_INFO("Vulkan Instance created successfully.");
     return true;
 }
 b8 VulkanRenderBackend::Terminate(){
+    for (auto& swapchain : swapchains) {
+        if (swapchain.surface != VK_NULL_HANDLE) {
+            PlatformDestroyVulkanSurface(instance, swapchain.surface);
+            swapchain.surface = VK_NULL_HANDLE;
+        }
+    }
+    swapchains.clear();
+
+    for (auto& device : devices) {
+        vulkan_logical_device_destroy(device);
+        device.is_inused = false;
+        device.logical_device = VK_NULL_HANDLE;
+    }
+
     if (debugger_enabled) {
         PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
         RT_ASSERT_MESSAGE(func != nullptr, "Failed to get vkDestroyDebugUtilsMessengerEXT function.");
@@ -60,6 +77,7 @@ b8 VulkanRenderBackend::Terminate(){
     }
     RT_LOG_INFO("Destroying Vulkan Instance.");
     vkDestroyInstance(instance, allocator);
+    return true;
 }
 b8 VulkanRenderBackend::Tick(){}
 b8 VulkanRenderBackend::Resized(u32 width, u32 height){}
@@ -67,105 +85,51 @@ b8 VulkanRenderBackend::Resized(u32 width, u32 height){}
 b8 VulkanRenderBackend::BeginFrame(f64 delta_time){}
 b8 VulkanRenderBackend::EndFrame(f64 delta_time){}
 
-void get_vulkan_extensions(u32& out_extension_count, ReiToEngine::List<const char*>& out_extensions)
+b8 VulkanRenderBackend::CreateSwapChain(RT_Platform_State& platform_state, SurfaceDesc& desc)
 {
-    out_extension_count = 0;
-    out_extensions.clear();
-#if RT_OHI_DEBUG == 1
-    out_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-    out_extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-#endif
-    PlatformGetVulkanExtensions(out_extensions);
-
-    out_extension_count = out_extensions.size();
-    RT_LOG_INFO("Vulkan Extension: ");
-    for(auto& ext : out_extensions) {
-        RT_LOG_INFO(ext);
-    }
-}
-
-b8 get_vulkan_validation_layers(u32& out_layer_count, ReiToEngine::List<const char*>& out_layers)
-{
-    out_layer_count = 0;
-    out_layers.clear();
-#if RT_OHI_DEBUG == 1
-    RT_LOG_INFO("Vulkan Validation Layers enabled.");
-    out_layers.push_back("VK_LAYER_KHRONOS_validation");
-
-    u32 available_layer_count = 0;
-    vkEnumerateInstanceLayerProperties(&available_layer_count, nullptr);
-    ReiToEngine::List<VkLayerProperties> available_layers;
-    available_layers.resize(available_layer_count);
-    vkEnumerateInstanceLayerProperties(&available_layer_count, available_layers.data());
-
-    for (u32 i = 0; i < out_layers.size(); ++i) {
-        RT_LOG_INFO("Requested Vulkan Validation Layer: ", out_layers[i]);
-        b8 layer_found = false;
-
-        for (u32 j = 0; j < available_layer_count; ++j) {
-            if (RT_StrCmp(out_layers[i], available_layers[j].layerName)) {
-                layer_found = true;
-                break;
-            }
-        }
-        if (!layer_found) {
-            RT_LOG_FATAL("Vulkan Validation Layer not found: ", out_layers[i]);
-            out_layers.clear();
-            out_layer_count = 0;
-            return false;
-        }
-    }
-
-    RT_LOG_INFO("All requested Vulkan Validation Layers are available.");
-    out_layer_count = out_layers.size();
-    return true;
-#endif
-}
-
-b8 create_debugger(VkInstance& instance, VkAllocationCallbacks*& allocator, VkDebugUtilsMessengerEXT& debug_messenger)
-{
-#if RT_OHI_DEBUG == 1
-    u32 msg_severity =VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
-                     VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                     VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT    |
-                     VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
-
-    VkDebugUtilsMessengerCreateInfoEXT debug_create_info{};
-    debug_create_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    debug_create_info.messageSeverity = msg_severity;
-    debug_create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                                   VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                                   VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    debug_create_info.pfnUserCallback = vk_debug_callback;
-    debug_create_info.pUserData = nullptr;
-
-    PFN_vkCreateDebugUtilsMessengerEXT func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-    RT_ASSERT_MESSAGE(func != nullptr, "Failed to get vkCreateDebugUtilsMessengerEXT function.");
-    RT_ASSERT(func(instance, &debug_create_info, allocator, &debug_messenger) == VK_SUCCESS);
-    RT_LOG_DEBUG("Vulkan Debug Messenger created.");
-    return true;
-#endif
-    debug_messenger = VK_NULL_HANDLE;
-    return false;
-}
-
-VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT              messageTypes,
-    const VkDebugUtilsMessengerCallbackDataEXT*  pCallbackData,
-    void*                                        pUserData)
-{
-    if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
-        RT_LOG_ERROR("Vulkan Validation Layer: ", pCallbackData->pMessage);
-    } else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
-        RT_LOG_WARN("Vulkan Validation Layer: ", pCallbackData->pMessage);
-    } else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) {
-        RT_LOG_INFO("Vulkan Validation Layer: ", pCallbackData->pMessage);
-    } else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
+    VulkanSwapchainContext swapchain_context{};
+    if (!PlatformCreateVulkanSurface(platform_state, desc, instance, swapchain_context.surface))
     {
-        RT_LOG_TRACE("Vulkan Validation Layer: ", pCallbackData->pMessage);
+        RT_LOG_ERROR("VulkanRenderBackend::CreateSwapChain: Failed to create Vulkan surface.");
+        return false;
     }
-    return VK_FALSE;
+    swapchains.push_back(swapchain_context);
+    RT_LOG_INFO("VulkanRenderBackend::CreateSwapChain: Vulkan surface created and swapchain context added.");
+    return true;
 }
 
+b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, SurfaceDesc& desc)
+{
+    RT_LOG_INFO("CreateSurface");
+
+    swapchains.emplace_back();
+    VulkanSwapchainContext& swapchain = swapchains.back();
+
+    swapchain_map[desc.p_window] = &swapchain;
+
+    PlatformCreateVulkanSurface(platform_state, desc, instance, swapchain.surface);
+
+    swapchain.requirements = {};
+    swapchain.requirements.queue_families[VulkanQueueFamilyIndicesType::GRAPHICS] = true;
+    swapchain.requirements.queue_families[VulkanQueueFamilyIndicesType::PRESENT] = true;
+    swapchain.requirements.queue_families[VulkanQueueFamilyIndicesType::TRANSFER] = true;
+    swapchain.requirements.queue_families[VulkanQueueFamilyIndicesType::COMPUTE] = true;
+    swapchain.requirements.sample_anisotropy = true;
+    swapchain.requirements.discrete_gpu = true;
+    swapchain.requirements.required_extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+    swapchain.requirements.required_extensions.push_back("VK_KHR_portability_subset");
+    swapchain.queue_family_indices.clear();
+    swapchain.device_combination = nullptr;
+    swapchain.queue_family_indices.clear();
+
+    vulkan_physical_device_select(instance, swapchain, devices);
+
+    vulkan_logical_device_create(swapchain);
+    // device->is_inused = true;
+    // if(!inused_devices.contains(device)) {
+        // inused_devices.insert(device);
+    // }
+    // swapchain.selected_physical_device = device;
+    return true;
+}
 }

@@ -9,7 +9,10 @@ b8 RendererSystem::Initialize() {
     // Initialization logic for the renderer system
     RT_LOG_INFO("RendererSystem Initialized.");
     CreateRendererBackend(ERenderBackendType::VULKAN, "ReiToEngine", nullptr);
+    RT_LOG_INFO("RendererSystem Frontend Initialized.");
     CreateRendererFrontend(ERenderFrontendType::MESH, "ReiToEngine", nullptr);
+    RT_LOG_INFO("RendererSystem Frontend Initialized.");
+
     return true;
 }
 

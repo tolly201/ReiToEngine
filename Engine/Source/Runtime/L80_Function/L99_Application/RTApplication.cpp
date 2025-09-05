@@ -82,14 +82,12 @@ namespace ReiToEngine{
         event_system_ptr->Initialize();
         input_system_ptr->Initialize();
         renderer_system_ptr->Initialize();
-
         RT_LOG_DEBUG("render manager");
         windowsManager_ptr->Initialize();
         RT_LOG_DEBUG("win iniite manager");
 
         //renderManager_ptr->Initialize();
         RT_LOG_DEBUG("render init manager");
-
         initialized = true;
         return true;
     }
@@ -101,7 +99,7 @@ namespace ReiToEngine{
         app_state.timer.SetFrameCount(60);
         RT_LOG_DEBUG("APPLICATION STARTGAME");
         // if(!RT_Platform_Initialize(app_state.main_window, game_instance->app_config.name, game_instance->app_config.start_width, game_instance->app_config.start_height, game_instance->app_config.start_pos_x, game_instance->app_config.start_pos_y))
-        if(!RT_Platform_Initialize())
+        if(!RT_Platform_Initialize(platform_state))
         {
             RT_LOG_FATAL("Failed to START CREATE PLATFORM WINDOW.");
             return false;
@@ -123,6 +121,12 @@ namespace ReiToEngine{
         printf("base run\n");
         CreateMainWindow();
 
+        renderer_system_ptr->CreateWindowsSurface(*platform_state, SurfaceDesc{
+            app_state.main_window.window_ptr,
+            app_state.width,
+            app_state.height
+        });
+
         event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_PRESS), this, application_on_key);
 
         app_state.is_running = true;
@@ -135,7 +139,7 @@ namespace ReiToEngine{
         RT_LOG_INFO(memoryManager.GetMemoryUsageReport());
         while(app_state.is_running)
         {
-            if (!RT_Platform_PumpMessage())
+            if (!RT_Platform_PumpMessage(platform_state))
             {
                 app_state.is_running = false;
             }

@@ -28,9 +28,10 @@ public:
     PlatformInputMonitor* GetInputMonitor() const;
     virtual void ProcessEvents() override;
     virtual void Update(const u8* buffer, u32 width, u32 height) override;
-
+    void* GetNativeWindowHandle() const override { return hwnd; }
 private:
     HWND hwnd;
+    HINSTANCE hInstance;
     ReiToEngine::WindowsInputMonitor* inputMonitor; // 新增成员
 };
 

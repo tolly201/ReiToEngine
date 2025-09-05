@@ -25,6 +25,8 @@
     "editor.autoIndent": "keep"
     },
 
+    "cmake.buildDirectory": "${workspaceFolder}/build_vscode",
+
     "clang-format.executable": "/usr/local/bin/clang-format",
     "files.associations": {
         "xstring": "cpp",
@@ -131,6 +133,8 @@
         "compare": "cpp",
         "concepts": "cpp",
         "numeric": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "coroutine": "cpp",
+        "future": "cpp"
     },
 }

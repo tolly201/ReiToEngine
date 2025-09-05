@@ -42,7 +42,7 @@ public:
     void SetInputMonitor(PlatformInputMonitor* monitor) override;
     PlatformInputMonitor* GetInputMonitor() const;
     void Update(const u8* buffer, u32 width, u32 height) override;
-
+    void* GetNativeWindowHandle() const override { return cocoaWindow; }
     MacOSXView* cocoaView;
 protected:
 private:

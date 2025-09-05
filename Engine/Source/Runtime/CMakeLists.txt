@@ -39,6 +39,8 @@ elseif(APPLE)
     target_link_libraries(ReiToRuntime PRIVATE
         "-framework Foundation"
         "-framework Cocoa"
+        "-framework Metal"         # 新增 Metal 框架
+        "-framework QuartzCore"    # 新增 QuartzCore 框架
     )
 else()
     target_compile_options(ReiToRuntime PRIVATE

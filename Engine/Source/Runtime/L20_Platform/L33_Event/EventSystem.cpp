@@ -42,6 +42,7 @@ b8 EventSystem::RegisterEvent(u32 code, void* listener, PFN_on_event callback){
     }
 
     state.registered[code].events.emplace_back(listener, callback);
+    return true;
 }
 b8 EventSystem::UnregisterEvent(u32 code, void* listener, PFN_on_event callback){
     if (!is_initialized) {

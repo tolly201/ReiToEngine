@@ -4,10 +4,22 @@
 #import <AppKit/AppKit.h>
 #include "MacOSXWindow.h"
 #include "L20_Platform/L23_Logger/Include.h"
-
+#import <QuartzCore/CAMetalLayer.h>
 @implementation OSXView {
 
 }
+
+- (instancetype)initWithFrame:(NSRect)frameRect {
+    self = [super initWithFrame:frameRect];
+    if (self) {
+        self.wantsLayer = YES;
+        if (![self.layer isKindOfClass:[CAMetalLayer class]]) {
+            self.layer = [CAMetalLayer layer];
+        }
+    }
+    return self;
+}
+
 - (void)displayBuffer:(const void*)buffer width:(uint32_t)width height:(uint32_t)height channel:(uint8_t)channel {
     if (buffer == nullptr || width == 0 || height == 0 || channel == 0) {
         return;

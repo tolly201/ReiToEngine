@@ -14,8 +14,8 @@ struct ApplicationState
     ~ApplicationState() = default;
     b8 is_running;
     b8 is_paused;
-    i16 width;
-    i16 height;
+    u32 width;
+    u32 height;
     f64 last_time;
     i16 pos_x;
     i16 pos_y;

@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
+
+if(DEFINED ENV{VSCODE_PID})
+else()
 # 自动检测目标平台和编译器
 if(NOT DEFINED RT_TARGET_PLATFORM)
     if(WIN32)
@@ -49,7 +52,7 @@ if(EXISTS ${TOOLCHAIN_FILE})
 else()
     message(FATAL_ERROR "Toolchain file not found: ${TOOLCHAIN_FILE}")
 endif()
-
+endif()
 project(ReiToEngine)
 # 通用编译设置
 set(CMAKE_CXX_STANDARD 20)

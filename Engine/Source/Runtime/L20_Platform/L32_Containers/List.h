@@ -31,6 +31,10 @@ public:
     {
         return _data[index];
     }
+    const T& operator[](u64 index) const
+    {
+        return _data[index];
+    }
     T& front()
     {
         return _data.front();

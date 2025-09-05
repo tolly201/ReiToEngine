@@ -34,6 +34,8 @@ public:
     InputSystem* input_system_ptr;
     RendererSystem* renderer_system_ptr;
 
+    RT_Platform_State* platform_state;
+
     // RenderManager* renderManager_ptr;
     WindowsManager* windowsManager_ptr;
     b8 initialized = false;

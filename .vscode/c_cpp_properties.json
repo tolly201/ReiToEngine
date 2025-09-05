@@ -16,7 +16,7 @@
                 "RT_EXPORTS",
                 "_GNU_SOURCE"
             ],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/usr/local/opt/llvm/bin/clang++",
             "cStandard": "c23",
             "cppStandard": "c++23",
             "intelliSenseMode": "clang-x64",
@@ -39,7 +39,8 @@
                 "${workspaceFolder}/Engine/Source/Editor/",
                 "${workspaceFolder}/Engine/Thirdparty/stb/*",
                 "${workspaceFolder}/Engine/Thirdparty/Assimp/include/",
-                "${VULKAN_SDK}/include"
+                "${VULKAN_SDK}/include",
+                "/Users/bole/VulkanSDK/1.4.321.0/macOS/include"
             ],
             "defines": [
                 "_DEBUG",
@@ -47,7 +48,7 @@
                 "_UNICODE",
                 "RT_EXPORTS"
             ],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/usr/local/opt/llvm/bin/clang++",
             "cStandard": "c23",
             "cppStandard": "c++23",
             "intelliSenseMode": "clang-x64"

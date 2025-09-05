@@ -2,6 +2,7 @@
 #define RHI_IRENDERER_BACKEND_H
 
 #include "L0_Macro/Include.h"
+#include "L20_Platform/Include.h"
 #include "RendererTypes.h"
 namespace ReiToEngine {
 
@@ -18,6 +19,9 @@ class IRendererBackend {
 
     virtual b8 BeginFrame(f64 delta_time) = 0;
     virtual b8 EndFrame(f64 delta_time) = 0;
+
+    virtual b8 CreateSwapChain(RT_Platform_State& platform_state, SurfaceDesc& desc) = 0;
+    virtual b8 CreateSurface(RT_Platform_State& platform_state, SurfaceDesc& desc) = 0;
 };
 }
 #endif
