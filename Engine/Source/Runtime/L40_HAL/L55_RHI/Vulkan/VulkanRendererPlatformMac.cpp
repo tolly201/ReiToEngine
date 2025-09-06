@@ -9,8 +9,6 @@ namespace ReiToEngine
 {
 void PlatformGetVulkanExtensions(ReiToEngine::List<const char*>& out_extensions)
 {
-    out_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-    out_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
     out_extensions.push_back(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
     out_extensions.push_back(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
 }
@@ -39,6 +37,11 @@ b8 PlatformDestroyVulkanSurface(VkInstance& instance, VkSurfaceKHR& surface)
 {
     vkDestroySurfaceKHR(instance, surface, nullptr);
     RT_LOG_INFO("PlatformDestroyVulkanSurface: Vulkan surface destroyed successfully");
+    return true;
+}
+
+b8 platform_get_required_vulkan_extensions(List<const char*>& out_extensions){
+    out_exensions.push_back("VK_KHR_portability_subset");
     return true;
 }
 }

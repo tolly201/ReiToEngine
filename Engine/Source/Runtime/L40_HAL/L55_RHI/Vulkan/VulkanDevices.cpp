@@ -10,28 +10,29 @@ b8 vulkan_initalize_physical_devices(VkInstance& instance, List<VulkanDeviceComb
         return false;
     }
 
-    VkPhysicalDevice devices[device_count];
-    RT_VK_CHECK(vkEnumeratePhysicalDevices(instance, &device_count, devices));
+    List<VkPhysicalDevice> physical_devices;
+    physical_devices.resize(device_count);
+    RT_VK_CHECK(vkEnumeratePhysicalDevices(instance, &device_count, physical_devices.data()));
 
     for (u32 i = 0; i < device_count; ++i) {
         VulkanDeviceCombination device_combination{};
 
-        device_combination.physical_device = devices[i];
+        device_combination.physical_device = physical_devices[i];
         device_combination.logical_device = VK_NULL_HANDLE;
         device_combination.is_inused = false;
 
         device_combination.device_properties = {};
         device_combination.device_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
 
-        vkGetPhysicalDeviceProperties2(devices[i], &device_combination.device_properties);
+        vkGetPhysicalDeviceProperties2(physical_devices[i], &device_combination.device_properties);
 
         device_combination.device_features = {};
         device_combination.device_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-        vkGetPhysicalDeviceFeatures2(devices[i], &device_combination.device_features);
+        vkGetPhysicalDeviceFeatures2(physical_devices[i], &device_combination.device_features);
 
         device_combination.memory_properties = {};
         device_combination.memory_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2;
-        vkGetPhysicalDeviceMemoryProperties2(devices[i], &device_combination.memory_properties);
+        vkGetPhysicalDeviceMemoryProperties2(physical_devices[i], &device_combination.memory_properties);
 
         u32 queue_family_count = 0;
 
@@ -77,9 +78,9 @@ b8 vulkan_initalize_physical_devices(VkInstance& instance, List<VulkanDeviceComb
         }
 
         u32 extension_count = 0;
-        RT_VK_CHECK(vkEnumerateDeviceExtensionProperties(devices[i], nullptr, &extension_count, nullptr));
+        RT_VK_CHECK(vkEnumerateDeviceExtensionProperties(physical_devices[i], nullptr, &extension_count, nullptr));
         device_combination.supported_extensions.resize(extension_count);
-        RT_VK_CHECK(vkEnumerateDeviceExtensionProperties(devices[i], nullptr, &extension_count, device_combination.supported_extensions.data()));
+        RT_VK_CHECK(vkEnumerateDeviceExtensionProperties(physical_devices[i], nullptr, &extension_count, device_combination.supported_extensions.data()));
 
         out_physical_devices.push_back(std::move(device_combination));
 
@@ -240,21 +241,24 @@ b8 vulkan_logical_device_destroy(VulkanDeviceCombination& dc)
 
 b8 select_physical_device(VkInstance& instance, VulkanSwapchainContext& swapchain_content,  List<VulkanDeviceCombination>& devices, VulkanDeviceCombination*& out_device)
 {
-    RT_LOG_DEBUG("START SELECT DEVICE:");
+    RT_LOG_DEBUG_FMT("START SELECT DEVICE: {}", devices.size());
 
     u32 highest_score = 0;
-    for (VulkanDeviceCombination& device_combination : devices) {
-        // need to be set in swapchain context
 
-        RT_LOG_DEBUG("START CHECK physical device:");
+    for (u32 i = 0; i < devices.size(); ++i) {
+        VulkanDeviceCombination& device_combination = devices[i];
+
+
+        RT_LOG_DEBUG_FMT("Querying swapchain support for device: {}", i);
         u32 score = physical_device_meets_requirements(device_combination, swapchain_content);
 
-        if (score > highest_score)
-        {
+        if (score > highest_score) {
             highest_score = score;
             out_device = &device_combination;
+            RT_LOG_DEBUG_FMT("New best device found: {} with score {}.", i, score);
         }
     }
+
     return out_device != nullptr;
 }
 

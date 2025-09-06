@@ -4,11 +4,7 @@
 #include "L20_Platform/L37_Window/Functions.h"
 #include "L20_Platform/L37_Window/Windows/WindowsWindow.h"
 #include "L20_Platform/L35_Input/Include.h"
-
-sturct RT_Platform_State{
-    HINSTANCE hInstance;
-}
-
+#include "windows.h"
 b8 RT_Platform_Initialize(RT_Platform_State*& platform_state){
     platform_state = new RT_Platform_State();
     platform_state->hInstance = GetModuleHandleW(nullptr);
@@ -18,7 +14,7 @@ b8 RT_Platform_Initialize(RT_Platform_State*& platform_state){
 }
 void RT_Platform_Terminate(RT_Platform_State*& platform_state)
 {
-    delete plateform_state;
+    delete platform_state;
     RT_Platform_MainWindowTerminate(platform_state);
 }
 

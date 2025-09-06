@@ -66,6 +66,8 @@ b8 vulkan_physical_device_select(VkInstance& instance, VulkanSwapchainContext& s
 b8 vulkan_logical_device_create(VulkanSwapchainContext& swapchain_context);
 b8 vulkan_physical_device_destroy();
 b8 vulkan_logical_device_destroy(VulkanDeviceCombination& dc);
+
+b8 platform_get_required_vulkan_extensions(List<const char*>&);
 }
 
 #endif

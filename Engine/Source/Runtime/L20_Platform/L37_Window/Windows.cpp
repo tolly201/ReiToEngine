@@ -2,7 +2,9 @@
 #ifdef RT_SYSTEM_WINDOWS
 #include <windows.h>
 #include "L20_Platform/L23_Logger/Include.h"
-#include "WindowsEnums.h"
+#include "WindowEnums.h"
+#include "L20_Platform/L35_Input/Include.h"
+#include "L20_Platform/L37_Window/Windows/WindowsWindow.h"
 namespace{
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -60,27 +62,27 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 
-b8 RT_Platform_MainWindowInitialize(RT_Platform_State* platform_state)
-{
-    HINSTANCE hInstance = platform_state->hInstance;
-    RegisterBaseWindowClass(hInstance, L"rt_base_window_class");
-    return true;
-}
-
-void RT_Platform_MainWindowTerminate(RT_Platform_State* platform_state)
-{
-    HINSTANCE hInstance = plaform_state->hInstance;
-    UnregisterClassW(L"rt_base_window_class", hInstance);
-}
-
-b8 RT_Platform_MainWindowPumpMessage(RT_Platform_State* platform_state)
-{
-    MSG message;
-    while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE))
+    b8 RT_Platform_MainWindowInitialize(RT_Platform_State* platform_state)
     {
-        TranslateMessage(&message);
-        DispatchMessageW(&message);
+        HINSTANCE hInstance = platform_state->hInstance;
+        RegisterBaseWindowClass(hInstance, L"rt_base_window_class");
+        return true;
     }
-    return true;
-}
-#endif
+
+    void RT_Platform_MainWindowTerminate(RT_Platform_State* platform_state)
+    {
+        HINSTANCE hInstance = platform_state->hInstance;
+        UnregisterClassW(L"rt_base_window_class", hInstance);
+    }
+
+    b8 RT_Platform_MainWindowPumpMessage(RT_Platform_State* platform_state)
+    {
+        MSG message;
+        while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&message);
+            DispatchMessageW(&message);
+        }
+        return true;
+    }
+    #endif

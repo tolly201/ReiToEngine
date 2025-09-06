@@ -13,6 +13,8 @@ void get_vulkan_extensions(u32& out_extension_count, ReiToEngine::List<const cha
     PlatformGetVulkanExtensions(out_extensions);
 
     out_extensions.push_back(VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME);
+    out_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+    out_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
     out_extension_count = out_extensions.size();
     RT_LOG_INFO("Vulkan Extension: ");
     for(auto& ext : out_extensions) {

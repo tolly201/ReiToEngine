@@ -79,11 +79,11 @@ b8 VulkanRenderBackend::Terminate(){
     vkDestroyInstance(instance, allocator);
     return true;
 }
-b8 VulkanRenderBackend::Tick(){}
-b8 VulkanRenderBackend::Resized(u32 width, u32 height){}
+b8 VulkanRenderBackend::Tick(){return true;}
+b8 VulkanRenderBackend::Resized(u32 width, u32 height){return true;}
 
-b8 VulkanRenderBackend::BeginFrame(f64 delta_time){}
-b8 VulkanRenderBackend::EndFrame(f64 delta_time){}
+b8 VulkanRenderBackend::BeginFrame(f64 delta_time){return true;}
+b8 VulkanRenderBackend::EndFrame(f64 delta_time){return true;}
 
 b8 VulkanRenderBackend::CreateSwapChain(RT_Platform_State& platform_state, SurfaceDesc& desc)
 {
@@ -116,8 +116,10 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
     swapchain.requirements.queue_families[VulkanQueueFamilyIndicesType::COMPUTE] = true;
     swapchain.requirements.sample_anisotropy = true;
     swapchain.requirements.discrete_gpu = true;
+
+    platform_get_required_vulkan_extensions(swapchain.requirements.required_extensions);
+
     swapchain.requirements.required_extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-    swapchain.requirements.required_extensions.push_back("VK_KHR_portability_subset");
     swapchain.queue_family_indices.clear();
     swapchain.device_combination = nullptr;
     swapchain.queue_family_indices.clear();
