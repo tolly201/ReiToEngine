@@ -41,7 +41,7 @@ b8 PlatformDestroyVulkanSurface(VkInstance& instance, VkSurfaceKHR& surface)
 }
 
 b8 platform_get_required_vulkan_extensions(List<const char*>& out_extensions){
-    out_exensions.push_back("VK_KHR_portability_subset");
+    out_extensions.push_back("VK_KHR_portability_subset");
     return true;
 }
 }
