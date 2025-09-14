@@ -62,4 +62,9 @@ constexpr T RTSETFLAG(const T& flags, const T& flag, bool enable) {
     return flags = (enable ? (flags | flag) : (flags & ~flag));
 }
 
+
+template <typename T>
+constexpr T RT_CLAMP(const T& value, const T& minval, const T& maxval) {
+    return (value <= minval) ? minval : ((value >= maxval) ? maxval : value);
+}
 #endif

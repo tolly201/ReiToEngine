@@ -135,6 +135,9 @@
         "numeric": "cpp",
         "algorithm": "cpp",
         "coroutine": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "xhash": "cpp",
+        "xiosbase": "cpp",
+        "xtree": "cpp"
     },
 }

@@ -2,6 +2,7 @@
 #include "L20_Platform/Include.h"
 #include "VulkanExtensions.h"
 #include "VulkanDevices.h"
+#include "VulkanSwapChain.h"
 namespace ReiToEngine
 {
 
@@ -55,10 +56,14 @@ b8 VulkanRenderBackend::Initialize(ERenderBackendType renderer_type, const char*
 }
 b8 VulkanRenderBackend::Terminate(){
     for (auto& swapchain : swapchains) {
-        if (swapchain.surface != VK_NULL_HANDLE) {
+        vulkan_swapchain_destroy({instance, allocator}, swapchain);
+
+        if (swapchain.surface != VK_NULL_HANDLE)
+        {
             PlatformDestroyVulkanSurface(instance, swapchain.surface);
             swapchain.surface = VK_NULL_HANDLE;
         }
+
     }
     swapchains.clear();
 
@@ -85,25 +90,14 @@ b8 VulkanRenderBackend::Resized(u32 width, u32 height){return true;}
 b8 VulkanRenderBackend::BeginFrame(f64 delta_time){return true;}
 b8 VulkanRenderBackend::EndFrame(f64 delta_time){return true;}
 
-b8 VulkanRenderBackend::CreateSwapChain(RT_Platform_State& platform_state, SurfaceDesc& desc)
-{
-    VulkanSwapchainContext swapchain_context{};
-    if (!PlatformCreateVulkanSurface(platform_state, desc, instance, swapchain_context.surface))
-    {
-        RT_LOG_ERROR("VulkanRenderBackend::CreateSwapChain: Failed to create Vulkan surface.");
-        return false;
-    }
-    swapchains.push_back(swapchain_context);
-    RT_LOG_INFO("VulkanRenderBackend::CreateSwapChain: Vulkan surface created and swapchain context added.");
-    return true;
-}
-
 b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, SurfaceDesc& desc)
 {
     RT_LOG_INFO("CreateSurface");
 
     swapchains.emplace_back();
     VulkanSwapchainContext& swapchain = swapchains.back();
+    swapchain.width = desc.width;
+    swapchain.height = desc.height;
 
     swapchain_map[desc.p_window] = &swapchain;
 
@@ -132,6 +126,8 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
         // inused_devices.insert(device);
     // }
     // swapchain.selected_physical_device = device;
+
+    vulkan_swapchain_create({instance, allocator}, swapchain);
     return true;
 }
 }

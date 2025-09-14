@@ -20,7 +20,6 @@ class IRendererBackend {
     virtual b8 BeginFrame(f64 delta_time) = 0;
     virtual b8 EndFrame(f64 delta_time) = 0;
 
-    virtual b8 CreateSwapChain(RT_Platform_State& platform_state, SurfaceDesc& desc) = 0;
     virtual b8 CreateSurface(RT_Platform_State& platform_state, SurfaceDesc& desc) = 0;
 };
 }

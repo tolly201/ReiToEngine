@@ -21,7 +21,6 @@ public:
     b8 BeginFrame(f64 delta_time) override;
     b8 EndFrame(f64 delta_time) override;
 
-    b8 CreateSwapChain(RT_Platform_State& platform_state, SurfaceDesc& desc) override;
     b8 CreateSurface(RT_Platform_State& platform_state, SurfaceDesc& desc) override;
 
 private:

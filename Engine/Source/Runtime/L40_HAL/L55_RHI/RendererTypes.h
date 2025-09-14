@@ -1,6 +1,5 @@
 #ifndef RHI_RENDERER_TYPES_H
 #define RHI_RENDERER_TYPES_H
-
 #include "L0_Macro/Include.h"
 #include "L20_Platform/Include.h"
 namespace ReiToEngine {

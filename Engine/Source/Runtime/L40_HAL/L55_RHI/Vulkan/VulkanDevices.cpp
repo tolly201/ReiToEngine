@@ -112,9 +112,6 @@ b8 vulkan_initalize_physical_devices(VkInstance& instance, List<VulkanDeviceComb
 
 b8 select_physical_device(VkInstance& instance, VulkanSwapchainContext& swapchain_content, List<VulkanDeviceCombination>&, VulkanDeviceCombination*&);
 u32 physical_device_meets_requirements(VulkanDeviceCombination&, VulkanSwapchainContext&);
-
-b8 vulkan_device_query_swapchain_support(VkPhysicalDevice& device, VkSurfaceKHR& surface, VulkanSwapChainSupportInfo& out_info);
-
 b8 vulkan_physical_device_select(VkInstance& instance, VulkanSwapchainContext& swapchain_content, List<VulkanDeviceCombination>& devices)
 {
     RT_LOG_DEBUG("START SELECT PHYSICAL DEVICE:");
@@ -165,7 +162,9 @@ b8 vulkan_logical_device_create(VulkanSwapchainContext& swapchain_context){
     // 2) 组装队列创建信息（每族先要 1 条队列）
     List<VkDeviceQueueCreateInfo> qcis;
     qcis.clear();
-    static float priority = 1.0f; // 单条队列优先级数组
+
+    List<List<float>> all_queue_priorities;
+    all_queue_priorities.clear();
 
     for (u32 family : families) {
         // 容错：若索引越界则跳过
@@ -178,12 +177,16 @@ b8 vulkan_logical_device_create(VulkanSwapchainContext& swapchain_context){
         if (qfp.queueCount == 0) continue;
 
         RT_LOG_DEBUG_FMT("Create queue for family index Priority: {}.", family);
-
         VkDeviceQueueCreateInfo qci{};
         qci.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         qci.queueFamilyIndex = family;
-        qci.queueCount = 1;
-        qci.pQueuePriorities = &priority;
+        qci.queueCount = 2;
+        all_queue_priorities.emplace_back();
+        List<float>& queue_priorities = all_queue_priorities.back();
+        queue_priorities.clear();
+        queue_priorities.resize(qci.queueCount, 1.0f);
+
+        qci.pQueuePriorities = queue_priorities.data();
         qcis.push_back(qci);
     }
 
@@ -237,6 +240,50 @@ b8 vulkan_logical_device_destroy(VulkanDeviceCombination& dc)
         RT_LOG_INFO("Logical device destroyed.");
     }
     return true;
+}
+
+b8 vulkan_device_detect_depth_format(VulkanDeviceCombination& device_combination)
+{
+    // 常用深度格式列表，按优先级从高到低
+
+    List<VkFormat> depth_formats;
+    depth_formats.clear();
+
+    depth_formats.push_back(VK_FORMAT_D32_SFLOAT_S8_UINT);
+    depth_formats.push_back(VK_FORMAT_D32_SFLOAT);
+    depth_formats.push_back(VK_FORMAT_D24_UNORM_S8_UINT);
+    depth_formats.push_back(VK_FORMAT_D16_UNORM_S8_UINT);
+    depth_formats.push_back(VK_FORMAT_D16_UNORM);
+
+    u32 flags = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
+    for (VkFormat format : depth_formats) {
+        VkFormatProperties2 props2;
+        VkFormatProperties3 props3;
+        props2.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+        props2.pNext = &props3;
+
+        props3.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3;
+        props3.pNext = nullptr;
+
+        vkGetPhysicalDeviceFormatProperties2(device_combination.physical_device, format, &props2);
+
+        // 检查是否支持作为深度/模板附件使用
+        if ((props3.linearTilingFeatures & flags) == flags) {
+            device_combination.depth_format = format;
+            RT_LOG_INFO_FMT("Selected depth format: {}", static_cast<u32>(format));
+            return true;
+        }
+
+        else if ((props3.optimalTilingFeatures & flags) == flags) {
+            device_combination.depth_format = format;
+            RT_LOG_INFO_FMT("Selected depth format: {}", static_cast<u32>(format));
+            return true;
+        }
+    }
+
+    RT_LOG_ERROR("Failed to find a supported depth format.");
+    return false;
 }
 
 b8 select_physical_device(VkInstance& instance, VulkanSwapchainContext& swapchain_content,  List<VulkanDeviceCombination>& devices, VulkanDeviceCombination*& out_device)
@@ -482,4 +529,17 @@ b8 vulkan_device_query_swapchain_support(VkPhysicalDevice& device, VkSurfaceKHR&
 
     return true;
 }
+
+i32 VulkanDeviceCombination::find_memory_index(u32 type_filter, VkMemoryPropertyFlags properties)
+{
+    VkPhysicalDeviceMemoryProperties2& memory_properties = this->memory_properties;
+    for (u32 i = 0; i < memory_properties.memoryProperties.memoryTypeCount; ++i) {
+        if ((type_filter & (1 << i)) && (memory_properties.memoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+            return i;
+        }
+    }
+    RT_LOG_WARN("Failed to find suitable memory type.");
+    return -1;
+}
+
 }

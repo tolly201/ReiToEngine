@@ -67,6 +67,16 @@ public:
     {
         _data.resize(new_size);
     }
+
+    void reserve(u32 new_capacity)
+    {
+        _data.reserve(new_capacity);
+    }
+
+    void resize(u32 new_size, const T& value)
+    {
+        _data.resize(new_size, value);
+    }
 protected:
     u64 length;
     std::vector<T> _data;
