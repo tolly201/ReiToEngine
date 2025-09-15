@@ -109,8 +109,8 @@ void create(VulkanContextRef context, VulkanSwapchainContext& swapchain_context,
     VkExtent2D min = swapchain_context.swapchain_info.capabilities.surfaceCapabilities.minImageExtent;
     VkExtent2D max = swapchain_context.swapchain_info.capabilities.surfaceCapabilities.maxImageExtent;
 
-    extent.width = RT_CLAMP(extent.width, min.width, max.width);
-    extent.height = RT_CLAMP(extent.height, min.height, max.height);
+    extent.width = RTCLAMP(extent.width, min.width, max.width);
+    extent.height = RTCLAMP(extent.height, min.height, max.height);
 
     u32 image_count = swapchain_context.swapchain_info.capabilities.surfaceCapabilities.minImageCount + 1;
 

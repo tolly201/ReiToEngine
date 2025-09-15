@@ -3,6 +3,7 @@
 #include "VulkanExtensions.h"
 #include "VulkanDevices.h"
 #include "VulkanSwapChain.h"
+#include "VulkanRenderPass.h"
 namespace ReiToEngine
 {
 
@@ -58,12 +59,15 @@ b8 VulkanRenderBackend::Terminate(){
     for (auto& swapchain : swapchains) {
         vulkan_swapchain_destroy({instance, allocator}, swapchain);
 
+        if (swapchain.render_pass.render_pass != VK_NULL_HANDLE) {
+            vulkan_renderpass_destroy({instance, allocator}, swapchain, swapchain.render_pass);
+            swapchain.render_pass.render_pass = VK_NULL_HANDLE;
+        }
         if (swapchain.surface != VK_NULL_HANDLE)
         {
             PlatformDestroyVulkanSurface(instance, swapchain.surface);
             swapchain.surface = VK_NULL_HANDLE;
         }
-
     }
     swapchains.clear();
 
@@ -128,6 +132,8 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
     // swapchain.selected_physical_device = device;
 
     vulkan_swapchain_create({instance, allocator}, swapchain);
+
+    vulkan_renderpass_create({instance, allocator}, swapchain, swapchain.render_pass);
     return true;
 }
 }

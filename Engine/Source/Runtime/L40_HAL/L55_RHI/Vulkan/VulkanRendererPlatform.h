@@ -67,6 +67,39 @@ struct VulkanImage{
     VkSharingMode sharing_mode;
 };
 
+
+enum class VulkanRenderPassState : u8{
+    INITIAL,
+    READY,
+    RECORDING,
+    RECORDED,
+    SUBMITTED,
+    NOT_ALLOCATED,
+    MAX
+};
+
+struct VulkanRenderPass{
+    VkRenderPass render_pass;
+    f32 x, y, width, height;
+    f32 r, g, b, a;
+
+    f32 depth;
+    u32 stencil;
+    VulkanRenderPassState state;
+};
+
+enum class VulkanCommandBufferState : u8{
+    INITIAL,
+    READY,
+    RECORDING,
+    RECORDED,
+    RENDERING,
+    RENDERED,
+    SUBMITTED,
+    NOT_ALLOCATED,
+    MAX
+};
+
 struct VulkanSwapchainContext{
     VkSurfaceKHR surface;
     VulkanSwapChainSupportInfo swapchain_info;
@@ -88,6 +121,8 @@ struct VulkanSwapchainContext{
 
     VulkanImage depth_image;
     VulkanPhysicalDeviceRequirements requirements;
+
+    VulkanRenderPass render_pass;
 };
 
 struct VulkanContextRef{
@@ -95,6 +130,10 @@ struct VulkanContextRef{
     VkAllocationCallbacks*& allocator;
 };
 
+struct VulkanCommandBuffer{
+    VkCommandBuffer command_buffer;
+    VulkanCommandBufferState state;
+};
 
 void PlatformGetVulkanExtensions(ReiToEngine::List<const char*>& out_extensions);
 b8 PlatformCreateVulkanSurface(RT_Platform_State& platform_state, SurfaceDesc& desc, VkInstance& instance, VkSurfaceKHR& out_surface);

@@ -166,6 +166,8 @@ b8 vulkan_logical_device_create(VulkanSwapchainContext& swapchain_context){
     List<List<float>> all_queue_priorities;
     all_queue_priorities.clear();
 
+    u32 queue_count_per_family = 2;
+
     for (u32 family : families) {
         // 容错：若索引越界则跳过
         RT_LOG_DEBUG_FMT("Creating queue for family index: {} / {}.", family, dc.queue_families.size());
@@ -180,7 +182,7 @@ b8 vulkan_logical_device_create(VulkanSwapchainContext& swapchain_context){
         VkDeviceQueueCreateInfo qci{};
         qci.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         qci.queueFamilyIndex = family;
-        qci.queueCount = 2;
+        qci.queueCount = RTMIN(queue_count_per_family, qfp.queueCount);
         all_queue_priorities.emplace_back();
         List<float>& queue_priorities = all_queue_priorities.back();
         queue_priorities.clear();
