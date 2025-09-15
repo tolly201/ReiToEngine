@@ -100,6 +100,11 @@ enum class VulkanCommandBufferState : u8{
     MAX
 };
 
+struct VulkanCommandBuffer{
+    VkCommandBuffer command_buffer;
+    VulkanCommandBufferState state;
+};
+
 struct VulkanSwapchainContext{
     VkSurfaceKHR surface;
     VulkanSwapChainSupportInfo swapchain_info;
@@ -128,11 +133,6 @@ struct VulkanSwapchainContext{
 struct VulkanContextRef{
     VkInstance& instance;
     VkAllocationCallbacks*& allocator;
-};
-
-struct VulkanCommandBuffer{
-    VkCommandBuffer command_buffer;
-    VulkanCommandBufferState state;
 };
 
 void PlatformGetVulkanExtensions(ReiToEngine::List<const char*>& out_extensions);

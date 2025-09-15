@@ -1,58 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
-
-if(DEFINED ENV{VSCODE_PID})
-else()
-# 自动检测目标平台和编译器
-if(NOT DEFINED RT_TARGET_PLATFORM)
-    if(WIN32)
-        set(RT_TARGET_PLATFORM "Windows")
-    elseif(APPLE)
-        set(RT_TARGET_PLATFORM "MacOS")
-    elseif(UNIX)
-        set(RT_TARGET_PLATFORM "Linux")
-    else()
-        message(FATAL_ERROR "Unsupported platform: ${CMAKE_SYSTEM_NAME}")
-    endif()
-endif()
-
-if(NOT DEFINED RT_COMPILE_PLATFORM)
-    if(DEFINED ENV{RT_COMPILE_PLATFORM})
-        set(RT_COMPILE_PLATFORM $ENV{RT_COMPILE_PLATFORM})
-    endif()
-endif()
-
-# 根据编译器和平台设置编译环境
-if(WIN32)
-    if(NOT DEFINED RT_COMPILE_PLATFORM)
-        message(WARNING "Default Compiler For Windows: MSVC.")
-        # set(RT_COMPILE_PLATFORM "Windows_MSVC")
-        set(RT_COMPILE_PLATFORM "Windows_MSVC")
-    endif()
-elseif(APPLE)
-    if(NOT DEFINED RT_COMPILE_PLATFORM)
-        message(WARNING "Default Compiler For MacOS: clang.")
-        set(RT_COMPILE_PLATFORM "MacOS_CLANG")
-    endif()
-elseif(UNIX)
-    if(NOT DEFINED RT_COMPILE_PLATFORM)
-        message(WARNING "Default Compiler For Linux: clang.")
-        set(RT_COMPILE_PLATFORM "Linux_CLANG")
-    endif()
-else()
-    message(FATAL_ERROR "Unsupported platform: ${CMAKE_SYSTEM_NAME}")
-endif()
-
-message(STATUS "Compile Platform: ${RT_COMPILE_PLATFORM}")
-message(STATUS "Target Platform: ${RT_TARGET_PLATFORM}")
-
-# 加载工具链文件
-set(TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/Engine/Scripts/cmake_toolchain/${RT_COMPILE_PLATFORM}-${RT_TARGET_PLATFORM}-toolchain.cmake")
-if(EXISTS ${TOOLCHAIN_FILE})
-    include(${TOOLCHAIN_FILE})
-else()
-    message(FATAL_ERROR "Toolchain file not found: ${TOOLCHAIN_FILE}")
-endif()
-endif()
+cmake_minimum_required(VERSION 3.20)
 project(ReiToEngine)
 # 通用编译设置
 set(CMAKE_CXX_STANDARD 20)
@@ -60,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(Vulkan REQUIRED)
 
 # 针对不同编译器的额外设置
 if(MSVC)
@@ -69,9 +14,9 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 endif()
 
+find_package(Vulkan REQUIRED)
 # 资源文件输出目录
 set(RESOURCE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/res)
-
 # 引擎目录设置
 set(ENGINE_ROOT_DIR Engine)
 
