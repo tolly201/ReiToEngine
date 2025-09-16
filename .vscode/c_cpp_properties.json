@@ -39,20 +39,10 @@
                 "${workspaceFolder}/Engine/Source/Editor/",
                 "${workspaceFolder}/Engine/Thirdparty/stb/*",
                 "${workspaceFolder}/Engine/Thirdparty/Assimp/include/",
-                "${VULKAN_SDK}/include",
                 "/Users/bole/VulkanSDK/1.4.321.0/macOS/include"
             ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE",
-                "RT_EXPORTS"
-            ],
-            "compilerPath": "/usr/local/opt/llvm/bin/clang++",
-            "cStandard": "c23",
-            "cppStandard": "c++23",
-            "intelliSenseMode": "clang-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "compilerPath": "/usr/local/opt/llvm@19/bin/clang++",
+            "compileCommands": "${workspaceFolder}/builds/macos-clang-debug/compile_commands.json"
         },
         {
             "name": "Win32",

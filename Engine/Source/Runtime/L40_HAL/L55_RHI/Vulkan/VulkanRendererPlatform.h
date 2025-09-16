@@ -5,6 +5,7 @@
 #include "../RendererTypes.h"
 namespace ReiToEngine
 {
+struct VulkanCommandBuffer;
 
 enum class VulkanQueueFamilyIndicesType : u8{
     GRAPHICS = 0,
@@ -38,11 +39,15 @@ struct VulkanDeviceCombination{
 
 
     VkFormat depth_format;
+
     // mark logical device is initialized
     // recover logical device when all swapchains using this device are destroyed
     VkDevice logical_device;
-    b8 is_inused;
+    Map<VulkanQueueFamilyIndicesType, VkCommandPool> command_pools;
+    Map<VulkanQueueFamilyIndicesType, List<VulkanCommandBuffer>> command_buffers;
 
+    b8 is_inused;
+    Set<i32> using_swapchains;
     i32 find_memory_index(u32 type_filter, VkMemoryPropertyFlags properties);
 };
 
@@ -128,6 +133,8 @@ struct VulkanSwapchainContext{
     VulkanPhysicalDeviceRequirements requirements;
 
     VulkanRenderPass render_pass;
+
+    i32 index;
 };
 
 struct VulkanContextRef{

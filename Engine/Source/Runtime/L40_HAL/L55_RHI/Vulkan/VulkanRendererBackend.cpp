@@ -4,6 +4,7 @@
 #include "VulkanDevices.h"
 #include "VulkanSwapChain.h"
 #include "VulkanRenderPass.h"
+#include "VulkanCommandBuffer.h"
 namespace ReiToEngine
 {
 
@@ -13,6 +14,8 @@ b8 get_vulkan_validation_layers(u32& out_layer_count, ReiToEngine::List<const ch
 b8 create_debugger(VkInstance& instance, VkAllocationCallbacks*& allocator, VkDebugUtilsMessengerEXT& debug_messenger);
 
 VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,VkDebugUtilsMessageTypeFlagsEXT              messageTypes,const VkDebugUtilsMessengerCallbackDataEXT*  pCallbackData, void* pUserData);
+
+void create_command_buffers(VulkanSwapchainContext& swapchain);
 
 b8 VulkanRenderBackend::Initialize(ERenderBackendType renderer_type, const char* application_name, PlatformState* plat_state) {
     allocator = nullptr;
@@ -136,4 +139,27 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
     vulkan_renderpass_create({instance, allocator}, swapchain, swapchain.render_pass);
     return true;
 }
+
+void create_command_buffers(VulkanSwapchainContext& swapchain)
+{
+    if (swapchain.device_combination->command_buffers.contains(VulkanQueueFamilyIndicesType::GRAPHICS) &&
+        !swapchain.device_combination->command_buffers[VulkanQueueFamilyIndicesType::GRAPHICS].empty()) {
+        return;
+    }
+
+    List<VulkanCommandBuffer>& command_buffers = swapchain.device_combination->command_buffers[VulkanQueueFamilyIndicesType::GRAPHICS];
+    command_buffers.clear();
+    command_buffers.resize(swapchain.image_count);
+
+    for (u32 i = 0; i < swapchain.image_count; ++i)
+    {
+        if (command_buffers[i].state != VulkanCommandBufferState::NOT_ALLOCATED) {
+            vulkan_command_buffer_free(swapchain.device_combination->logical_device, swapchain.device_combination->command_pools[VulkanQueueFamilyIndicesType::GRAPHICS], command_buffers[i]);
+        }
+
+        vulkan_command_buffer_allocate(swapchain.device_combination->logical_device, swapchain.device_combination->command_pools[VulkanQueueFamilyIndicesType::GRAPHICS], true, command_buffers[i]);
+
+    }
 }
+}
+

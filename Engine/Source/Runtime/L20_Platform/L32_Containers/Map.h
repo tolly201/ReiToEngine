@@ -78,6 +78,9 @@ public:
         return data.find(key);
     }
 
+    b8 contains(const Key& key) const {
+        return data.contains(key);
+    }
 
 protected:
     u64 length;

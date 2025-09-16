@@ -16,7 +16,8 @@
 
         "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/bin/",
         "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/"
-      }
+      },
+        "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
     },
     {
       "name": "macos-clang-release",
@@ -32,11 +33,18 @@
       "name": "macos-cross-win-mingw",
       "displayName": "macOS -> Windows (MinGW)",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/macos-cross-win",
+      "binaryDir": "${sourceDir}/builds/${presetName}",
       "toolchainFile": "${sourceDir}/Engine/Scripts/cmake_toolchain/MacOS_CLANG-Windows-toolchain.cmake",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "USE_LLD": "OFF"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic -DUNICODE -D_UNICODE -D_CRT_SECURE_NO_WARNINGS -m64",
+        "CMAKE_CXX_FLAGS_DEBUG": "-ggdb -g -O0",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O2",
+        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/bin/",
+        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/",
+        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/",
+        "Vulkan_INCLUDE_DIR": "/opt/local/x86_64-w64-mingw32-vulkan/include",
+        "Vulkan_LIBRARY": "/opt/local/x86_64-w64-mingw32-vulkan/lib/vulkan-1.lib"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
     },
@@ -66,7 +74,8 @@
         "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/",
         "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/bin/",
         "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/"
-      }
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
     },
     {
       "name": "windows-llvm-x64",
@@ -82,7 +91,8 @@
         "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/bin/",
         "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/",
         "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/"
-      }
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
     },
     {
       "name": "linux-clang-debug",

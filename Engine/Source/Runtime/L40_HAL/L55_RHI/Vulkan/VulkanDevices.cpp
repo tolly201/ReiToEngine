@@ -1,4 +1,5 @@
 #include "VulkanDevices.h"
+#include "VulkanCommandBuffer.h"
 namespace ReiToEngine
 {
 b8 vulkan_initalize_physical_devices(VkInstance& instance, List<VulkanDeviceCombination>& out_physical_devices)
@@ -222,6 +223,15 @@ b8 vulkan_logical_device_create(VulkanSwapchainContext& swapchain_context){
         return false;
     }
 
+    VkCommandPoolCreateInfo pool_info{};
+    pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    pool_info.queueFamilyIndex = swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::GRAPHICS];
+
+    dc.command_pools[VulkanQueueFamilyIndicesType::GRAPHICS] = VK_NULL_HANDLE;
+
+    RT_VK_CHECK(vkCreateCommandPool(dc.logical_device, &pool_info, nullptr, &dc.command_pools[VulkanQueueFamilyIndicesType::GRAPHICS]));
+
     dc.is_inused = true;
 
     // 如需获取队列句柄，可在此使用 vkGetDeviceQueue(dc.logical_device, family, 0, &queue)
@@ -233,6 +243,23 @@ b8 vulkan_logical_device_create(VulkanSwapchainContext& swapchain_context){
 b8 vulkan_physical_device_destroy();
 b8 vulkan_logical_device_destroy(VulkanDeviceCombination& dc)
 {
+    for (auto& [type, pool] : dc.command_pools) {
+        if (pool != VK_NULL_HANDLE) {
+            vkDestroyCommandPool(dc.logical_device, pool, nullptr);
+            pool = VK_NULL_HANDLE;
+        }
+    }
+
+    for (auto& [type, buffers] : dc.command_buffers) {
+        for (auto& cb : buffers) {
+            if (cb.command_buffer != VK_NULL_HANDLE) {
+                vulkan_command_buffer_free(dc.logical_device, dc.command_pools[type], cb);
+            }
+        }
+    }
+    dc.command_buffers.clear();
+
+
     if (dc.logical_device != VK_NULL_HANDLE) {
         vkDeviceWaitIdle(dc.logical_device);
         vkDestroyDevice(dc.logical_device, nullptr);
