@@ -5,6 +5,8 @@
 #include "VulkanSwapChain.h"
 #include "VulkanRenderPass.h"
 #include "VulkanCommandBuffer.h"
+#include "VulkanFrameBuffer.h"
+#include "VulkanFence.h"
 namespace ReiToEngine
 {
 
@@ -16,6 +18,7 @@ b8 create_debugger(VkInstance& instance, VkAllocationCallbacks*& allocator, VkDe
 VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,VkDebugUtilsMessageTypeFlagsEXT              messageTypes,const VkDebugUtilsMessengerCallbackDataEXT*  pCallbackData, void* pUserData);
 
 void create_command_buffers(VulkanSwapchainContext& swapchain);
+void regenerate_frame_buffers(VulkanContextRef context, VulkanSwapchainContext& swapchain, VulkanRenderPass& render_pass);
 
 b8 VulkanRenderBackend::Initialize(ERenderBackendType renderer_type, const char* application_name, PlatformState* plat_state) {
     allocator = nullptr;
@@ -59,12 +62,34 @@ b8 VulkanRenderBackend::Initialize(ERenderBackendType renderer_type, const char*
     return true;
 }
 b8 VulkanRenderBackend::Terminate(){
+    for (auto& device : devices) {
+        vkDeviceWaitIdle(device.logical_device);
+    }
+
     for (auto& swapchain : swapchains) {
         vulkan_swapchain_destroy({instance, allocator}, swapchain);
 
-        if (swapchain.render_pass.render_pass != VK_NULL_HANDLE) {
+        for (u32 i = 0; i < swapchain.max_frames_in_flight; ++i)
+        {
+            vkDestroySemaphore(swapchain.device_combination->logical_device, swapchain.image_available_semaphores[i], allocator);
+            vkDestroySemaphore(swapchain.device_combination->logical_device, swapchain.render_finished_semaphores[i], allocator);
+            vulkan_fence_destroy({instance, allocator}, swapchain.device_combination->logical_device, swapchain.in_flight_fences[i]);
+        }
+        swapchain.image_available_semaphores.clear();
+        swapchain.render_finished_semaphores.clear();
+        swapchain.in_flight_fences.clear();
+        swapchain.images_in_flight.clear();
+        swapchain.in_flight_fence_count = 0;
+
+
+        for (auto& frame_buffer : swapchain.framebuffers) {
+            vulkan_frame_buffer_destroy({instance, allocator}, swapchain, frame_buffer);
+        }
+        swapchain.framebuffers.clear();
+
+        if (swapchain.render_pass.handle != VK_NULL_HANDLE) {
             vulkan_renderpass_destroy({instance, allocator}, swapchain, swapchain.render_pass);
-            swapchain.render_pass.render_pass = VK_NULL_HANDLE;
+            swapchain.render_pass.handle = VK_NULL_HANDLE;
         }
         if (swapchain.surface != VK_NULL_HANDLE)
         {
@@ -92,10 +117,130 @@ b8 VulkanRenderBackend::Terminate(){
     return true;
 }
 b8 VulkanRenderBackend::Tick(){return true;}
-b8 VulkanRenderBackend::Resized(u32 width, u32 height){return true;}
+b8 VulkanRenderBackend::Resized(SurfaceDesc& desc, u32 width, u32 height){
+    VulkanSwapchainContext* swapchain = swapchain_map[desc.p_window];
+    if(swapchain == nullptr) {
+        RT_LOG_ERROR("Failed to find swapchain for window during resize.");
+        return false;
+    }
 
-b8 VulkanRenderBackend::BeginFrame(f64 delta_time){return true;}
-b8 VulkanRenderBackend::EndFrame(f64 delta_time){return true;}
+    swapchain->width = width;
+    swapchain->height = height;
+
+    swapchain->frame_size_generation++;
+
+    return true;
+}
+
+b8 VulkanRenderBackend::BeginFrame(f64 delta_time){
+    for (auto& device : devices) {
+        if (device.is_inused)
+        {
+            if (vkDeviceWaitIdle(device.logical_device) != VK_SUCCESS) {
+                RT_LOG_ERROR_FMT("Failed to wait device idle for device {}.", device.device_properties.properties.deviceName);
+                return false;
+            }
+        };
+    }
+
+    for (auto& swapchain : swapchains) {
+        if (swapchain.recreating_swapchain)
+        {
+            RT_LOG_INFO_FMT("Recreating swapchain {} for window {}", swapchain.index, swapchain.p_window);
+            VkResult result = vkDeviceWaitIdle(swapchain.device_combination->logical_device);
+            if (result != VK_SUCCESS) {
+                RT_LOG_ERROR_FMT("Failed to wait device idle before recreating swapchain {}. VkResult: {}", swapchain.index, result);
+                return false;
+            }
+        };
+
+        if (swapchain.frame_size_generation != swapchain.last_frame_size_generation) {
+            VkResult result = vkDeviceWaitIdle(swapchain.device_combination->logical_device);
+            if (result != VK_SUCCESS) {
+                RT_LOG_ERROR_FMT("Failed to wait device idle before recreating swapchain {}. VkResult: {}", swapchain.index, result);
+                return false;
+            }
+            if (!vulkan_swapchain_recreate({instance, allocator}, swapchain)) {
+                RT_LOG_ERROR_FMT("Failed to recreate swapchain {}.", swapchain.index);
+                return false;
+            }
+            RT_LOG_INFO_FMT("Swapchain {} recreated successfully.", swapchain.index);
+            continue;
+        }
+
+        if (!vulkan_fence_wait(swapchain.device_combination->logical_device, swapchain.in_flight_fences[swapchain.current_frame], UINT64_MAX)) {
+            RT_LOG_ERROR_FMT("Failed to wait for in-flight fence for swapchain {}.", swapchain.index);
+            return false;
+        }
+
+        if (!vulkan_swapchain_acquire_next_image_index({instance, allocator}, swapchain, UINT64_MAX, swapchain.image_available_semaphores[swapchain.current_frame], VK_NULL_HANDLE, swapchain.current_image_index)) {
+            RT_LOG_ERROR_FMT("Failed to acquire next image index for swapchain {}.", swapchain.index);
+            return false;
+        }
+
+        VulkanCommandBuffer& command_buffer = swapchain.device_combination->command_buffers[VulkanQueueFamilyIndicesType::GRAPHICS][swapchain.current_image_index];
+        vulkan_command_buffer_reset(command_buffer);
+        vulkan_command_buffer_begin(command_buffer, false, false, false);
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = (f32)swapchain.height;
+        viewport.width = (f32)swapchain.width;
+        viewport.height = -(f32)swapchain.height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+
+        VkRect2D scissor{};
+        scissor.offset = {0, 0};
+        scissor.extent = {swapchain.width, swapchain.height};
+
+        vkCmdSetViewport(command_buffer.command_buffer, 0, 1, &viewport);
+        vkCmdSetScissor(command_buffer.command_buffer, 0, 1, &scissor);
+
+        vulkan_renderpass_begin({instance, allocator}, swapchain, swapchain.render_pass, command_buffer, swapchain.framebuffers[swapchain.current_image_index].handle);
+    }
+    return true;
+}
+b8 VulkanRenderBackend::EndFrame(f64 delta_time){
+    for (auto& swapchain : swapchains) {
+        VulkanCommandBuffer& command_buffer = swapchain.device_combination->command_buffers[VulkanQueueFamilyIndicesType::GRAPHICS][swapchain.current_image_index];
+        vulkan_renderpass_end({instance, allocator}, swapchain, swapchain.render_pass, command_buffer, swapchain.framebuffers[swapchain.current_image_index].handle);
+        vulkan_command_buffer_end(command_buffer);
+
+        if (swapchain.images_in_flight[swapchain.current_image_index] != VK_NULL_HANDLE) {
+            vulkan_fence_wait(swapchain.device_combination->logical_device, *swapchain.images_in_flight[swapchain.current_image_index], UINT64_MAX);
+        }
+        swapchain.images_in_flight[swapchain.current_image_index] = &swapchain.in_flight_fences[swapchain.current_frame];
+
+        vulkan_fence_reset(swapchain.device_combination->logical_device, swapchain.in_flight_fences[swapchain.current_frame]);
+
+        VkSubmitInfo submit_info{};
+        submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+        submit_info.commandBufferCount = 1;
+        submit_info.pCommandBuffers = &command_buffer.command_buffer;
+
+        submit_info.waitSemaphoreCount = 1;
+        submit_info.pWaitSemaphores = &swapchain.image_available_semaphores[swapchain.current_frame];
+
+        submit_info.signalSemaphoreCount = 1;
+        submit_info.pSignalSemaphores = &swapchain.render_finished_semaphores[swapchain.current_frame];
+
+        VkPipelineStageFlags wait_stages[1] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+
+        submit_info.pWaitDstStageMask = wait_stages;
+
+        VkResult result = vkQueueSubmit(swapchain.device_combination->queues[VulkanQueueFamilyIndicesType::GRAPHICS], 1, &submit_info, swapchain.in_flight_fences[swapchain.current_frame].handle);
+        if (result != VK_SUCCESS) {
+            RT_LOG_ERROR_FMT("Failed to submit draw command buffer for swapchain {}. VkResult: {}", swapchain.index, result);
+            return false;
+        }
+
+        vulkan_command_buffer_update_submmitted(command_buffer);
+    }
+
+    return true;
+}
 
 b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, SurfaceDesc& desc)
 {
@@ -105,6 +250,9 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
     VulkanSwapchainContext& swapchain = swapchains.back();
     swapchain.width = desc.width;
     swapchain.height = desc.height;
+    swapchain.frame_size_generation = 0;
+    swapchain.index = (u32)swapchains.size() - 1;
+    swapchain.p_window = desc.p_window;
 
     swapchain_map[desc.p_window] = &swapchain;
 
@@ -121,7 +269,6 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
     platform_get_required_vulkan_extensions(swapchain.requirements.required_extensions);
 
     swapchain.requirements.required_extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-    swapchain.queue_family_indices.clear();
     swapchain.device_combination = nullptr;
     swapchain.queue_family_indices.clear();
 
@@ -137,6 +284,30 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
     vulkan_swapchain_create({instance, allocator}, swapchain);
 
     vulkan_renderpass_create({instance, allocator}, swapchain, swapchain.render_pass);
+
+    regenerate_frame_buffers({instance, allocator}, swapchain, swapchain.render_pass);
+
+    create_command_buffers(swapchain);
+
+    swapchain.image_available_semaphores.resize(swapchain.max_frames_in_flight);
+    swapchain.render_finished_semaphores.resize(swapchain.max_frames_in_flight);
+    swapchain.in_flight_fences.resize(swapchain.max_frames_in_flight);
+
+    for (u32 i = 0; i < swapchain.max_frames_in_flight; ++i)
+    {
+        VkSemaphoreCreateInfo semaphore_info{};
+        semaphore_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+        semaphore_info.pNext = nullptr;
+        semaphore_info.flags = 0;
+
+        vkCreateSemaphore(swapchain.device_combination->logical_device, &semaphore_info, allocator, &swapchain.image_available_semaphores[i]);
+        vkCreateSemaphore(swapchain.device_combination->logical_device, &semaphore_info, allocator, &swapchain.render_finished_semaphores[i]);
+
+        vulkan_fence_create({instance, allocator},swapchain.device_combination->logical_device, true, swapchain.in_flight_fences[i]);
+    }
+
+    swapchain.images_in_flight.resize(swapchain.image_count, nullptr);
+
     return true;
 }
 
@@ -161,5 +332,24 @@ void create_command_buffers(VulkanSwapchainContext& swapchain)
 
     }
 }
-}
 
+void regenerate_frame_buffers(VulkanContextRef context, VulkanSwapchainContext& swapchain, VulkanRenderPass& render_pass)
+{
+    // 销毁旧的 framebuffer
+    for (auto& fb : swapchain.framebuffers) {
+        vulkan_frame_buffer_destroy(context, swapchain, fb);
+    }
+    swapchain.framebuffers.clear();
+    swapchain.framebuffers.resize(swapchain.images.size());
+
+    for (u32 i = 0; i < swapchain.images.size(); ++i)
+    {
+        u32 attachment_count = 2;
+        VkImageView attachments[2];
+        attachments[0] = swapchain.images[i].view; // 颜色附件
+        attachments[1] = swapchain.depth_image.view; // 深度附件
+
+        vulkan_frame_buffer_create(context, swapchain, render_pass, swapchain.width, swapchain.height, attachment_count, attachments, swapchain.framebuffers[i]);
+    }
+}
+} // namespace ReiToEngine

@@ -4,6 +4,7 @@
 #include "vulkan/vulkan.h"
 #include "vulkan/vulkan_metal.h"
 #include "L20_Platform/L37_Window/MACOSX/MacOSXWindow.h"
+#include "VulkanDefines.h"
 #import <Cocoa/Cocoa.h>
 namespace ReiToEngine
 {

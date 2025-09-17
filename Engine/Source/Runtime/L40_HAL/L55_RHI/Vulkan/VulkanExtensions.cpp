@@ -1,5 +1,6 @@
 #include "VulkanExtensions.h"
 #include "VulkanRendererPlatform.h"
+#include "VulkanDefines.h"
 namespace ReiToEngine
 {
 void get_vulkan_extensions(u32& out_extension_count, ReiToEngine::List<const char*>& out_extensions)

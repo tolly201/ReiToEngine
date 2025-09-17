@@ -4,6 +4,7 @@
 #include "L20_Platform/Include.h"
 #include "../RendererTypes.h"
 #include "VulkanRendererPlatform.h"
+#include "VulkanDefines.h"
 
 namespace ReiToEngine
 {

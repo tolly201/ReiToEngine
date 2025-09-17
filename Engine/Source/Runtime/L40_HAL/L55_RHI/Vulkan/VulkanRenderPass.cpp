@@ -3,7 +3,6 @@ namespace ReiToEngine
 {
 void vulkan_renderpass_create(VulkanContextRef context, VulkanSwapchainContext& swapchain_context, VulkanRenderPass& out_render_pass)
 {
-
     VkSubpassDescription subpass{};
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 
@@ -73,14 +72,14 @@ void vulkan_renderpass_create(VulkanContextRef context, VulkanSwapchainContext& 
     rpci.pNext = nullptr;
     rpci.flags = 0;
 
-    RT_VK_CHECK(vkCreateRenderPass(swapchain_context.device_combination->logical_device, &rpci, context.allocator, &out_render_pass.render_pass));
+    RT_VK_CHECK(vkCreateRenderPass(swapchain_context.device_combination->logical_device, &rpci, context.allocator, &out_render_pass.handle));
 }
 
 void vulkan_renderpass_destroy(VulkanContextRef context, VulkanSwapchainContext& swapchain_context, VulkanRenderPass& out_render_pass)
 {
-    if (out_render_pass.render_pass != VK_NULL_HANDLE)
+    if (out_render_pass.handle != VK_NULL_HANDLE)
     {
-        vkDestroyRenderPass(swapchain_context.device_combination->logical_device, out_render_pass.render_pass, context.allocator);
+        vkDestroyRenderPass(swapchain_context.device_combination->logical_device, out_render_pass.handle, context.allocator);
     }
 }
 
@@ -88,7 +87,7 @@ void vulkan_renderpass_begin(VulkanContextRef context, VulkanSwapchainContext& s
 {
     VkRenderPassBeginInfo rpbi{};
     rpbi.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rpbi.renderPass = render_pass.render_pass;
+    rpbi.renderPass = render_pass.handle;
     rpbi.framebuffer = framebuffer;
     rpbi.renderArea.offset.x = render_pass.x;
     rpbi.renderArea.offset.y = render_pass.y;

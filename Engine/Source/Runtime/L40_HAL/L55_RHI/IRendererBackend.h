@@ -15,7 +15,7 @@ class IRendererBackend {
     virtual b8 Initialize(ERenderBackendType renderer_type, const char* application_name, PlatformState* plat_state) = 0;
     virtual b8 Terminate() = 0;
     virtual b8 Tick() = 0;
-    virtual b8 Resized(u32 width, u32 height) = 0;
+    virtual b8 Resized(SurfaceDesc& desc, u32 width, u32 height) = 0;
 
     virtual b8 BeginFrame(f64 delta_time) = 0;
     virtual b8 EndFrame(f64 delta_time) = 0;

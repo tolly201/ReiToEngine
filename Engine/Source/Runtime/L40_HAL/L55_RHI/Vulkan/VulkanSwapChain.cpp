@@ -12,10 +12,11 @@ void vulkan_swapchain_create(VulkanContextRef context, VulkanSwapchainContext& s
     create(context, swapchain_context, swapchain_context.width, swapchain_context.height);
 }
 
-void vulkan_swapchain_recreate(VulkanContextRef context, VulkanSwapchainContext& swapchain_context)
+b8 vulkan_swapchain_recreate(VulkanContextRef context, VulkanSwapchainContext& swapchain_context)
 {
     destroy(context, swapchain_context);
     create(context, swapchain_context, swapchain_context.width, swapchain_context.height);
+    return true;
 }
 
 void vulkan_swapchain_destroy(VulkanContextRef context, VulkanSwapchainContext& swapchain_context)
@@ -23,13 +24,13 @@ void vulkan_swapchain_destroy(VulkanContextRef context, VulkanSwapchainContext& 
     destroy(context, swapchain_context);
 }
 
-b8 vulkan_swapchain_acquire_next_image_index(VulkanContextRef context ,VulkanSwapchainContext& swapchain_context, u32 timeout_us, VkSemaphore& semaphore, VkFence& fence, u32& image_index)
+b8 vulkan_swapchain_acquire_next_image_index(VulkanContextRef context ,VulkanSwapchainContext& swapchain_context, u32 timeout_us, VkSemaphore& semaphore, VkFence* fence, u32& image_index)
 {
     VkDevice& logical_device = swapchain_context.device_combination->logical_device;
     VkSemaphore& image_available_semaphore = swapchain_context.image_available_semaphores[swapchain_context.current_frame];
 
     VkResult result = vkAcquireNextImageKHR(
-        swapchain_context.device_combination->logical_device, swapchain_context.swapchain, timeout_us, semaphore, VK_NULL_HANDLE, &swapchain_context.current_image_index);
+        swapchain_context.device_combination->logical_device, swapchain_context.swapchain, timeout_us, semaphore, *fence, &swapchain_context.current_image_index);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
@@ -65,6 +66,8 @@ void vulkan_swapchain_present(VulkanContextRef context ,VulkanSwapchainContext& 
     {
         RT_LOG_FATAL("Failed to present swap chain image!");
     }
+
+    swapchain_context.current_frame = (swapchain_context.current_frame + 1) % swapchain_context.max_frames_in_flight;
 }
 
 void create(VulkanContextRef context, VulkanSwapchainContext& swapchain_context, u32 width, u32 height)

@@ -6,6 +6,7 @@
 #include "L20_Platform/Include.h"
 #include "VulkanExtensions.h"
 #include "VulkanDevices.h"
+#include "VulkanDefines.h"
 namespace ReiToEngine
 {
 class VulkanRenderBackend : public IRendererBackend {
@@ -16,7 +17,7 @@ public:
     b8 Initialize(ERenderBackendType renderer_type, const char* application_name, PlatformState* plat_state) override;
     b8 Terminate() override;
     b8 Tick() override;
-    b8 Resized(u32 width, u32 height) override;
+    b8 Resized(SurfaceDesc& desc, u32 width, u32 height) override;
 
     b8 BeginFrame(f64 delta_time) override;
     b8 EndFrame(f64 delta_time) override;

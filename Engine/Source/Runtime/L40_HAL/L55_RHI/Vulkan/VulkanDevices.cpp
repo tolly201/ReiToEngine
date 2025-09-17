@@ -237,19 +237,20 @@ b8 vulkan_logical_device_create(VulkanSwapchainContext& swapchain_context){
     // 如需获取队列句柄，可在此使用 vkGetDeviceQueue(dc.logical_device, family, 0, &queue)
     // 并存入你的 SwapchainContext 或设备级缓存。
 
+    for (const auto& [type, family_index] : swapchain_context.queue_family_indices) {
+        if (family_index != static_cast<u32>(-1)) {
+            VkQueue queue = VK_NULL_HANDLE;
+            vkGetDeviceQueue(dc.logical_device, family_index, 0, &queue);
+            dc.queues[type] = queue;
+        }
+    }
+
     RT_LOG_INFO("Logical device created.");
     return true;
 }
 b8 vulkan_physical_device_destroy();
 b8 vulkan_logical_device_destroy(VulkanDeviceCombination& dc)
 {
-    for (auto& [type, pool] : dc.command_pools) {
-        if (pool != VK_NULL_HANDLE) {
-            vkDestroyCommandPool(dc.logical_device, pool, nullptr);
-            pool = VK_NULL_HANDLE;
-        }
-    }
-
     for (auto& [type, buffers] : dc.command_buffers) {
         for (auto& cb : buffers) {
             if (cb.command_buffer != VK_NULL_HANDLE) {
@@ -259,6 +260,12 @@ b8 vulkan_logical_device_destroy(VulkanDeviceCombination& dc)
     }
     dc.command_buffers.clear();
 
+    for (auto& [type, pool] : dc.command_pools) {
+        if (pool != VK_NULL_HANDLE) {
+            vkDestroyCommandPool(dc.logical_device, pool, nullptr);
+            pool = VK_NULL_HANDLE;
+        }
+    }
 
     if (dc.logical_device != VK_NULL_HANDLE) {
         vkDeviceWaitIdle(dc.logical_device);

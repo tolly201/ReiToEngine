@@ -1,15 +1,14 @@
-#ifndef RHI_VULKAN_COMMAND_BUFFER_H
-#define RHI_VULKAN_COMMAND_BUFFER_H
-#include "vulkan/vulkan.h"
-#include "L20_Platform/Include.h"
-#include "../RendererTypes.h"
+#ifndef RHI_VULKAN_FRAME_BUFFER_H
+#define RHI_VULKAN_FRAME_BUFFER_H
 #include "VulkanDefines.h"
-
 namespace ReiToEngine
 {
-void vulkan_command_buffer_allocate(VkDevice& device, VkCommandPool commandPool, b8 is_primary, VulkanCommandBuffer& out_command_buffer);
+void vulkan_frame_buffer_create(VulkanContextRef context, VulkanSwapchainContext& swapchain_context,
+VulkanRenderPass& render_pass, u32 width, u32 height,
+u32 attachment_count, VkImageView* p_attachments,
+VulkanFrameBuffer& out_framebuffer);
 
-void vulkan_command_buffer_free(VkDevice& device, VkCommandPool commandPool, VulkanCommandBuffer& out_command_buffer);
+void vulkan_frame_buffer_destroy(VulkanContextRef context, VulkanSwapchainContext& , VulkanFrameBuffer& framebuffer);
 
 void vulkan_command_buffer_begin(VulkanCommandBuffer& command_buffer, b8 is_single_use, b8 is_render_pass_continue, b8 is_simultaneous_use);
 void vulkan_command_buffer_end(VulkanCommandBuffer& command_buffer);

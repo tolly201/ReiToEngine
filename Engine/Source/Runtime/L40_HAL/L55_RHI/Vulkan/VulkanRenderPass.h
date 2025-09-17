@@ -3,6 +3,8 @@
 #include "vulkan/vulkan.h"
 #include "../RendererTypes.h"
 #include "VulkanRendererPlatform.h"
+#include "VulkanDefines.h"
+
 namespace ReiToEngine
 {
 void vulkan_renderpass_create(VulkanContextRef context, VulkanSwapchainContext& swapchain_context, VulkanRenderPass& out_render_pass);
