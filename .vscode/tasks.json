@@ -1,0 +1,21 @@
+{
+    // Run the progress generator to produce PROGRESS.md
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Generate Progress (PROGRESS.md)",
+            "type": "shell",
+            "command": "python3",
+            "args": [
+                "Engine/Scripts/progress/generate_progress.py",
+                "."
+            ],
+            "problemMatcher": [],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        }
+    ]
+}

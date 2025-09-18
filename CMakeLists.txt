@@ -11,7 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 if(MSVC)
 else()
     # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 endif()
 
 find_package(Vulkan REQUIRED)

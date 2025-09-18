@@ -138,4 +138,75 @@
         "xiosbase": "cpp",
         "xtree": "cpp"
     },
+
+    "todo-tree.general.tags": [
+        "TODO",
+        "FIXME",
+        "BUG",
+        "HACK",
+        "NOTE",
+        "MILESTONE",
+        "OPTIMIZE",
+        "WARNING",
+        "ALTERNATIVE",
+        "DONE",
+        "FITNESS",
+        "GUITAR"
+    ],
+    "todo-tree.highlights.customHighlight": {
+        "TODO": {
+            "icon": "check",
+            "type": "tag",
+            "foreground": "#fff",
+            "background": "#ffbd2a",
+            "iconColour": "#ffbd2a"
+        },
+        "FIXME": {
+            "icon": "beaker",
+            "type": "tag",
+            "foreground": "#fff",
+            "background": "#f06292",
+            "iconColour": "#f06292"
+        },
+        "MILESTONE": {
+            "icon": "star",
+            "type": "tag",
+            "foreground": "#fff",
+            "background": "#4caf50",
+            "iconColour": "#4caf50"
+        },
+        "BUG": {
+            "icon": "bug",
+            "type": "tag",
+            "foreground": "#fff",
+            "background": "#f44336",
+            "iconColour": "#f44336"
+        },
+        "DONE": {
+            "icon": "verified",
+            "type": "tag",
+            "foreground": "#fff",
+            "background": "#2196f3",
+            "iconColour": "#2196f3"
+        },
+        "FITNESS": {
+            "icon": "pulse",
+            "type": "tag",
+            "foreground": "#ffffff",
+            "background": "#43a047",
+            "iconColour": "#43a047"
+        },
+        "GUITAR": {
+            "icon": "zap",
+            "type": "tag",
+            "foreground": "#ffffff",
+            "background": "#8e24aa",
+            "iconColour": "#8e24aa"
+        }
+    },
+
+    "todo-tree.regex.regex": "(^|[\\s\\(\\[\\{])($TAGS)(:|\\b)|^\\s*-\\s*\\[(?:\\s|x|X)\\]\\s*($TAGS)(:|\\b)",
+    "todo-tree.regex.regexCaseSensitive": false,
+    "todo-tree.tree.scanMode": "workspace",
+    "todo-tree.filtering.excludeGlobs": ["**/node_modules", "**/build", "**/dist"]
 }
