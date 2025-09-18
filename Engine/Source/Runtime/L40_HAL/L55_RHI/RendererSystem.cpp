@@ -13,26 +13,34 @@ b8 RendererSystem::Initialize() {
     CreateRendererFrontend(ERenderFrontendType::MESH, "ReiToEngine", nullptr);
     RT_LOG_INFO("RendererSystem Frontend Initialized.");
 
+    pipelines.emplace_back();
+    RendererPipeline& pipeline = pipelines.back();
+    pipeline.backend = backends[ERenderBackendType::VULKAN];
+    // pipeline.frontend = frontends[ERenderFrontendType::MESH];
+    pipeline.frontend = nullptr;
+
     return true;
 }
 
 b8 RendererSystem::Tick(f64 delta_time) {
+    RT_LOG_INFO_FMT("VulkanRenderSystem::Tick. piplines size : {}", pipelines.size());
     SceneData scene_data;
     for (auto& pipeline : pipelines) {
         render_packet packet;
         RenderData data;
-        if (!pipeline.frontend->BeginFrame(packet, data))
-        {
-            RT_LOG_ERROR("Failed to begin frame for frontend.");
-            return false;
-        }
+
+        // if (!pipeline.frontend->BeginFrame(packet, data))
+        // {
+        //     RT_LOG_ERROR("Failed to begin frame for frontend.");
+        //     return false;
+        // }
         if (!pipeline.backend->BeginFrame(delta_time)) {
             return false;
         }
 
-        if (!pipeline.frontend->EndFrame(packet, data)) {
-            return false;
-        }
+        // if (!pipeline.frontend->EndFrame(packet, data)) {
+        //     return false;
+        // }
         if (!pipeline.backend->EndFrame(delta_time)) {
             return false;
         }

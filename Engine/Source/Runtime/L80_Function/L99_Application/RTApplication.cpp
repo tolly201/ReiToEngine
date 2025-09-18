@@ -127,6 +127,8 @@ namespace ReiToEngine{
             app_state.height
         });
 
+        RT_LOG_DEBUG_FMT("width: {}, height: {}", app_state.width, app_state.height);
+
         event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_PRESS), this, application_on_key);
 
         app_state.is_running = true;

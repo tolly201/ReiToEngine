@@ -73,6 +73,18 @@ void vulkan_renderpass_create(VulkanContextRef context, VulkanSwapchainContext& 
     rpci.flags = 0;
 
     RT_VK_CHECK(vkCreateRenderPass(swapchain_context.device_combination->logical_device, &rpci, context.allocator, &out_render_pass.handle));
+
+    out_render_pass.x = 0;
+    out_render_pass.y = 0;
+    out_render_pass.width = swapchain_context.width;
+    out_render_pass.height = swapchain_context.height;
+    out_render_pass.r = 0.0f;
+    out_render_pass.g = 0.0f;
+    out_render_pass.b = 1.0f;
+    out_render_pass.a = 0.5f;
+    out_render_pass.depth = 1.0f;
+    out_render_pass.stencil = 0;
+    out_render_pass.state = VulkanRenderPassState::READY;
 }
 
 void vulkan_renderpass_destroy(VulkanContextRef context, VulkanSwapchainContext& swapchain_context, VulkanRenderPass& out_render_pass)

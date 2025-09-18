@@ -26,11 +26,37 @@ void vulkan_swapchain_destroy(VulkanContextRef context, VulkanSwapchainContext& 
 
 b8 vulkan_swapchain_acquire_next_image_index(VulkanContextRef context ,VulkanSwapchainContext& swapchain_context, u32 timeout_us, VkSemaphore& semaphore, VkFence* fence, u32& image_index)
 {
+    RT_LOG_INFO_FMT("Acquiring next image for swapchain {}", swapchain_context.index);
+
+
+    // 检查 device_combination 是否有效
+    if (!swapchain_context.device_combination) {
+        RT_LOG_FATAL("swapchain_context.device_combination is nullptr!");
+        return false;
+    }
+
+    // 检查信号量和 fence 是否有效
+    if (semaphore == VK_NULL_HANDLE) {
+        RT_LOG_FATAL("semaphore is VK_NULL_HANDLE!");
+        return false;
+    }
+    if (fence && *fence == VK_NULL_HANDLE) {
+        RT_LOG_FATAL("fence is VK_NULL_HANDLE!");
+        return false;
+    }
+
+    // 检查 current_frame 是否越界
+    if (swapchain_context.current_frame >= swapchain_context.image_available_semaphores.size()) {
+        RT_LOG_FATAL("current_frame out of range!");
+        return false;
+    }
+
     VkDevice& logical_device = swapchain_context.device_combination->logical_device;
     VkSemaphore& image_available_semaphore = swapchain_context.image_available_semaphores[swapchain_context.current_frame];
 
+    RT_LOG_INFO_FMT("Acquiring next image for swapchain {}", swapchain_context.index);
     VkResult result = vkAcquireNextImageKHR(
-        swapchain_context.device_combination->logical_device, swapchain_context.swapchain, timeout_us, semaphore, *fence, &swapchain_context.current_image_index);
+        swapchain_context.device_combination->logical_device, swapchain_context.swapchain, timeout_us, semaphore, fence ? *fence : VK_NULL_HANDLE, &swapchain_context.current_image_index);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
@@ -42,10 +68,10 @@ b8 vulkan_swapchain_acquire_next_image_index(VulkanContextRef context ,VulkanSwa
         RT_LOG_ERROR("Failed to acquire swap chain image!");
         return false;
     }
-
+    RT_LOG_INFO_FMT("Acquiring next image for swapchain {}", swapchain_context.index);
     return true;
 }
-void vulkan_swapchain_present(VulkanContextRef context ,VulkanSwapchainContext& swapchain_context, VkQueue graphics_queue, VkQueue present_queue, VkSemaphore complete_semaphore, u32 present_image_index)
+b8 vulkan_swapchain_present(VulkanContextRef context ,VulkanSwapchainContext& swapchain_context, VkQueue graphics_queue, VkQueue present_queue, VkSemaphore complete_semaphore, u32 present_image_index)
 {
     VkPresentInfoKHR present_info{};
     present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -61,13 +87,16 @@ void vulkan_swapchain_present(VulkanContextRef context ,VulkanSwapchainContext& 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
         vulkan_swapchain_recreate(context, swapchain_context);
+        return false;
     }
     else if (result != VK_SUCCESS)
     {
         RT_LOG_FATAL("Failed to present swap chain image!");
+        return false;
     }
 
     swapchain_context.current_frame = (swapchain_context.current_frame + 1) % swapchain_context.max_frames_in_flight;
+    return true;
 }
 
 void create(VulkanContextRef context, VulkanSwapchainContext& swapchain_context, u32 width, u32 height)
