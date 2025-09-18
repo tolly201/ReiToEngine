@@ -20,7 +20,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     void RegisterBaseWindowClass(HINSTANCE& hInstance,const wchar_t* class_name)
     {
-        HICON icon = LoadIconW(hInstance, IDI_APPLICATION);
+        HICON icon = LoadIconW(hInstance, MAKEINTRESOURCEW(IDI_APPLICATION));
         WNDCLASSEXW wc = {0};
         wc.cbSize = sizeof(WNDCLASSEXW);
         wc.style = CS_DBLCLKS; // Get double-clicks
@@ -29,7 +29,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         wc.hInstance = hInstance;
         wc.hIcon = icon;
         wc.hIconSm = icon;
-        wc.hCursor = LoadCursorW(NULL, IDC_ARROW); // NULL; // Manage the cursor manually
+        wc.hCursor = LoadCursorW(NULL, MAKEINTRESOURCEW(IDC_ARROW)); // NULL; // Manage the cursor manually
         wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
         wc.lpszClassName = class_name;
         wc.lpszMenuName = 0;

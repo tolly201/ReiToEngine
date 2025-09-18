@@ -98,7 +98,7 @@ void WindowsWindow::SetTitle(const char* title)
 {
     this->title = const_cast<char*>(title);
     std::wstring wideTitle = std::wstring(title, title + strlen(title));
-    SetWindowText(hwnd, wideTitle.c_str());
+    SetWindowTextW(hwnd, wideTitle.c_str());
 }
 
 char* WindowsWindow::GetTitle() const
