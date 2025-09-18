@@ -27,8 +27,6 @@ void vulkan_swapchain_destroy(VulkanContextRef context, VulkanSwapchainContext& 
 b8 vulkan_swapchain_acquire_next_image_index(VulkanContextRef context ,VulkanSwapchainContext& swapchain_context, u32 timeout_us, VkSemaphore& semaphore, VkFence* fence, u32& image_index)
 {
     RT_LOG_INFO_FMT("Acquiring next image for swapchain {}", swapchain_context.index);
-
-
     // 检查 device_combination 是否有效
     if (!swapchain_context.device_combination) {
         RT_LOG_FATAL("swapchain_context.device_combination is nullptr!");
@@ -51,16 +49,14 @@ b8 vulkan_swapchain_acquire_next_image_index(VulkanContextRef context ,VulkanSwa
         return false;
     }
 
-    VkDevice& logical_device = swapchain_context.device_combination->logical_device;
-    VkSemaphore& image_available_semaphore = swapchain_context.image_available_semaphores[swapchain_context.current_frame];
-
-    RT_LOG_INFO_FMT("Acquiring next image for swapchain {}", swapchain_context.index);
+    // Perform acquire
     VkResult result = vkAcquireNextImageKHR(
         swapchain_context.device_combination->logical_device, swapchain_context.swapchain, timeout_us, semaphore, fence ? *fence : VK_NULL_HANDLE, &swapchain_context.current_image_index);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
-        vulkan_swapchain_recreate(context, swapchain_context);
+        // Defer actual rebuild to the main loop to ensure framebuffers/command buffers are recreated too.
+        swapchain_context.recreating_swapchain = true;
         return false;
     }
     else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
@@ -68,7 +64,6 @@ b8 vulkan_swapchain_acquire_next_image_index(VulkanContextRef context ,VulkanSwa
         RT_LOG_ERROR("Failed to acquire swap chain image!");
         return false;
     }
-    RT_LOG_INFO_FMT("Acquiring next image for swapchain {}", swapchain_context.index);
     return true;
 }
 b8 vulkan_swapchain_present(VulkanContextRef context ,VulkanSwapchainContext& swapchain_context, VkQueue graphics_queue, VkQueue present_queue, VkSemaphore complete_semaphore, u32 present_image_index)

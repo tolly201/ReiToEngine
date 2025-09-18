@@ -52,13 +52,14 @@ void vulkan_renderpass_create(VulkanContextRef context, VulkanSwapchainContext& 
     subpass.preserveAttachmentCount = 0;
     subpass.pPreserveAttachments = nullptr;
 
+    // Include both color and depth dependencies for correct layout transitions.
     VkSubpassDependency dependency{};
     dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
     dependency.dstSubpass = 0;
-    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
     dependency.srcAccessMask = 0;
-    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
     dependency.dependencyFlags = 0;
 
     VkRenderPassCreateInfo rpci{};
@@ -92,11 +93,16 @@ void vulkan_renderpass_destroy(VulkanContextRef context, VulkanSwapchainContext&
     if (out_render_pass.handle != VK_NULL_HANDLE)
     {
         vkDestroyRenderPass(swapchain_context.device_combination->logical_device, out_render_pass.handle, context.allocator);
+        out_render_pass.handle = VK_NULL_HANDLE;
+        out_render_pass.state = VulkanRenderPassState::NOT_ALLOCATED;
     }
 }
 
 void vulkan_renderpass_begin(VulkanContextRef context, VulkanSwapchainContext& swapchain_context,VulkanRenderPass& render_pass, VulkanCommandBuffer& command_buffer, VkFramebuffer framebuffer)
 {
+    // Ensure valid extents
+    RT_ASSERT(render_pass.width > 0 && render_pass.height > 0);
+
     VkRenderPassBeginInfo rpbi{};
     rpbi.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     rpbi.renderPass = render_pass.handle;
@@ -125,7 +131,7 @@ void vulkan_renderpass_begin(VulkanContextRef context, VulkanSwapchainContext& s
 void vulkan_renderpass_end(VulkanContextRef context, VulkanSwapchainContext& swapchain_context,VulkanRenderPass& render_pass, VulkanCommandBuffer& command_buffer, VkFramebuffer framebuffer)
 {
     vkCmdEndRenderPass(command_buffer.command_buffer);
-    command_buffer.state = VulkanCommandBufferState::RECORDING;
+    command_buffer.state = VulkanCommandBufferState::RECORDED;
 
 }
 }

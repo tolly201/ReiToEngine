@@ -10,25 +10,46 @@
 #    define RT_SYSTEM_LINUX 1
 #    if defined(__ANDROID__)
 #        define RT_SYSTEM_ANDROID 1
+// Mobile umbrella macro
+#        define RT_SYSTEM_MOBILE 1
+// Vulkan surface for Android
+#        ifndef VK_USE_PLATFORM_ANDROID_KHR
+#            define VK_USE_PLATFORM_ANDROID_KHR
+#        endif
 #    endif
 #elif defined(__unix__)
 #    define RT_SYSTEM_UNIX 1
 #elif defined(_POSIX_VERSION)
 #    define RT_SYSTEM_POSIX 1
 #elif __APPLE__
-#include <TargetConditionals.h>
-    #if TARGET_IPHONE_SIMULATOR
-        #define RT_SYSTEM_IOS 1
-        #define RT_SYSTEM_IOS_SIMULATOR 1
-    #elif TARGET_OS_IPHONE
-        #define RT_SYSTEM_IOS 1
-    #elif TARGET_OS_MAC
-        #define RT_SYSTEM_APPLE
+#    define RT_SYSTEM_APPLE 1
+#    include <TargetConditionals.h>
+#    if TARGET_IPHONE_SIMULATOR
+#        define RT_SYSTEM_IOS 1
+#        define RT_SYSTEM_IOS_SIMULATOR 1
+// Mobile umbrella macro
+#        define RT_SYSTEM_MOBILE 1
+// Vulkan surface for iOS (MoltenVK)
+#        ifndef VK_USE_PLATFORM_IOS_MVK
+#            define VK_USE_PLATFORM_IOS_MVK
+#        endif
+#    elif TARGET_OS_IPHONE
+#        define RT_SYSTEM_IOS 1
+// Mobile umbrella macro
+#        define RT_SYSTEM_MOBILE 1
+// Vulkan surface for iOS (MoltenVK)
+#        ifndef VK_USE_PLATFORM_IOS_MVK
+#            define VK_USE_PLATFORM_IOS_MVK
+#        endif
+#    elif TARGET_OS_MAC
+// macOS (MoltenVK)
 // HACK: Should probably be in the Vulkan Renderer lib, not here.
-        #define VK_USE_PLATFORM_MACOS_MVK
-    #else
-        #error "Unknown Apple platform"
-    #endif
+#        ifndef VK_USE_PLATFORM_MACOS_MVK
+#            define VK_USE_PLATFORM_MACOS_MVK
+#        endif
+#    else
+#        error "Unknown Apple platform"
+#    endif
 #else
     #define RT_SYSTEM_UNKNOWN
     #error "Unknown platform!"

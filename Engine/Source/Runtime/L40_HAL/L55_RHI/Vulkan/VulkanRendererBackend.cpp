@@ -21,6 +21,32 @@ void create_command_buffers(VulkanSwapchainContext& swapchain);
 void regenerate_frame_buffers(VulkanContextRef context, VulkanSwapchainContext& swapchain, VulkanRenderPass& render_pass);
 b8 recreate_swapchain(VulkanContextRef context, VulkanSwapchainContext& swapchain);
 
+static b8 rebuild_swapchain_pipeline(VulkanContextRef context, VulkanSwapchainContext& swapchain) {
+    // Destroy old framebuffers first
+    for (auto& fb : swapchain.framebuffers) {
+        vulkan_frame_buffer_destroy(context, swapchain, fb);
+    }
+    swapchain.framebuffers.clear();
+
+    // Destroy old swapchain and depth image
+    vulkan_swapchain_destroy(context, swapchain);
+
+    // Recreate swapchain
+    vulkan_swapchain_create(context, swapchain);
+
+    // Update render pass extents
+    swapchain.render_pass.width = swapchain.width;
+    swapchain.render_pass.height = swapchain.height;
+
+    // Recreate framebuffers matching new images and depth
+    regenerate_frame_buffers(context, swapchain, swapchain.render_pass);
+
+    // Recreate/resize command buffers to match image count
+    create_command_buffers(swapchain);
+
+    return true;
+}
+
 b8 VulkanRenderBackend::Initialize(ERenderBackendType renderer_type, const char* application_name, PlatformState* plat_state) {
     allocator = nullptr;
 
@@ -150,12 +176,19 @@ b8 VulkanRenderBackend::BeginFrame(f64 delta_time){
         RT_LOG_INFO_FMT("Processing swapchain {} for window {}", swapchain.index, swapchain.p_window);
         if (swapchain.recreating_swapchain)
         {
-            RT_LOG_INFO_FMT("Recreating swapchain {} for window {}", swapchain.index, swapchain.p_window);
+            RT_LOG_INFO_FMT("Rebuilding swapchain {} pipeline for window {}", swapchain.index, swapchain.p_window);
             VkResult result = vkDeviceWaitIdle(swapchain.device_combination->logical_device);
             if (result != VK_SUCCESS) {
-                RT_LOG_ERROR_FMT("Failed to wait device idle before recreating swapchain {}.", swapchain.index);
+                RT_LOG_ERROR_FMT("Failed to wait device idle before rebuilding swapchain {}.", swapchain.index);
                 return false;
             }
+            if (!rebuild_swapchain_pipeline({instance, allocator}, swapchain)) {
+                RT_LOG_ERROR_FMT("Failed to rebuild swapchain {}.", swapchain.index);
+                return false;
+            }
+            swapchain.recreating_swapchain = false;
+            swapchain.last_frame_size_generation = swapchain.frame_size_generation;
+            continue;
         };
 
         RT_LOG_INFO_FMT("Swapchain {} frame size generation: {}, last frame size generation: {}", swapchain.index, swapchain.frame_size_generation, swapchain.last_frame_size_generation);
@@ -166,12 +199,9 @@ b8 VulkanRenderBackend::BeginFrame(f64 delta_time){
                 RT_LOG_ERROR_FMT("Failed to wait device idle before recreating swapchain {}.", swapchain.index);
                 return false;
             }
-            if (!vulkan_swapchain_recreate({instance, allocator}, swapchain)) {
-                RT_LOG_ERROR_FMT("Failed to recreate swapchain {}.", swapchain.index);
-                return false;
-            }
-            RT_LOG_INFO_FMT("Swapchain {} recreated successfully.", swapchain.index);
-            continue;
+            swapchain.recreating_swapchain = true;
+            RT_LOG_INFO_FMT("Marked swapchain {} for recreation.", swapchain.index);
+            continue; // handle on next loop
         }
 
         RT_LOG_INFO_FMT("Swapchain {} current frame: {}", swapchain.index, swapchain.current_frame);
@@ -182,6 +212,10 @@ b8 VulkanRenderBackend::BeginFrame(f64 delta_time){
         }
 
         if (!vulkan_swapchain_acquire_next_image_index({instance, allocator}, swapchain, UINT64_MAX, swapchain.image_available_semaphores[swapchain.current_frame], VK_NULL_HANDLE, swapchain.current_image_index)) {
+            if (swapchain.recreating_swapchain) {
+                RT_LOG_INFO_FMT("Acquire indicated out-of-date for swapchain {}. Marked for rebuild.", swapchain.index);
+                continue; // handle rebuild next loop
+            }
             RT_LOG_ERROR_FMT("Failed to acquire next image index for swapchain {}.", swapchain.index);
             return false;
         }
@@ -266,8 +300,9 @@ b8 VulkanRenderBackend::EndFrame(f64 delta_time){
                 present_queue,
                 swapchain.render_finished_semaphores[swapchain.current_frame],
                 swapchain.current_image_index)) {
-            RT_LOG_ERROR_FMT("Failed to present swapchain {}.", swapchain.index);
-            return false;
+            RT_LOG_ERROR_FMT("Present reported suboptimal/out-of-date for swapchain {}. Will rebuild.", swapchain.index);
+            swapchain.recreating_swapchain = true;
+            // Let the next frame handle rebuild
         }
 
         vulkan_command_buffer_update_submmitted(command_buffer);
@@ -351,21 +386,18 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
 
 void create_command_buffers(VulkanSwapchainContext& swapchain)
 {
-    if (swapchain.device_combination->command_buffers.contains(VulkanQueueFamilyIndicesType::GRAPHICS) &&
-        !swapchain.device_combination->command_buffers[VulkanQueueFamilyIndicesType::GRAPHICS].empty()) {
-        return;
-    }
-
     List<VulkanCommandBuffer>& command_buffers = swapchain.device_combination->command_buffers[VulkanQueueFamilyIndicesType::GRAPHICS];
+    // Free existing if present, then resize to match current image count
+    for (auto& cb : command_buffers) {
+        if (cb.state != VulkanCommandBufferState::NOT_ALLOCATED) {
+            vulkan_command_buffer_free(swapchain.device_combination->logical_device, swapchain.device_combination->command_pools[VulkanQueueFamilyIndicesType::GRAPHICS], cb);
+        }
+    }
     command_buffers.clear();
     command_buffers.resize(swapchain.image_count);
 
     for (u32 i = 0; i < swapchain.image_count; ++i)
     {
-        if (command_buffers[i].state != VulkanCommandBufferState::NOT_ALLOCATED) {
-            vulkan_command_buffer_free(swapchain.device_combination->logical_device, swapchain.device_combination->command_pools[VulkanQueueFamilyIndicesType::GRAPHICS], command_buffers[i]);
-        }
-
         vulkan_command_buffer_allocate(swapchain.device_combination->logical_device, swapchain.device_combination->command_pools[VulkanQueueFamilyIndicesType::GRAPHICS], true, command_buffers[i]);
 
     }

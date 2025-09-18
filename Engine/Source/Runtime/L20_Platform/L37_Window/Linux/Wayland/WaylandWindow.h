@@ -3,10 +3,8 @@
 
 #include "../../IWindow.h"
 #ifdef RT_SYSTEM_LINUX
-#include <EGL/egl.h>
 #include <wayland-client.h>
-#include <wayland-egl.h>
-#include <xkbcommon/xkbcommon.h>
+#include <wayland-client-protocol.h>
 
 #include "L20_Platform/L35_Input/WaylandInputMonitor.h"
 
@@ -56,106 +54,9 @@ class WaylandWindow : public IWindow {
     static void registryGlobalCallback(void* data, struct wl_registry* registry, uint32_t id, const char* interface,
                                        uint32_t version);
     static void registryGlobalRemoveCallback(void* data, struct wl_registry* registry, uint32_t name);
-    static void shellSurfaceCallback(void* data, struct wl_shell_surface* shell_surface, uint32_t mode);
-
-    const struct wl_registry_listener registry_listener = {WaylandWindow::registryGlobalCallback,
-                                                           WaylandWindow::registryGlobalRemoveCallback};
-
-    const struct wl_shell_surface_listener shell_surface_listener = {WaylandWindow::shellSurfaceCallback};
-
-    static void keyboard_keymap_callback(void* data, struct wl_keyboard* keyboard, uint32_t format, int fd,
-                                         uint32_t size);
-    static void keyboard_enter_callback(void* data, struct wl_keyboard* keyboard, uint32_t serial,
-                                        struct wl_surface* surface, struct wl_array* keys);
-    static void keyboard_leave_callback(void* data, struct wl_keyboard* keyboard, uint32_t serial,
-                                        struct wl_surface* surface);
-    static void keyboard_key_callback(void* data, struct wl_keyboard* keyboard, uint32_t serial, uint32_t time,
-                                      uint32_t key, uint32_t state);
-    static void keyboard_modifiers_callback(void* data, struct wl_keyboard* keyboard, uint32_t serial,
-                                            uint32_t mods_depressed, uint32_t mods_latched, uint32_t mods_locked,
-                                            uint32_t group);
-    static void keyboard_repeat_info_callback(void* data, struct wl_keyboard* keyboard, int rate, int delay);
-
-    const struct wl_keyboard_listener keyboard_listener = {
-        WaylandWindow::keyboard_keymap_callback,    WaylandWindow::keyboard_enter_callback,
-        WaylandWindow::keyboard_leave_callback,     WaylandWindow::keyboard_key_callback,
-        WaylandWindow::keyboard_modifiers_callback, WaylandWindow::keyboard_repeat_info_callback};
-
-    // 鼠标事件监听器
-    static void pointer_enter_callback(void* data, struct wl_pointer* pointer, uint32_t serial,
-                                       struct wl_surface* surface, wl_fixed_t sx, wl_fixed_t sy);
-
-    static void pointer_leave_callback(void* data, struct wl_pointer* pointer, uint32_t serial,
-                                       struct wl_surface* surface);
-
-    static void pointer_motion_callback(void* data, struct wl_pointer* pointer, uint32_t time, wl_fixed_t sx,
-                                        wl_fixed_t sy);
-
-    static void pointer_button_callback(void* data, struct wl_pointer* pointer, uint32_t serial, uint32_t time,
-                                        uint32_t button, uint32_t state);
-
-    static void pointer_axis_callback(void* data, struct wl_pointer* pointer, uint32_t time, uint32_t axis,
-                                      wl_fixed_t value);
-
-    static void pointer_frame_callback(void* data, struct wl_pointer* pointer);
-
-    static void pointer_axis_source_callback(void* data, struct wl_pointer* pointer, uint32_t source);
-
-    static void pointer_axis_stop_callback(void* data, struct wl_pointer* pointer, uint32_t time, uint32_t axis);
-    static void pointer_axis_discrete_callback(void* data, struct wl_pointer* pointer, uint32_t axis, int32_t discrete);
-
-    const struct wl_pointer_listener {
-        pointer_enter_callback, pointer_leave_callback, pointer_motion_callback, pointer_button_callback,
-            pointer_axis_callback, pointer_frame_callback, pointer_axis_source_callback, pointer_axis_stop_callback,
-            pointer_axis_discrete_callback
-    };
-    // 触摸事件监听器
-    static void touch_down_callback(void* data, struct wl_touch* touch, uint32_t serial, uint32_t time,
-                                    struct wl_surface* surface, int32_t id, wl_fixed_t x, wl_fixed_t y);
-    static void touch_up_callback(void* data, struct wl_touch* touch, uint32_t serial, uint32_t time, int32_t id);
-
-    static void touch_motion_callback(void* data, struct wl_touch* touch, uint32_t time, int32_t id, wl_fixed_t x,
-                                      wl_fixed_t y);
-
-    static void touch_frame_callback(void* data, struct wl_touch* touch);
-
-    static void touch_cancel_callback(void* data, struct wl_touch* touch);
-
-    static void touch_shape_callback(void* data, struct wl_touch* touch, int32_t id, wl_fixed_t major,
-                                     wl_fixed_t minor);
-
-    static void touch_orientation_callback(void* data, struct wl_touch* touch, int32_t id, wl_fixed_t orientation);
-    const struct wl_touch_listener {
-        touch_down_callback, touch_up_callback, touch_motion_callback, touch_frame_callback, touch_cancel_callback,
-            touch_shape_callback, touch_orientation_callback
-    };
-
-    // 平板/手写板等扩展设备监听器（以 tablet_tool 为例，需 Wayland 扩展支持）
-    static void tablet_tool_type_callback(void* data, struct zwp_tablet_tool_v2* tool, uint32_t type);
-    static void tablet_tool_enter_callback(void* data, struct zwp_tablet_tool_v2* tool, uint32_t serial,
-                                           struct zwp_tablet_v2* tablet, struct wl_surface* surface);
-    static void tablet_tool_leave_callback(void* data, struct zwp_tablet_tool_v2* tool, uint32_t serial,
-                                           struct wl_surface* surface);
-    static void tablet_tool_motion_callback(void* data, struct zwp_tablet_tool_v2* tool, wl_fixed_t x, wl_fixed_t y);
-    static void tablet_tool_pressure_callback(void* data, struct zwp_tablet_tool_v2* tool, uint32_t pressure);
-    static void tablet_tool_button_callback(void* data, struct zwp_tablet_tool_v2* tool, uint32_t serial,
-                                            uint32_t button, uint32_t state);
-
-    const struct zwp_tablet_tool_v2_listener {
-        tablet_tool_type_callback,
-            nullptr, // hardware_serial
-            nullptr, // hardware_id_wacom
-            tablet_tool_enter_callback, tablet_tool_leave_callback, tablet_tool_motion_callback,
-            tablet_tool_pressure_callback,
-            nullptr, // distance
-            nullptr, // tilt
-            nullptr, // rotation
-            nullptr, // slider
-            tablet_tool_button_callback,
-            nullptr, // frame
-            nullptr, // proximity_in
-            nullptr  // proximity_out
-    };
+    // Proper listener declarations will be defined in the .cpp
+    static const wl_registry_listener s_registry_listener;
+    static const wl_shell_surface_listener s_shell_surface_listener;
 };
 #endif
 #endif

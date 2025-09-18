@@ -1,6 +1,5 @@
 #include "WaylandWindow.h"
 #ifdef RT_SYSTEM_LINUX
-#include <wayland-client-protocol.h>
 #include <cstring>
 #include <cstdlib>
 #include <unistd.h>
@@ -9,11 +8,10 @@
 #include "L20_Platform/Include.h"
 
 WaylandWindow::WaylandWindow()
-    : m_display(nullptr), m_registry(nullptr), m_compositor(nullptr), m_shell(nullptr),
-      m_shm(nullptr), m_surface(nullptr), m_shell_surface(nullptr), m_egl_window(nullptr), m_buffer(nullptr),
-      inputMonitor(nullptr),
-{
-}
+        : m_display(nullptr), m_registry(nullptr), m_compositor(nullptr), m_shell(nullptr), m_seat(nullptr),
+            m_shm(nullptr), m_surface(nullptr), m_shell_surface(nullptr), m_egl_window(nullptr), m_keyboard(nullptr),
+            m_pointer(nullptr), m_xkb_context(nullptr), m_xkb_keymap(nullptr), m_xkb_state(nullptr), m_buffer(nullptr),
+            inputMonitor(nullptr) {}
 
 WaylandWindow::~WaylandWindow()
 {
@@ -22,12 +20,11 @@ WaylandWindow::~WaylandWindow()
 
 IWindow* WaylandWindow::Create(const char* title, u32 width, u32 height, u32 pos_x, u32 pos_y)
 {
-
-    title = title;
-    width = width;
-    height = height;
-    position_x = pos_x;
-    position_y = pos_y;
+    this->title = strdup(title);
+    this->width = width;
+    this->height = height;
+    this->position_x = pos_x;
+    this->position_y = pos_y;
 
 
     // 连接到Wayland显示服务器
@@ -45,7 +42,7 @@ IWindow* WaylandWindow::Create(const char* title, u32 width, u32 height, u32 pos
     wl_display_roundtrip(m_display);
 
     // 验证所需的Wayland接口是否可用
-    if (!m_compositor || !m_shell || !m_shm) {
+    if (!m_compositor || !m_shell) {
         RT_LOG_FATAL("无法获取必要的Wayland接口");
         CloseWindow();
         return nullptr;
@@ -60,16 +57,16 @@ IWindow* WaylandWindow::Create(const char* title, u32 width, u32 height, u32 pos
     }
 
     // 创建shell表面
-    m_shell_surface = wl_shell_get_shell_surface(m_shell, m_shell_surface);
-    if (!shell_surface) {
+    m_shell_surface = wl_shell_get_shell_surface(m_shell, m_surface);
+    if (!m_shell_surface) {
         RT_LOG_FATAL("无法创建Wayland shell表面");
         CloseWindow();
         return nullptr;
     }
 
     // 设置shell表面监听器
-    wl_shell_surface_add_listener(m_shell_surface, &shell_surface_listener, this);
-    wl_shell_surface_set_title(m_shell_surface, title);
+    wl_shell_surface_add_listener(m_shell_surface, &s_shell_surface_listener, this);
+    wl_shell_surface_set_title(m_shell_surface, this->title);
     wl_shell_surface_set_toplevel(m_shell_surface);
 
     RT_LOG_INFO("Wayland窗口创建成功");
@@ -78,61 +75,36 @@ IWindow* WaylandWindow::Create(const char* title, u32 width, u32 height, u32 pos
 
 void WaylandWindow::SetTitle(const char* title)
 {
-    this->title = title;
+    if (this->title) free(this->title);
+    this->title = strdup(title);
     if (m_shell_surface) {
         wl_shell_surface_set_title(m_shell_surface, title);
     }
 }
 
-char* WaylandWindow::GetTitle() const
-{
-    // 注意：这不是线程安全的，实际应用中应考虑更安全的实现
-    char* title = new char[windowTitle.length() + 1];
-    strcpy(title, windowTitle.c_str());
-    return title;
-}
+char* WaylandWindow::GetTitle() const { return title; }
 
 void WaylandWindow::SetSize(uint32_t width, uint32_t height)
 {
-    windowWidth = width;
-    windowHeight = height;
-
-    // 重新创建buffer或通知客户端尺寸改变
-    // 这里可能需要根据实际情况实现更复杂的逻辑
-    if (surface && buffer) {
-        // 销毁旧buffer
-        wl_buffer_destroy(buffer);
-        buffer = nullptr;
-
-        // 需要重新创建buffer并更新surface
-        // 实际实现取决于如何处理缓冲区
-    }
+    this->width = width;
+    this->height = height;
 }
 
-uint32_t WaylandWindow::GetWidth() const
-{
-    return windowWidth;
-}
+uint32_t WaylandWindow::GetWidth() const { return width; }
 
-uint32_t WaylandWindow::GetHeight() const
-{
-    return windowHeight;
-}
+uint32_t WaylandWindow::GetHeight() const { return height; }
 
 void WaylandWindow::ShowWindow()
 {
-    isVisible = true;
-    // 在Wayland中，表面可见性通常通过提交决定
-    if (surface) {
-        wl_surface_commit(surface);
+    // 在Wayland中，提交即可显示
+    if (m_surface) {
+        wl_surface_commit(m_surface);
     }
 }
 
 void WaylandWindow::HideWindow()
 {
-    isVisible = false;
-    // 在Wayland中，隐藏表面可能需要特殊处理
-    // 一种方法是不再提交更新
+    // Wayland没有统一隐藏 API；可以不再提交或销毁 shell surface
 }
 
 void WaylandWindow::CloseWindow()
@@ -237,22 +209,40 @@ void WaylandWindow::Update(const uint8_t* buffer_data, uint32_t width, uint32_t 
 void WaylandWindow::registryGlobalCallback(void* data, struct wl_registry* registry, uint32_t id,
                                          const char* interface, uint32_t version)
 {
+    WaylandWindow* self = static_cast<WaylandWindow*>(data);
+    if (strcmp(interface, wl_compositor_interface.name) == 0) {
+        self->m_compositor = static_cast<wl_compositor*>(
+            wl_registry_bind(registry, id, &wl_compositor_interface, 4));
+    } else if (strcmp(interface, wl_shell_interface.name) == 0) {
+        self->m_shell = static_cast<wl_shell*>(wl_registry_bind(registry, id, &wl_shell_interface, 1));
+    } else if (strcmp(interface, wl_shm_interface.name) == 0) {
+        self->m_shm = static_cast<wl_shm*>(wl_registry_bind(registry, id, &wl_shm_interface, 1));
+    } else if (strcmp(interface, wl_seat_interface.name) == 0) {
+        self->m_seat = static_cast<wl_seat*>(wl_registry_bind(registry, id, &wl_seat_interface, 1));
+    }
 }
 
 void WaylandWindow::registryGlobalRemoveCallback(void* data, struct wl_registry* registry, uint32_t name)
 {
 }
 
-void WaylandWindow::shellSurfaceCallback(void* data, struct wl_shell_surface* shell_surface, uint32_t mode)
-{
+static void shell_surface_ping(void* data, wl_shell_surface* shell_surface, uint32_t serial) {
+    wl_shell_surface_pong(shell_surface, serial);
 }
+static void shell_surface_configure(void* data, wl_shell_surface* shell_surface, uint32_t edges, int32_t width, int32_t height) {
+    // 可根据需要调整窗口大小
+}
+static void shell_surface_popup_done(void* data, wl_shell_surface* shell_surface) {}
 
-void WindowsWindow::SetInputMonitor(PlatformInputMonitor* monitor)
+const wl_shell_surface_listener WaylandWindow::s_shell_surface_listener = {shell_surface_ping, shell_surface_configure, shell_surface_popup_done};
+const wl_registry_listener WaylandWindow::s_registry_listener = {WaylandWindow::registryGlobalCallback, WaylandWindow::registryGlobalRemoveCallback};
+
+void WaylandWindow::SetInputMonitor(PlatformInputMonitor* monitor)
 {
     inputMonitor = monitor;
 }
 
-PlatformInputMonitor* WindowsWindow::GetInputMonitor() const
+PlatformInputMonitor* WaylandWindow::GetInputMonitor() const
 {
     return inputMonitor;
 }
