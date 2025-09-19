@@ -1,20 +1,53 @@
 #ifndef CORE_MATH_SVector_H
 #define CORE_MATH_SVector_H
 
-#include "IVector.h"
+#include <cstdint>
 #include <stdexcept> // For std::out_of_range
 #include <vector>    // For std::vector
 #include <initializer_list>
 #include <algorithm>
 #include <cmath>
 #include <cassert>
+#include <type_traits>
+#include <new>
+#include "L20_Platform/L31_SingletonFactory/SingletonFactory.h"
 
 namespace ReiToEngine
 {
 template <uint8_t DIM, typename T>
-class SVector : public IVector<SVector<DIM, T>, DIM, T>
+class SVector
 {
 public:
+    static constexpr uint8_t Dimension = DIM;
+    // Custom memory management
+    static void* operator new(std::size_t sz)
+    {
+        return GetMemoryManager().Allocate(sz, static_cast<u8>(alignof(SVector)), RT_MEMORY_TAG::MATH);
+    }
+    static void operator delete(void* p, std::size_t sz) noexcept
+    {
+        if (p) GetMemoryManager().Free(p, sz, RT_MEMORY_TAG::MATH);
+    }
+#if __cpp_aligned_new
+    static void* operator new(std::size_t sz, std::align_val_t al)
+    {
+        std::size_t a = static_cast<std::size_t>(al);
+        u8 align_u8 = static_cast<u8>(a > 255 ? 255 : a);
+        return GetMemoryManager().Allocate(sz, align_u8, RT_MEMORY_TAG::MATH);
+    }
+    static void operator delete(void* p, std::size_t sz, std::align_val_t) noexcept
+    {
+        if (p) GetMemoryManager().Free(p, sz, RT_MEMORY_TAG::MATH);
+    }
+#endif
+    static void* operator new[](std::size_t sz)
+    {
+        return GetMemoryManager().Allocate(sz, static_cast<u8>(alignof(SVector)), RT_MEMORY_TAG::MATH);
+    }
+    static void operator delete[](void* p, std::size_t sz) noexcept
+    {
+        if (p) GetMemoryManager().Free(p, sz, RT_MEMORY_TAG::MATH);
+    }
     SVector(const std::initializer_list<T>& init) :
         x(data[0]),
         y(DIM >= 2 ? data[1] : data[0]),
@@ -81,7 +114,7 @@ public:
     // }
 
     // Element functions from IVector (CRTP style, returning SVector<T, DIM>& and SVector<T, DIM>)
-    SVector<DIM, T>& operator+=(const SVector<DIM, T>& other) override
+    SVector<DIM, T>& operator+=(const SVector<DIM, T>& other)
     {
         size_t i = 0;
         for (; i < DIM; ++i)
@@ -90,7 +123,7 @@ public:
         }
         return *this;
     }
-    SVector<DIM, T>& operator-=(const SVector<DIM, T>& other) override
+    SVector<DIM, T>& operator-=(const SVector<DIM, T>& other)
     {
         size_t i = 0;
         for (; i < DIM; ++i)
@@ -99,7 +132,7 @@ public:
         }
         return *this;
     }
-    SVector<DIM, T>& operator*=(T scalar) override
+    SVector<DIM, T>& operator*=(T scalar)
     {
         size_t i = 0;
         for (; i < DIM; ++i)
@@ -108,7 +141,7 @@ public:
         }
         return *this;
     }
-    SVector<DIM, T>& operator/=(T scalar) override
+    SVector<DIM, T>& operator/=(T scalar)
     {
         size_t i = 0;
         for (; i < DIM; ++i)
@@ -117,27 +150,27 @@ public:
         }
         return *this;
     }
-    SVector<DIM, T> operator+(const SVector<DIM, T>& other) const override
+    [[nodiscard]] SVector<DIM, T> operator+(const SVector<DIM, T>& other) const
     {
         SVector<DIM, T> result = *this;
         return result += other;
     }
-    SVector<DIM, T> operator-(const SVector<DIM, T>& other) const override
+    [[nodiscard]] SVector<DIM, T> operator-(const SVector<DIM, T>& other) const
     {
         SVector<DIM, T> result = *this;
         return result -= other;
     }
-    SVector<DIM, T> operator*(T scalar) const override
+    [[nodiscard]] SVector<DIM, T> operator*(T scalar) const
     {
         SVector<DIM, T> result = *this;
         return result *= scalar;
     }
-    SVector<DIM, T> operator/(T scalar) const override
+    [[nodiscard]] SVector<DIM, T> operator/(T scalar) const
     {
         SVector<DIM, T> result = *this;
         return result /= scalar;
     }
-    T operator*(const SVector<DIM, T>& other) const override {
+    [[nodiscard]] T operator*(const SVector<DIM, T>& other) const {
         T ret = T{};
         size_t i = 0;
         for (; i < DIM; ++i)
@@ -147,30 +180,30 @@ public:
         return ret;
     }
 
-    T& operator[](int index) override {
+    T& operator[](int index) {
         if (index < 0 || index > DIM - 1) {
             throw std::out_of_range("Index out of bounds");
         }
         return data[index];
     }
 
-    const T& operator[](int index) const override {
+    const T& operator[](int index) const {
         if (index < 0 || index > DIM - 1) {
             throw std::out_of_range("Index out of bounds");
         }
         return data[index];
     }
 
-    bool operator==(const SVector<DIM, T>& other) const override
+    bool operator==(const SVector<DIM, T>& other) const
     {
-        size_t i = 0;
-        for (; i < DIM; ++i)
+        const T eps = static_cast<T>(RT_COMPARE_PRECISION);
+        for (size_t i = 0; i < DIM; ++i)
         {
-            if (std::abs(data[i] - other.data[i]) < RT_COMPARE_PRECISION) return false;
+            if (std::abs(data[i] - other.data[i]) > eps) return false;
         }
         return true;
     }
-    bool operator!=(const SVector<DIM, T>& other) const override
+    bool operator!=(const SVector<DIM, T>& other) const
     {
         return !(*this == other);
     }
@@ -197,18 +230,18 @@ public:
         return *this;
     }
 
-    T dot(const SVector<DIM, T>& other) const override
+    [[nodiscard]] T dot(const SVector<DIM, T>& other) const
     {
         return *this * other;
     }
 
-    T cross2D(const SVector<DIM, T>& other) const override
+    [[nodiscard]] T cross2D(const SVector<DIM, T>& other) const
     {
         assert(DIM >= 2 && "Call cross2D with a wrong DIMENTION.\n");
         return data[0] * other.data[1] - data[1] * other.data[0];
     }
 
-    SVector<DIM, T> cross4D(const SVector<DIM, T>& other) const override {
+    [[nodiscard]] SVector<DIM, T> cross4D(const SVector<DIM, T>& other) const {
         assert((DIM == 4 || DIM == 3) && "Call cross4D with a wrong DIMENTION.\n");
         if (DIM == 3) return cross3D(other);
 
@@ -220,7 +253,7 @@ public:
         return ret;
     }
 
-    SVector<DIM, T> cross3D(const SVector<DIM, T>& other) const override {
+    [[nodiscard]] SVector<DIM, T> cross3D(const SVector<DIM, T>& other) const {
         assert((DIM == 4 || DIM == 3) && "Call cross3D with a wrong DIMENTION.\n");
 
         SVector<DIM, T> ret;
@@ -230,7 +263,7 @@ public:
         return ret;
     }
 
-    SVector<DIM, T> normalize() const override
+    [[nodiscard]] SVector<DIM, T> normalize() const
     {
         T _length = length();
         if (_length == static_cast<T>(0)) {
@@ -245,7 +278,7 @@ public:
         return ret;
     }
 
-    void normalizeSelf() override
+    void normalizeSelf()
     {
         T _length = length();
         if (_length == static_cast<T>(0)) {
@@ -253,17 +286,18 @@ public:
             {
                 data[i] = 0;
             }
+            return;
         }
         for (size_t i = 0; i < DIM; ++i)
         {
-            data[i] = 0;
+            data[i] = data[i] / _length;
         }
     }
-    T length() const override
+    [[nodiscard]] T length() const
     {
         return std::sqrt(lengthSquared());
     }
-    T lengthSquared() const override
+    [[nodiscard]] T lengthSquared() const
     {
         T ret = T{0};
         for (size_t i = 0; i < DIM; ++i)
@@ -272,19 +306,20 @@ public:
         }
         return ret;
     }
-    bool isZero() const override
+    [[nodiscard]] bool isZero() const
     {
         return this->lengthSquared() < RT_COMPARE_PRECISION;
     }
-    bool isNormalized() const override
+    [[nodiscard]] bool isNormalized() const
     {
-        return std::abs(this->lengthSquared() - 1.0f) < RT_COMPARE_PRECISION;
+        const T eps = static_cast<T>(RT_COMPARE_PRECISION);
+        return std::abs(this->lengthSquared() - static_cast<T>(1)) < eps;
     }
-    T distance(const SVector<DIM, T>& other) const override
+    [[nodiscard]] T distance(const SVector<DIM, T>& other) const
     {
         return std::sqrt(distanceSquared(other));
     }
-    T distanceSquared(const SVector<DIM, T>& other) const override
+    [[nodiscard]] T distanceSquared(const SVector<DIM, T>& other) const
     {
         T ret = T{0};
         for (size_t i = 0; i < DIM; ++i)
@@ -293,7 +328,7 @@ public:
         }
         return ret;
     }
-    SVector<DIM, T> lerp(const SVector<DIM, T>& other, T t) const override
+    [[nodiscard]] SVector<DIM, T> lerp(const SVector<DIM, T>& other, T t) const
     {
         SVector<DIM, T> ret;
         for (size_t i = 0; i < DIM; ++i)
@@ -302,7 +337,7 @@ public:
         }
         return ret;
     }
-    SVector<DIM, T> reflect(const SVector<DIM, T>& normal) const override
+    [[nodiscard]] SVector<DIM, T> reflect(const SVector<DIM, T>& normal) const
     {
         T dotProduct = this->dot(normal);
 
@@ -313,7 +348,7 @@ public:
         }
         return ret;
     }
-    SVector<DIM, T> project(const SVector<DIM, T>& normal) const override
+    [[nodiscard]] SVector<DIM, T> project(const SVector<DIM, T>& normal) const
     {
         T dotProduct = this->dot(normal);
         T normalLengthSquared = normal.lengthSquared();
@@ -324,6 +359,52 @@ public:
             ret.data[i] = mult * normal.data[i];
         }
         return ret;
+    }
+    // Element-wise product
+    [[nodiscard]] SVector<DIM, T> hadamard(const SVector<DIM, T>& other) const
+    {
+        SVector<DIM, T> ret;
+        for (size_t i = 0; i < DIM; ++i) ret.data[i] = data[i] * other.data[i];
+        return ret;
+    }
+    // Clamp each component into [minV, maxV]
+    [[nodiscard]] SVector<DIM, T> clamp(T minV, T maxV) const
+    {
+        SVector<DIM, T> ret;
+        for (size_t i = 0; i < DIM; ++i)
+        {
+            T v = data[i];
+            if (v < minV) v = minV; else if (v > maxV) v = maxV;
+            ret.data[i] = v;
+        }
+        return ret;
+    }
+    // Angle between vectors (in radians); returns 0 for zero-length inputs
+    [[nodiscard]] T angle(const SVector<DIM, T>& other) const
+    {
+        T ls = this->lengthSquared();
+        T rs = other.lengthSquared();
+        if (ls <= static_cast<T>(RT_COMPARE_PRECISION) || rs <= static_cast<T>(RT_COMPARE_PRECISION)) return static_cast<T>(0);
+        T c = (*this * other) / (std::sqrt(ls) * std::sqrt(rs));
+        if (c < static_cast<T>(-1)) c = static_cast<T>(-1);
+        if (c > static_cast<T>(1))  c = static_cast<T>(1);
+        return std::acos(c);
+    }
+    [[nodiscard]] bool approxEqual(const SVector<DIM, T>& other, T eps = static_cast<T>(RT_COMPARE_PRECISION)) const
+    {
+        for (size_t i = 0; i < DIM; ++i)
+        {
+            if (std::abs(data[i] - other.data[i]) > eps) return false;
+        }
+        return true;
+    }
+    [[nodiscard]] bool isFinite() const
+    {
+        for (size_t i = 0; i < DIM; ++i)
+        {
+            if (!std::isfinite(static_cast<double>(data[i]))) return false;
+        }
+        return true;
     }
 public:
     T data[DIM];

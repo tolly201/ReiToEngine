@@ -136,7 +136,8 @@
         "future": "cpp",
         "xhash": "cpp",
         "xiosbase": "cpp",
-        "xtree": "cpp"
+        "xtree": "cpp",
+        "source_location": "cpp"
     },
 
     "todo-tree.general.tags": [

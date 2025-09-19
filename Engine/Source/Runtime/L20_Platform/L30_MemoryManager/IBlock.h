@@ -35,7 +35,8 @@ enum class RT_MEMORY_TAG : u16
     AUDIO = 18,
 
     SINGLETON = 19,
-    MAX_TAG = 20
+    MATH = 20,
+    MAX_TAG = 21
 };
 
 class RTBlock

@@ -44,3 +44,10 @@ set(ASSIMP_WARNINGS_AS_ERRORS OFF)
 # add_subdirectory(Engine/Thirdparty/Assimp)
 add_subdirectory(Engine/Source/Editor)
 
+# ---------------------- Tests (no third-party) ----------------------
+option(RT_ENABLE_TESTS "Build internal test targets" OFF)
+if(RT_ENABLE_TESTS)
+    include(CTest)
+    add_subdirectory(Engine/Source/Test)
+endif()
+
