@@ -4,3 +4,6 @@
 [submodule "Engine/Thirdparty/Assimp"]
 	path = Engine/Thirdparty/Assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "Engine/Thirdparty/mimalloc"]
+	path = Engine/Thirdparty/mimalloc
+	url = https://github.com/microsoft/mimalloc.git

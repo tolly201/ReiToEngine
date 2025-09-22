@@ -7,6 +7,7 @@
                 "${workspaceFolder}/Engine/Source/Editor/**",
                 "${workspaceFolder}/Engine/Thirdparty/stb/**",
                 "${workspaceFolder}/Engine/Thirdparty/Assimp/include/**",
+                "${workspaceFolder}/Engine/Thirdparty/mimalloc/include/**",
                 "${VULKAN_SDK}/include"
             ],
             "defines": [
@@ -39,9 +40,13 @@
                 "${workspaceFolder}/Engine/Source/Editor/",
                 "${workspaceFolder}/Engine/Thirdparty/stb/*",
                 "${workspaceFolder}/Engine/Thirdparty/Assimp/include/",
+                "${workspaceFolder}/Engine/Thirdparty/mimalloc/include/**",
                 "/Users/bole/VulkanSDK/1.4.321.0/macOS/include"
             ],
             "compilerPath": "/usr/local/opt/llvm@19/bin/clang++",
+            "cStandard": "c23",
+            "cppStandard": "c++23",
+            "intelliSenseMode": "clang-x64",
             "compileCommands": "${workspaceFolder}/builds/macos-clang-debug/compile_commands.json"
         },
         {
@@ -51,6 +56,7 @@
                 "${workspaceFolder}/Engine/Source/Editor/**",
                 "${workspaceFolder}/Engine/Thirdparty/stb/**",
                 "${workspaceFolder}/Engine/Thirdparty/Assimp/include/**",
+                "${workspaceFolder}/Engine/Thirdparty/mimalloc/include/**",
                 "${VULKAN_SDK}/include"
             ],
             "defines": [
@@ -61,8 +67,8 @@
             ],
             "windowsSdkVersion": "10.0.22621.0",
             "compilerPath": "cl.exe",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
+            "cStandard": "c23",
+            "cppStandard": "c++23",
             "intelliSenseMode": "windows-msvc-x64"
         }
     ],

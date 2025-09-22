@@ -59,6 +59,10 @@ ${CMAKE_CURRENT_SOURCE_DIR}/../../Thirdparty/Assimp/include
 
 target_link_libraries(ReiToRuntime PRIVATE ${Vulkan_LIBRARIES})
 
+target_link_libraries(ReiToRuntime PRIVATE mimalloc-static)
+
+target_include_directories(ReiToRuntime PRIVATE ${ENGINE_ROOT_DIR}/Thirdparty/mimalloc/include)
+
 # 创建导出目标列表
 install(TARGETS ReiToRuntime
     EXPORT ReiToRuntimeTargets

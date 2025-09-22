@@ -33,6 +33,12 @@ include_directories(
 
 include_directories(${Vulkan_INCLUDE_DIRS})
 
+set(MI_OVERRIDE ON CACHE BOOL "" FORCE)
+set(MI_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(MI_BUILD_SHARED ON CACHE BOOL "" FORCE)
+set(MI_BUILD_STATIC ON  CACHE BOOL "" FORCE)
+add_subdirectory(Engine/Thirdparty/mimalloc)
+
 add_subdirectory(Engine/Source/Runtime)
 
 # 设置 Assimp 的构建选项
