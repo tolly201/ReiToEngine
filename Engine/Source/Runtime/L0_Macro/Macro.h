@@ -79,12 +79,12 @@
     #define RT_FORCEINLINE inline __attribute__((always_inline))
 #endif
 
-#if _DEBUG
+#if !defined(NDEBUG)
 #    define RT_OHI_DEBUG 1
 #    define RT_OHI_RELEASE 0
 #else
-#    define RT_OHI_RELEASE 1
 #    define RT_OHI_DEBUG 0
+#    define RT_OHI_RELEASE 1
 #endif
 
 // Deprecation

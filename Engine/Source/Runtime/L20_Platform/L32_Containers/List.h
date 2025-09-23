@@ -3,13 +3,10 @@
 #include "L0_Macro/Include.h"
 #include "L20_Platform/L31_SingletonFactory/SingletonFactory.h"
 #include "L20_Platform/L30_MemoryManager/Memory.h"
-#include <new>
-#include <type_traits>
 
 namespace ReiToEngine
 {
 
-// 一个轻量自管内存的线性容器，接口贴近 std::vector（不依赖 STL 容器）
 template <typename T>
 class RTENGINE_API List
 {
@@ -19,7 +16,6 @@ public:
     List() = default;
     ~List() { destroy_and_free(); }
 
-    // 拷贝/移动
     List(const List& other) { copy_from(other); }
     List& operator=(const List& other) {
         if (this != &other) { destroy_and_free(); copy_from(other); }
@@ -31,7 +27,6 @@ public:
         return *this;
     }
 
-    // 容量/大小
     [[nodiscard]] u64 size() const noexcept { return _size; }
     [[nodiscard]] u64 capacity() const noexcept { return _capacity; }
     [[nodiscard]] b8  empty() const noexcept { return _size == 0; }
@@ -39,7 +34,6 @@ public:
     void clear() noexcept { destroy_range(0, _size); _size = 0; }
     void reserve(u64 new_cap) { if (new_cap > _capacity) reallocate(new_cap); }
 
-    // 注意：当 T 不可默认构造时，调用该重载将导致编译失败，语义与 std::vector 一致
     void resize(u64 new_size) {
         if (new_size < _size) { destroy_range(new_size, _size); _size = new_size; return; }
         if (new_size > _capacity) reallocate(grow_to_fit(new_size));
