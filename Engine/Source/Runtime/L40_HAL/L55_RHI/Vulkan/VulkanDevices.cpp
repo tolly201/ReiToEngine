@@ -132,7 +132,7 @@ b8 vulkan_physical_device_select(VkInstance& instance, VulkanSwapchainContext& s
 
     return true;
 }
-b8 vulkan_logical_device_create(VulkanSwapchainContext& swapchain_context){
+b8 vulkan_logical_device_create(VulkanContextRef ref, VulkanSwapchainContext& swapchain_context){
     VulkanDeviceCombination& dc = *swapchain_context.device_combination;
     if (dc.logical_device != VK_NULL_HANDLE) {
         // 已创建，直接复用
@@ -217,7 +217,7 @@ b8 vulkan_logical_device_create(VulkanSwapchainContext& swapchain_context){
     dci.ppEnabledExtensionNames = swapchain_context.requirements.required_extensions.data();
     dci.pEnabledFeatures = &enabled; // 如需 Features2/链，可改用 pNext
 
-    if (!RT_VK_CHECK(vkCreateDevice(dc.physical_device, &dci, nullptr, &dc.logical_device))) {
+    if (!RT_VK_CHECK(vkCreateDevice(dc.physical_device, &dci, ref.allocator, &dc.logical_device))) {
         RT_LOG_ERROR("vkCreateDevice failed.");
         dc.logical_device = VK_NULL_HANDLE;
         return false;
@@ -249,7 +249,7 @@ b8 vulkan_logical_device_create(VulkanSwapchainContext& swapchain_context){
     return true;
 }
 b8 vulkan_physical_device_destroy();
-b8 vulkan_logical_device_destroy(VulkanDeviceCombination& dc)
+b8 vulkan_logical_device_destroy(VulkanContextRef ref, VulkanDeviceCombination& dc)
 {
     for (auto& [type, buffers] : dc.command_buffers) {
         for (auto& cb : buffers) {
@@ -269,7 +269,7 @@ b8 vulkan_logical_device_destroy(VulkanDeviceCombination& dc)
 
     if (dc.logical_device != VK_NULL_HANDLE) {
         vkDeviceWaitIdle(dc.logical_device);
-        vkDestroyDevice(dc.logical_device, nullptr);
+        vkDestroyDevice(dc.logical_device, ref.allocator);
         dc.logical_device = VK_NULL_HANDLE;
         dc.is_inused = false;
         dc.inuse_queue_family_indices.clear();

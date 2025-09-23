@@ -13,8 +13,13 @@ namespace ReiToEngine{
         }
         if (code == static_cast<u16>(SYSTEM_EVENT_CODE::KEY_PRESS))
         {
-            u8 key_code = context.data.u8[0];
+            i16 key_code = context.data.u16[2];
             RT_LOG_INFO("catch key event", key_code);
+            InputEvent* event = static_cast<InputEvent*>(context.user_data);
+            RT_LOG_INFO("key code:", static_cast<u16>(key_code));
+            u16 mod = static_cast<u16>(context.data.u16[1]);
+            RT_LOG_INFO("modifiers:", mod);
+
             if (key_code == static_cast<u8>(KEY_CODE_KEYBOARD::ESCAPE))
             {
                 RT_LOG_INFO("exit application");
@@ -30,6 +35,17 @@ namespace ReiToEngine{
 
         return true;
     }
+
+    b8 application_on_resize(u16 code, void* sender, void* listener_inst, event_context context)
+    {
+        IWindow* window = static_cast<IWindow*>(sender);
+        ReiToEngine::RTApplication& app = ReiToEngine::RTApplication::Instance();
+        return true;
+    }
+
+    b8 application_on_quit(u16 code, void* sender, void* listener_inst, event_context context){return true;}
+
+    b8 application_on_mouse(u16 code, void* sender, void* listener_inst, event_context context){return true;}
 
     RTApplication::RTApplication() = default;
     RTApplication::~RTApplication() = default;
@@ -131,6 +147,24 @@ namespace ReiToEngine{
 
         event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_PRESS), this, application_on_key);
 
+        event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::WINDOW_RESIZE), this, application_on_resize);
+
+        event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::APPLICATION_QUIT), this, application_on_quit);
+
+        event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_RELEASE), this, application_on_key);
+
+        event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_REPEAT), this, application_on_key);
+
+        event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_BUTTON_PRESS), this, application_on_mouse);
+
+        event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_BUTTON_RELEASE), this, application_on_mouse);
+
+        event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_BUTTON_REPEAT), this, application_on_mouse);
+
+        event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_MOVE), this, application_on_mouse);
+
+        event_system_ptr->RegisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_WHEEL), this, application_on_mouse);
+
         app_state.is_running = true;
         app_state.is_paused = false;
         return true;
@@ -205,6 +239,18 @@ namespace ReiToEngine{
         windowsManager_ptr->Terminate();
         game_instance->Terminate();
         event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_PRESS), this, application_on_key);
+
+        event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::WINDOW_RESIZE), this, application_on_resize);
+        event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::APPLICATION_QUIT), this, application_on_quit);
+        event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_RELEASE), this, application_on_key);
+        event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::KEY_REPEAT), this, application_on_key);
+        event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_BUTTON_PRESS), this, application_on_mouse);
+        event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_BUTTON_RELEASE), this, application_on_mouse);
+        event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_BUTTON_REPEAT), this, application_on_mouse);
+        event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_MOVE), this, application_on_mouse);
+        event_system_ptr->UnregisterEvent(static_cast<u32>(SYSTEM_EVENT_CODE::MOUSE_WHEEL), this, application_on_mouse);
+
+
         input_system_ptr->Terminate();
         event_system_ptr->Terminate();
     }

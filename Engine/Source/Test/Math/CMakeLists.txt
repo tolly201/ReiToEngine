@@ -1,26 +1,16 @@
 cmake_minimum_required(VERSION 3.20)
 project(MathTests)
 
-# Auto-discover Math test sources
+# Auto-discover Math test sources (exclude standalone main)
 file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/*_tests.cpp
 )
 
-add_executable(MathTests ${TEST_SOURCES})
+add_library(MathTestsObjs OBJECT ${TEST_SOURCES})
 
-# Include Runtime headers to reuse math code
-target_include_directories(MathTests PRIVATE
+target_include_directories(MathTestsObjs PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Runtime
 )
 
-# Link against ReiToRuntime to share symbols and compile defs
-target_link_libraries(MathTests PRIVATE ReiToRuntime)
-
-# Output next to other runtime bins
-set_target_properties(MathTests PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/bin/
-)
-
-# Register with CTest
-add_test(NAME MathTests COMMAND MathTests)
+# Do not link full runtime here to avoid dragging platform code; prefer header-only math usage

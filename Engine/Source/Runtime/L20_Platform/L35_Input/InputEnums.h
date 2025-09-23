@@ -149,6 +149,12 @@ enum class KEY_CODE_MODIFIER : u8
     SUPER     = 0x08,
     CAPS_LOCK = 0x10,
     NUM_LOCK  = 0x20,
+    LEFT_ALT  = 0x40,
+    RIGHT_ALT = 0x80,
+    LEFT_SHIFT = 0x100,
+    RIGHT_SHIFT = 0x200,
+    LEFT_CONTROL = 0x400,
+    RIGHT_CONTROL = 0x800,
     ALL       = 0xFF
 };
 

@@ -30,7 +30,7 @@ void WindowsInputMonitor::ProcessNativeEvent(MSG* msg)
         inputEvent.data.keyboard.keyCode = MapKeyCode(msg->wParam);
         // 可补充修饰键状态
         inputEvent.modifiers = GetModifiers();
-        ProcessKey(inputEvent.data.keyboard.keyCode, true);
+        ProcessKey(inputEvent, true);
         break;
 
     // 键盘释放
@@ -40,7 +40,7 @@ void WindowsInputMonitor::ProcessNativeEvent(MSG* msg)
         inputEvent.eventType  = SYSTEM_EVENT_CODE::KEY_RELEASE;
         inputEvent.data.keyboard.keyCode = MapKeyCode(msg->wParam);
         inputEvent.modifiers = GetModifiers();
-        ProcessKey(inputEvent.data.keyboard.keyCode, false);
+        ProcessKey(inputEvent, false);
         break;
 
     // 鼠标移动

@@ -57,12 +57,15 @@ b8 InputMonitor::WasKeyUp(KEY_CODE_KEYBOARD keyCode) {
     return !prev_state.keys[static_cast<u8>(keyCode)];
 }
 
-void InputMonitor::ProcessKey(KEY_CODE_KEYBOARD keycode, b8 pressed) {
-    if (cur_state.keys[static_cast<u8>(keycode)] != pressed) {
-        cur_state.keys[static_cast<u8>(keycode)] = pressed;
+void InputMonitor::ProcessKey(InputEvent input_event, b8 pressed) {
+    if (cur_state.keys[static_cast<u8>(input_event.eventType)] != pressed) {
+        cur_state.keys[static_cast<u8>(input_event.eventType)] = pressed;
 
         event_context content;
-        content.data.u8[0] = static_cast<u8>(keycode);
+        content.data.u16[0] = static_cast<u16>(input_event.eventType);
+        content.data.u16[1] = static_cast<u16>(input_event.modifiers);
+        content.data.u16[2] = static_cast<u16>(input_event.data.keyboard.keyCode);
+        content.user_data = &input_event;
         EventSystem::Instance().TriggerEvent(
             pressed ? static_cast<u32>(SYSTEM_EVENT_CODE::KEY_PRESS) : static_cast<u32>(SYSTEM_EVENT_CODE::KEY_RELEASE), this, content);
     }
@@ -129,7 +132,6 @@ void InputMonitor::ProcessMouseButton(KEY_CODE_MOUSE mouseButton, b8 pressed) {
 void InputMonitor::ProcessMouseMove(f32 x, f32 y) {
     if (cur_state.mouseX != x || cur_state.mouseY != y) {
 
-        RT_LOG_INFO("Mouse Move: ", x, y);
         cur_state.mouseX = x;
         cur_state.mouseY = y;
         event_context content;

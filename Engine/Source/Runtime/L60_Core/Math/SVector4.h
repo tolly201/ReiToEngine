@@ -47,24 +47,42 @@ public:
         if (p) GetMemoryManager().Free(p, sz, RT_MEMORY_TAG::MATH);
     }
     SVector4(const std::initializer_list<T>& init) noexcept
+        : x(T{0}), y(T{0}), z(T{0}), w(T{0})
+        , r(x), g(y), b(z), a(w)
+        , s(x), t(y), p(z), q(w)
     {
-        x = y = z = w = T{0};
-        int list_size = init.size();
-        list_size = list_size > 4? 4 : list_size;
+        int list_size = static_cast<int>(init.size());
+        list_size = list_size > 4 ? 4 : list_size;
         if (list_size > 0) x = init.begin()[0];
         if (list_size > 1) y = init.begin()[1];
         if (list_size > 2) z = init.begin()[2];
         if (list_size > 3) w = init.begin()[3];
     }
     SVector4() noexcept
-    {
-        x=y=z=w= T{0};
-    }
-    SVector4(T x, T y, T z, T w) noexcept:
-        x(x), y(y), z(z), w(w) {};
-    SVector4(T val) noexcept:x(val), y(val), z(val), w(val) {};
-    SVector4(const SVector4<T>& other) = default;
-    SVector4(SVector4<T>&&)noexcept = default;
+        : x(T{0}), y(T{0}), z(T{0}), w(T{0})
+        , r(x), g(y), b(z), a(w)
+        , s(x), t(y), p(z), q(w)
+    {}
+    SVector4(T x, T y, T z, T w) noexcept
+        : x(x), y(y), z(z), w(w)
+        , r(this->x), g(this->y), b(this->z), a(this->w)
+        , s(this->x), t(this->y), p(this->z), q(this->w)
+    {};
+    SVector4(T val) noexcept
+        : x(val), y(val), z(val), w(val)
+        , r(this->x), g(this->y), b(this->z), a(this->w)
+        , s(this->x), t(this->y), p(this->z), q(this->w)
+    {};
+    SVector4(const SVector4<T>& other)
+        : x(other.x), y(other.y), z(other.z), w(other.w)
+        , r(this->x), g(this->y), b(this->z), a(this->w)
+        , s(this->x), t(this->y), p(this->z), q(this->w)
+    {}
+    SVector4(SVector4<T>&& other) noexcept
+        : x(other.x), y(other.y), z(other.z), w(other.w)
+        , r(this->x), g(this->y), b(this->z), a(this->w)
+        , s(this->x), t(this->y), p(this->z), q(this->w)
+    {}
     // SVector4<T>ement functions from IVector (CRTP style, returning SVector<T, DIM>& and SVector<T, DIM>)
     SVector4<T>& operator+=(const SVector4<T>& other)
     {
@@ -281,11 +299,106 @@ SVector4<T>& operator=(const SVector4<T>& other)
             (dotProduct / normalLengthSquared) * normal.w
         );
     }
+    // Component-wise trig (angles in radians)
+    [[nodiscard]] SVector4<T> sin() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector4::sin requires floating-point T");
+        return SVector4<T>(
+            static_cast<T>(std::sin(static_cast<double>(x))),
+            static_cast<T>(std::sin(static_cast<double>(y))),
+            static_cast<T>(std::sin(static_cast<double>(z))),
+            static_cast<T>(std::sin(static_cast<double>(w)))
+        );
+    }
+    [[nodiscard]] SVector4<T> cos() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector4::cos requires floating-point T");
+        return SVector4<T>(
+            static_cast<T>(std::cos(static_cast<double>(x))),
+            static_cast<T>(std::cos(static_cast<double>(y))),
+            static_cast<T>(std::cos(static_cast<double>(z))),
+            static_cast<T>(std::cos(static_cast<double>(w)))
+        );
+    }
+    [[nodiscard]] SVector4<T> tan() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector4::tan requires floating-point T");
+        return SVector4<T>(
+            static_cast<T>(std::tan(static_cast<double>(x))),
+            static_cast<T>(std::tan(static_cast<double>(y))),
+            static_cast<T>(std::tan(static_cast<double>(z))),
+            static_cast<T>(std::tan(static_cast<double>(w)))
+        );
+    }
+    [[nodiscard]] SVector4<T> asin() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector4::asin requires floating-point T");
+        T cx = x; if (cx < static_cast<T>(-1)) cx = static_cast<T>(-1); else if (cx > static_cast<T>(1)) cx = static_cast<T>(1);
+        T cy = y; if (cy < static_cast<T>(-1)) cy = static_cast<T>(-1); else if (cy > static_cast<T>(1)) cy = static_cast<T>(1);
+        T cz = z; if (cz < static_cast<T>(-1)) cz = static_cast<T>(-1); else if (cz > static_cast<T>(1)) cz = static_cast<T>(1);
+        T cw = w; if (cw < static_cast<T>(-1)) cw = static_cast<T>(-1); else if (cw > static_cast<T>(1)) cw = static_cast<T>(1);
+        return SVector4<T>(
+            static_cast<T>(std::asin(static_cast<double>(cx))),
+            static_cast<T>(std::asin(static_cast<double>(cy))),
+            static_cast<T>(std::asin(static_cast<double>(cz))),
+            static_cast<T>(std::asin(static_cast<double>(cw)))
+        );
+    }
+    [[nodiscard]] SVector4<T> acos() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector4::acos requires floating-point T");
+        T cx = x; if (cx < static_cast<T>(-1)) cx = static_cast<T>(-1); else if (cx > static_cast<T>(1)) cx = static_cast<T>(1);
+        T cy = y; if (cy < static_cast<T>(-1)) cy = static_cast<T>(-1); else if (cy > static_cast<T>(1)) cy = static_cast<T>(1);
+        T cz = z; if (cz < static_cast<T>(-1)) cz = static_cast<T>(-1); else if (cz > static_cast<T>(1)) cz = static_cast<T>(1);
+        T cw = w; if (cw < static_cast<T>(-1)) cw = static_cast<T>(-1); else if (cw > static_cast<T>(1)) cw = static_cast<T>(1);
+        return SVector4<T>(
+            static_cast<T>(std::acos(static_cast<double>(cx))),
+            static_cast<T>(std::acos(static_cast<double>(cy))),
+            static_cast<T>(std::acos(static_cast<double>(cz))),
+            static_cast<T>(std::acos(static_cast<double>(cw)))
+        );
+    }
+    [[nodiscard]] SVector4<T> atan() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector4::atan requires floating-point T");
+        return SVector4<T>(
+            static_cast<T>(std::atan(static_cast<double>(x))),
+            static_cast<T>(std::atan(static_cast<double>(y))),
+            static_cast<T>(std::atan(static_cast<double>(z))),
+            static_cast<T>(std::atan(static_cast<double>(w)))
+        );
+    }
+    // Degrees/radians helpers
+    [[nodiscard]] SVector4<T> toRadians() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector4::toRadians requires floating-point T");
+        constexpr T pi = static_cast<T>(3.141592653589793238462643383279502884L);
+        const T k = pi / static_cast<T>(180);
+        return SVector4<T>(x * k, y * k, z * k, w * k);
+    }
+    [[nodiscard]] SVector4<T> toDegrees() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector4::toDegrees requires floating-point T");
+        constexpr T pi = static_cast<T>(3.141592653589793238462643383279502884L);
+        const T k = static_cast<T>(180) / pi;
+        return SVector4<T>(x * k, y * k, z * k, w * k);
+    }
 public:
     T x;
     T y;
     T z;
     T w;
+    // Alias reference members (colors and texture coords)
+    // Color aliases
+    T& r; // -> x
+    T& g; // -> y
+    T& b; // -> z
+    T& a; // -> w
+    // Texture coordinate aliases
+    T& s; // -> x
+    T& t; // -> y
+    T& p; // -> z
+    T& q; // -> w
 };
 }
 

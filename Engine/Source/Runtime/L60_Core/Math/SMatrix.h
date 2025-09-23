@@ -11,7 +11,7 @@
 namespace ReiToEngine
 {
 template <uint8_t column, uint8_t row, typename T>
-class RTENGINE_API SMatrix
+class SMatrix
 {
 public:
     static constexpr uint8_t Columns = column;

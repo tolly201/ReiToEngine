@@ -14,13 +14,12 @@
         "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic",
         "CMAKE_CXX_FLAGS_DEBUG": "-ggdb -g -O0",
 
-        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/bin/",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/"
+        "CMAKE_PROJECT_SOURCE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/"
       },
         "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
     },
     {
-      "name": "macos-clang-debug-tests",
+      "name": "macos-clang-debug-test",
       "displayName": "macOS Clang Debug (with Tests)",
       "description": "Debug build with tests enabled.",
       "generator": "Ninja",
@@ -30,8 +29,7 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic",
         "CMAKE_CXX_FLAGS_DEBUG": "-ggdb -g -O0",
-        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/bin/",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/",
+        "CMAKE_PROJECT_SOURCE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/",
         "RT_ENABLE_TESTS": "ON"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
@@ -57,11 +55,7 @@
         "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic -DUNICODE -D_UNICODE -D_CRT_SECURE_NO_WARNINGS -m64",
         "CMAKE_CXX_FLAGS_DEBUG": "-ggdb -g -O0",
         "CMAKE_CXX_FLAGS_RELEASE": "-O2",
-        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/bin/",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/",
-        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/",
-        "Vulkan_INCLUDE_DIR": "/opt/local/x86_64-w64-mingw32-vulkan/include",
-        "Vulkan_LIBRARY": "/opt/local/x86_64-w64-mingw32-vulkan/lib/vulkan-1.lib"
+        "CMAKE_PROJECT_SOURCE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
     },
@@ -88,11 +82,17 @@
         "CMAKE_CXX_FLAGS": "/W4 /EHsc /source-charset:utf-8 /DUNICODE /D_UNICODE /D_CRT_SECURE_NO_WARNINGS",
         "CMAKE_CXX_FLAGS_DEBUG": "/Zi /Od /MDd",
         "CMAKE_CXX_FLAGS_RELEASE": "/O2 /MD",
-        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/",
-        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/bin/",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/"
+        "CMAKE_PROJECT_SOURCE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    },
+    {
+      "name": "windows-msvc-x64-test",
+      "displayName": "Windows MSVC x64 (with Tests)",
+      "inherits": "windows-msvc-x64",
+      "cacheVariables": {
+        "RT_ENABLE_TESTS": "ON"
+      }
     },
     {
       "name": "windows-llvm-x64",
@@ -102,14 +102,20 @@
       "toolchainFile": "${sourceDir}/Engine/Scripts/cmake_toolchain/Windows_LLVM-Windows-toolchain.cmake",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic-DUNICODE -D_UNICODE -D_CRT_SECURE_NO_WARNINGS -m64",
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic -DUNICODE -D_UNICODE -D_CRT_SECURE_NO_WARNINGS -m64",
         "CMAKE_CXX_FLAGS_DEBUG": "-ggdb -g -O0",
         "CMAKE_CXX_FLAGS_RELEASE": "-O2",
-        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/bin/",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/",
-        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/lib/"
+        "CMAKE_PROJECT_SOURCE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    },
+    {
+      "name": "windows-llvm-x64-test",
+      "displayName": "Windows LLVM Clang x64 with Tests",
+      "inherits": "windows-llvm-x64",
+      "cacheVariables": {
+        "RT_ENABLE_TESTS": "ON"
+      }
     },
     {
       "name": "linux-clang-debug",
@@ -126,20 +132,37 @@
   ],
   "buildPresets": [
   {"name": "macos-clang-debug", "configurePreset": "macos-clang-debug"},
-  {"name": "macos-clang-debug-tests", "configurePreset": "macos-clang-debug-tests"},
+  {"name": "macos-clang-debug-test", "configurePreset": "macos-clang-debug-test"},
     { "name": "macos-clang-release", "configurePreset": "macos-clang-release" },
     { "name": "macos-cross-win-mingw", "configurePreset": "macos-cross-win-mingw" },
     { "name": "macos-cross-linux-musl", "configurePreset": "macos-cross-linux-musl" },
     { "name": "windows-msvc-x64", "configurePreset": "windows-msvc-x64" },
+    { "name": "windows-msvc-x64-test", "configurePreset": "windows-msvc-x64-test", "configuration": "Debug" },
     { "name": "windows-llvm-x64", "configurePreset": "windows-llvm-x64" },
+    { "name": "windows-llvm-x64-test", "configurePreset": "windows-llvm-x64-test" },
     { "name": "linux-clang-debug", "configurePreset": "linux-clang-debug" }
   ],
   "testPresets": [
     {
-      "name": "macos-tests-all",
+      "name": "macos-test-all",
       "displayName": "Run all tests (macOS Debug)",
       "description": "Runs all tests built with the macos-clang-debug-tests preset.",
-      "configurePreset": "macos-clang-debug-tests",
+      "configurePreset": "macos-clang-debug-test",
+      "execution": { "jobs": 8 }
+    },
+    {
+      "name": "windows-llvm-test-all",
+      "displayName": "Run all tests (Windows LLVM Debug)",
+      "description": "Runs all tests built with the windows-llvm-x64-test preset.",
+      "configurePreset": "windows-llvm-x64-test",
+      "execution": { "jobs": 8 }
+    },
+    {
+      "name": "windows-msvc-test-all",
+      "displayName": "Run all tests (Windows MSVC Debug)",
+      "description": "Runs all tests built with the windows-msvc-x64-tests preset.",
+      "configurePreset": "windows-msvc-x64-test",
+      "configuration": "Debug",
       "execution": { "jobs": 8 }
     }
   ]

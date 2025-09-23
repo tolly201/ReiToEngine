@@ -1,4 +1,3 @@
-// Engine/Source/Runtime/Core/HAL/Input/Include/IInputMonitor.h
 #ifndef PLATFORM_INPUT_MONITOR_H
 #define PLATFORM_INPUT_MONITOR_H
 #include "L0_Macro/Include.h"
@@ -19,7 +18,7 @@ public:
     b8 WasKeyDown(KEY_CODE_KEYBOARD keyCode);
     b8 WasKeyUp(KEY_CODE_KEYBOARD keyCode);
 
-    void ProcessKey(KEY_CODE_KEYBOARD keycode, b8 pressed);
+    void ProcessKey(InputEvent input_event, b8 pressed);
 
     b8 IsMouseButtonDown(KEY_CODE_MOUSE mouseButton);
     b8 IsMouseButtonUp(KEY_CODE_MOUSE mouseButton);

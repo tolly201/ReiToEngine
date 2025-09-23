@@ -126,7 +126,7 @@ T* Singleton<T>::instance_ptr = nullptr;
 template <typename T>
 std::once_flag Singleton<T>::once_flag;
 
-MemoryManager& GetMemoryManager();
+RTENGINE_API MemoryManager& GetMemoryManager();
 }  // namespace ReiToEngine
 
 

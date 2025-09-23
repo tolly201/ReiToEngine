@@ -26,7 +26,6 @@ void vulkan_swapchain_destroy(VulkanContextRef context, VulkanSwapchainContext& 
 
 b8 vulkan_swapchain_acquire_next_image_index(VulkanContextRef context ,VulkanSwapchainContext& swapchain_context, u32 timeout_us, VkSemaphore& semaphore, VkFence* fence, u32& image_index)
 {
-    RT_LOG_INFO_FMT("Acquiring next image for swapchain {}", swapchain_context.index);
     // 检查 device_combination 是否有效
     if (!swapchain_context.device_combination) {
         RT_LOG_FATAL("swapchain_context.device_combination is nullptr!");
@@ -97,7 +96,6 @@ b8 vulkan_swapchain_present(VulkanContextRef context ,VulkanSwapchainContext& sw
 void create(VulkanContextRef context, VulkanSwapchainContext& swapchain_context, u32 width, u32 height)
 {
     VkExtent2D extent = { swapchain_context.width, swapchain_context.height };
-    swapchain_context.max_frames_in_flight = 2;
 
     b8 found = false;
     for (u32 i = 0; i < swapchain_context.swapchain_info.formats.size(); ++i) {
@@ -144,6 +142,8 @@ void create(VulkanContextRef context, VulkanSwapchainContext& swapchain_context,
     if (swapchain_context.swapchain_info.capabilities.surfaceCapabilities.maxImageCount > 0 && image_count > swapchain_context.swapchain_info.capabilities.surfaceCapabilities.maxImageCount) {
         image_count = swapchain_context.swapchain_info.capabilities.surfaceCapabilities.maxImageCount;
     }
+
+    swapchain_context.max_frames_in_flight = image_count - 1;
 
     VkSwapchainCreateInfoKHR create_info{};
     create_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;

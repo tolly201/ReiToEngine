@@ -360,6 +360,75 @@ public:
         }
         return ret;
     }
+    // Component-wise trig functions (angles in radians)
+    [[nodiscard]] SVector<DIM, T> sin() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector::sin requires floating-point T");
+        SVector<DIM, T> ret;
+        for (size_t i = 0; i < DIM; ++i) ret.data[i] = static_cast<T>(std::sin(static_cast<double>(data[i])));
+        return ret;
+    }
+    [[nodiscard]] SVector<DIM, T> cos() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector::cos requires floating-point T");
+        SVector<DIM, T> ret;
+        for (size_t i = 0; i < DIM; ++i) ret.data[i] = static_cast<T>(std::cos(static_cast<double>(data[i])));
+        return ret;
+    }
+    [[nodiscard]] SVector<DIM, T> tan() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector::tan requires floating-point T");
+        SVector<DIM, T> ret;
+        for (size_t i = 0; i < DIM; ++i) ret.data[i] = static_cast<T>(std::tan(static_cast<double>(data[i])));
+        return ret;
+    }
+    // Inverse trig with clamping to [-1, 1]
+    [[nodiscard]] SVector<DIM, T> asin() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector::asin requires floating-point T");
+        SVector<DIM, T> ret;
+        for (size_t i = 0; i < DIM; ++i) {
+            T v = data[i];
+            if (v < static_cast<T>(-1)) v = static_cast<T>(-1); else if (v > static_cast<T>(1)) v = static_cast<T>(1);
+            ret.data[i] = static_cast<T>(std::asin(static_cast<double>(v)));
+        }
+        return ret;
+    }
+    [[nodiscard]] SVector<DIM, T> acos() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector::acos requires floating-point T");
+        SVector<DIM, T> ret;
+        for (size_t i = 0; i < DIM; ++i) {
+            T v = data[i];
+            if (v < static_cast<T>(-1)) v = static_cast<T>(-1); else if (v > static_cast<T>(1)) v = static_cast<T>(1);
+            ret.data[i] = static_cast<T>(std::acos(static_cast<double>(v)));
+        }
+        return ret;
+    }
+    [[nodiscard]] SVector<DIM, T> atan() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector::atan requires floating-point T");
+        SVector<DIM, T> ret;
+        for (size_t i = 0; i < DIM; ++i) ret.data[i] = static_cast<T>(std::atan(static_cast<double>(data[i])));
+        return ret;
+    }
+    // Degree/radian component-wise conversion helpers
+    [[nodiscard]] SVector<DIM, T> toRadians() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector::toRadians requires floating-point T");
+        constexpr T pi = static_cast<T>(3.141592653589793238462643383279502884L);
+        SVector<DIM, T> ret;
+        for (size_t i = 0; i < DIM; ++i) ret.data[i] = data[i] * (pi / static_cast<T>(180));
+        return ret;
+    }
+    [[nodiscard]] SVector<DIM, T> toDegrees() const
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector::toDegrees requires floating-point T");
+        constexpr T pi = static_cast<T>(3.141592653589793238462643383279502884L);
+        SVector<DIM, T> ret;
+        for (size_t i = 0; i < DIM; ++i) ret.data[i] = data[i] * (static_cast<T>(180) / pi);
+        return ret;
+    }
     // Element-wise product
     [[nodiscard]] SVector<DIM, T> hadamard(const SVector<DIM, T>& other) const
     {

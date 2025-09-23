@@ -57,38 +57,48 @@ public:
     }
     char* GetMemoryUsageReport()
     {
-        char buffer[8000] = "System memory use (tagged):\n";
-        u64 offset = strlen(buffer);
+        static thread_local char buffer[8000];
+        // 写入标题
+        strcpy(buffer, "System memory use (tagged):\n");
+        size_t offset = strlen(buffer);
+        const size_t capacity = sizeof(buffer);
 
-        for (u16 i = 0; i < static_cast<u16>(RT_MEMORY_TAG::MAX_TAG); ++i)
-        {
+        for (u16 i = 0; i < static_cast<u16>(RT_MEMORY_TAG::MAX_TAG); ++i) {
             char unit[3] = "XB";
             float amount = .0f;
-            if (Stats.TaggedAllocatedMemory[i] >= GIGABYTE)
-            {
+            if (Stats.TaggedAllocatedMemory[i] >= GIGABYTE) {
                 unit[0] = 'G';
-                amount = Stats.TaggedAllocatedMemory[i] / GIGABYTE;
-            }
-            else if (Stats.TaggedAllocatedMemory[i] >= MEGABYTE)
-            {
+                amount = static_cast<float>(Stats.TaggedAllocatedMemory[i] / GIGABYTE);
+            } else if (Stats.TaggedAllocatedMemory[i] >= MEGABYTE) {
                 unit[0] = 'M';
-                amount = Stats.TaggedAllocatedMemory[i] / MEGABYTE;
-            }
-            else if (Stats.TaggedAllocatedMemory[i] >= KILOBYTE)
-            {
+                amount = static_cast<float>(Stats.TaggedAllocatedMemory[i] / MEGABYTE);
+            } else if (Stats.TaggedAllocatedMemory[i] >= KILOBYTE) {
                 unit[0] = 'K';
-                amount = Stats.TaggedAllocatedMemory[i] / KILOBYTE;
-            }
-            else
-            {
+                amount = static_cast<float>(Stats.TaggedAllocatedMemory[i] / KILOBYTE);
+            } else {
                 unit[0] = 'B';
                 unit[1] = '\0';
-                amount = Stats.TaggedAllocatedMemory[i];
+                amount = static_cast<float>(Stats.TaggedAllocatedMemory[i]);
             }
-            i32 length = snprintf(buffer + offset, 8000, "%s: %.2f %s\n", MemoryTags[i], amount, unit);
-            offset += length;
+
+            if (offset < capacity) {
+                // 计算剩余空间，避免越界
+                size_t remaining = capacity - offset;
+                int written = snprintf(buffer + offset, remaining, "%s: %.2f %s\n", MemoryTags[i], amount, unit);
+                if (written > 0) {
+                    // 限制累计偏移不超过容量
+                    offset += static_cast<size_t>(written);
+                    if (offset >= capacity) {
+                        buffer[capacity - 1] = '\0';
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
         }
-        // char* report = _strdup(buffer);
         return buffer;
     }
 protected:

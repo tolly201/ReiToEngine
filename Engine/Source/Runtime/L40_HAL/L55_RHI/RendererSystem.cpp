@@ -23,7 +23,6 @@ b8 RendererSystem::Initialize() {
 }
 
 b8 RendererSystem::Tick(f64 delta_time) {
-    RT_LOG_INFO_FMT("VulkanRenderSystem::Tick. piplines size : {}", pipelines.size());
     SceneData scene_data;
     for (auto& pipeline : pipelines) {
         render_packet packet;

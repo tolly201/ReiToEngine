@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <initializer_list>
 #include <cmath>
+#include <type_traits>
 #include "L20_Platform/L23_Logger/Include.h"
 #include <new>
 #include "L20_Platform/L31_SingletonFactory/SingletonFactory.h"
@@ -43,22 +44,28 @@ public:
         if (p) GetMemoryManager().Free(p, sz, RT_MEMORY_TAG::MATH);
     }
     SVector2(const std::initializer_list<T>& init) noexcept
+        : x(T{0}), y(T{0}), r(x), g(y), s(x), t(y), u(x), v(y)
     {
-        x = y = T{0};
-        int list_size = init.size();
-        list_size = list_size > 2? 2 : list_size;
+        int list_size = static_cast<int>(init.size());
+        list_size = list_size > 2 ? 2 : list_size;
         if (list_size > 0) x = init.begin()[0];
         if (list_size > 1) y = init.begin()[1];
     }
     SVector2() noexcept
-    {
-        x = y = T{0};
-    }
-    SVector2(T x, T y) noexcept:
-        x(x), y(y) {};
-    SVector2(T val) noexcept:x(val), y(val) {};
-    SVector2(const SVector2<T>& other) = default;
-    SVector2(SVector2<T>&&)noexcept = default;
+        : x(T{0}), y(T{0}), r(x), g(y), s(x), t(y), u(x), v(y)
+    {}
+    SVector2(T x_, T y_) noexcept
+        : x(x_), y(y_), r(x), g(y), s(x), t(y), u(x), v(y)
+    {}
+    SVector2(T val) noexcept
+        : x(val), y(val), r(x), g(y), s(x), t(y), u(x), v(y)
+    {}
+    SVector2(const SVector2<T>& other) noexcept
+        : x(other.x), y(other.y), r(x), g(y), s(x), t(y), u(x), v(y)
+    {}
+    SVector2(SVector2<T>&& other) noexcept
+        : x(other.x), y(other.y), r(x), g(y), s(x), t(y), u(x), v(y)
+    {}
     // SVector2<T>ement functions from IVector (CRTP style, returning SVector<T, DIM>& and SVector<T, DIM>)
     SVector2<T>& operator+=(const SVector2<T>& other) noexcept
     {
@@ -228,9 +235,63 @@ public:
             (dotProduct / normalLengthSquared) * normal.y,
         };
     }
+    // Component-wise trig (angles in radians)
+    [[nodiscard]] SVector2<T> sin() const noexcept
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector2::sin requires floating-point T");
+        return { static_cast<T>(std::sin(static_cast<double>(x))), static_cast<T>(std::sin(static_cast<double>(y))) };
+    }
+    [[nodiscard]] SVector2<T> cos() const noexcept
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector2::cos requires floating-point T");
+        return { static_cast<T>(std::cos(static_cast<double>(x))), static_cast<T>(std::cos(static_cast<double>(y))) };
+    }
+    [[nodiscard]] SVector2<T> tan() const noexcept
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector2::tan requires floating-point T");
+        return { static_cast<T>(std::tan(static_cast<double>(x))), static_cast<T>(std::tan(static_cast<double>(y))) };
+    }
+    [[nodiscard]] SVector2<T> asin() const noexcept
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector2::asin requires floating-point T");
+        T cx = x; if (cx < static_cast<T>(-1)) cx = static_cast<T>(-1); else if (cx > static_cast<T>(1)) cx = static_cast<T>(1);
+        T cy = y; if (cy < static_cast<T>(-1)) cy = static_cast<T>(-1); else if (cy > static_cast<T>(1)) cy = static_cast<T>(1);
+        return { static_cast<T>(std::asin(static_cast<double>(cx))), static_cast<T>(std::asin(static_cast<double>(cy))) };
+    }
+    [[nodiscard]] SVector2<T> acos() const noexcept
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector2::acos requires floating-point T");
+        T cx = x; if (cx < static_cast<T>(-1)) cx = static_cast<T>(-1); else if (cx > static_cast<T>(1)) cx = static_cast<T>(1);
+        T cy = y; if (cy < static_cast<T>(-1)) cy = static_cast<T>(-1); else if (cy > static_cast<T>(1)) cy = static_cast<T>(1);
+        return { static_cast<T>(std::acos(static_cast<double>(cx))), static_cast<T>(std::acos(static_cast<double>(cy))) };
+    }
+    [[nodiscard]] SVector2<T> atan() const noexcept
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector2::atan requires floating-point T");
+        return { static_cast<T>(std::atan(static_cast<double>(x))), static_cast<T>(std::atan(static_cast<double>(y))) };
+    }
+    // Degrees/radians helpers
+    [[nodiscard]] SVector2<T> toRadians() const noexcept
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector2::toRadians requires floating-point T");
+        constexpr T pi = static_cast<T>(3.141592653589793238462643383279502884L);
+        return { x * (pi / static_cast<T>(180)), y * (pi / static_cast<T>(180)) };
+    }
+    [[nodiscard]] SVector2<T> toDegrees() const noexcept
+    {
+        static_assert(std::is_floating_point_v<T>, "SVector2::toDegrees requires floating-point T");
+        constexpr T pi = static_cast<T>(3.141592653589793238462643383279502884L);
+        return { x * (static_cast<T>(180) / pi), y * (static_cast<T>(180) / pi) };
+    }
 public:
     T x;
     T y;
+    T& r;
+    T& g;
+    T& s;
+    T& t;
+    T& u;
+    T& v;
 };
 }
 

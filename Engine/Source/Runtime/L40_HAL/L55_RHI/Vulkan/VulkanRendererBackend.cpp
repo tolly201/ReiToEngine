@@ -90,6 +90,7 @@ b8 VulkanRenderBackend::Initialize(ERenderBackendType renderer_type, const char*
 }
 b8 VulkanRenderBackend::Terminate(){
     for (auto& device : devices) {
+        if (device.logical_device != VK_NULL_HANDLE)
         vkDeviceWaitIdle(device.logical_device);
     }
 
@@ -127,7 +128,7 @@ b8 VulkanRenderBackend::Terminate(){
     swapchains.clear();
 
     for (auto& device : devices) {
-        vulkan_logical_device_destroy(device);
+        vulkan_logical_device_destroy({instance, allocator}, device);
         device.is_inused = false;
         device.logical_device = VK_NULL_HANDLE;
     }
@@ -160,7 +161,6 @@ b8 VulkanRenderBackend::Resized(SurfaceDesc& desc, u32 width, u32 height){
 }
 
 b8 VulkanRenderBackend::BeginFrame(f64 delta_time){
-    RT_LOG_INFO("VulkanRenderBackend::BeginFrame");
     for (auto& device : devices) {
         if (device.is_inused)
         {
@@ -170,13 +170,10 @@ b8 VulkanRenderBackend::BeginFrame(f64 delta_time){
             }
         };
     }
-    RT_LOG_INFO("VulkanRenderBackend::BeginFrame - after wait idle");
 
     for (auto& swapchain : swapchains) {
-        RT_LOG_INFO_FMT("Processing swapchain {} for window {}", swapchain.index, swapchain.p_window);
         if (swapchain.recreating_swapchain)
         {
-            RT_LOG_INFO_FMT("Rebuilding swapchain {} pipeline for window {}", swapchain.index, swapchain.p_window);
             VkResult result = vkDeviceWaitIdle(swapchain.device_combination->logical_device);
             if (result != VK_SUCCESS) {
                 RT_LOG_ERROR_FMT("Failed to wait device idle before rebuilding swapchain {}.", swapchain.index);
@@ -191,7 +188,6 @@ b8 VulkanRenderBackend::BeginFrame(f64 delta_time){
             continue;
         };
 
-        RT_LOG_INFO_FMT("Swapchain {} frame size generation: {}, last frame size generation: {}", swapchain.index, swapchain.frame_size_generation, swapchain.last_frame_size_generation);
 
         if (swapchain.frame_size_generation != swapchain.last_frame_size_generation) {
             VkResult result = vkDeviceWaitIdle(swapchain.device_combination->logical_device);
@@ -204,7 +200,6 @@ b8 VulkanRenderBackend::BeginFrame(f64 delta_time){
             continue; // handle on next loop
         }
 
-        RT_LOG_INFO_FMT("Swapchain {} current frame: {}", swapchain.index, swapchain.current_frame);
 
         if (!vulkan_fence_wait(swapchain.device_combination->logical_device, swapchain.in_flight_fences[swapchain.current_frame], UINT64_MAX)) {
             RT_LOG_ERROR_FMT("Failed to wait for in-flight fence for swapchain {}.", swapchain.index);
@@ -238,20 +233,16 @@ b8 VulkanRenderBackend::BeginFrame(f64 delta_time){
         scissor.extent.width = swapchain.width;
         scissor.extent.height = swapchain.height;
 
-        RT_LOG_DEBUG_FMT("width: {}, height: {}", swapchain.width, swapchain.height);
-        RT_LOG_DEBUG_FMT("width: {}, height: {}", scissor.extent.width, scissor.extent.height);
 
         vkCmdSetViewport(command_buffer.command_buffer, 0, 1, &viewport);
         vkCmdSetScissor(command_buffer.command_buffer, 0, 1, &scissor);
 
         vulkan_renderpass_begin({instance, allocator}, swapchain, swapchain.render_pass, command_buffer, swapchain.framebuffers[swapchain.current_image_index].handle);
     }
-    RT_LOG_INFO("VulkanRenderBackend::BeginFrame - after swapchain loop");
 
     return true;
 }
 b8 VulkanRenderBackend::EndFrame(f64 delta_time){
-    RT_LOG_INFO("VulkanRenderBackend::EndFrame");
     for (auto& swapchain : swapchains) {
         VulkanCommandBuffer& command_buffer = swapchain.device_combination->command_buffers[VulkanQueueFamilyIndicesType::GRAPHICS][swapchain.current_image_index];
         vulkan_renderpass_end({instance, allocator}, swapchain, swapchain.render_pass, command_buffer, swapchain.framebuffers[swapchain.current_image_index].handle);
@@ -347,7 +338,7 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
 
     vulkan_physical_device_select(instance, swapchain, devices);
 
-    vulkan_logical_device_create(swapchain);
+    vulkan_logical_device_create({instance, allocator}, swapchain);
     // device->is_inused = true;
     // if(!inused_devices.contains(device)) {
         // inused_devices.insert(device);

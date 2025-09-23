@@ -11,9 +11,9 @@ namespace ReiToEngine
 b8 vulkan_initalize_physical_devices(VkInstance& instance, List<VulkanDeviceCombination>& out_physical_devices);
 
 b8 vulkan_physical_device_select(VkInstance& instance, VulkanSwapchainContext& swapchain_content, List<VulkanDeviceCombination>& physical_devices);
-b8 vulkan_logical_device_create(VulkanSwapchainContext& swapchain_context);
+b8 vulkan_logical_device_create(VulkanContextRef, VulkanSwapchainContext& swapchain_context);
 b8 vulkan_physical_device_destroy();
-b8 vulkan_logical_device_destroy(VulkanDeviceCombination& dc);
+b8 vulkan_logical_device_destroy(VulkanContextRef, VulkanDeviceCombination& dc);
 
 b8 platform_get_required_vulkan_extensions(List<const char*>&);
 b8 vulkan_device_query_swapchain_support(VkPhysicalDevice& device, VkSurfaceKHR& surface, VulkanSwapChainSupportInfo& out_info);

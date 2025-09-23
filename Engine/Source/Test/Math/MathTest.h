@@ -1,49 +1,34 @@
+// Adapter to new core test framework. Tests can continue to use RT_TEST/RT_ASSERT_* macros.
 #pragma once
-#include <iostream>
-#include <functional>
-#include <vector>
-#include <string>
+#include "../Core/TestCore.h"
 #include <cmath>
 
-namespace RTTest {
-struct TestCase {
-    std::string name;
-    std::function<void()> fn;
-};
+// Legacy style: RT_TEST(TestName) { ... }
+// We map each RT_TEST to a default suite "Math" for grouping.
 
-inline std::vector<TestCase>& registry() {
-    static std::vector<TestCase> r; return r;
-}
-
-inline void registerTest(const std::string& name, std::function<void()> fn) {
-    registry().push_back({name, std::move(fn)});
-}
-
-inline int runAll() {
-    int failed = 0;
-    for (auto& t : registry()) {
-        try {
-            t.fn();
-            std::cout << "[PASS] " << t.name << "\n";
-        } catch (const std::exception& e) {
-            std::cout << "[FAIL] " << t.name << ": " << e.what() << "\n";
-            failed++;
-        } catch (...) {
-            std::cout << "[FAIL] " << t.name << ": unknown error\n";
-            failed++;
-        }
+namespace RTMathAdapter {
+inline RTTestCore::Suite& suite() {
+    static bool init = [](){
+        static int s_autoreg = [](){
+            auto s = std::make_unique<RTTestCore::Suite>("Math");
+            RTTestCore::Registry::instance().add(std::move(s));
+            return 0;
+        }();
+        (void)s_autoreg; return true; }();
+    (void)init;
+    for (auto& sp : RTTestCore::Registry::instance().suites()) {
+        if (sp->name()=="Math") return *sp;
     }
-    std::cout << "-- Summary: " << (registry().size() - failed) << "/" << registry().size() << " passed --\n";
-    return failed;
+    // Fallback (should not happen)
+    static RTTestCore::Suite fallback("Math");
+    return fallback;
+}
 }
 
-struct AutoReg {
-    AutoReg(const std::string& name, std::function<void()> fn) {
-        registerTest(name, std::move(fn));
-    }
-};
-}
+#define RT_TEST(name) \
+    static void name(); \
+    static int _auto_##name = [](){ RTMathAdapter::suite().add(#name, &name); return 0; }(); \
+    static void name()
 
-#define RT_ASSERT_TRUE(cond) do { if(!(cond)) throw std::runtime_error("Assertion failed: " #cond); } while(0)
-#define RT_ASSERT_NEAR(a,b,eps) do { if(std::fabs((a)-(b)) > (eps)) throw std::runtime_error("Assertion failed: |" #a "-" #b "|>eps"); } while(0)
-#define RT_TEST(name) static void name(); static RTTest::AutoReg _auto_##name(#name, name); static void name()
+#define RT_ASSERT_TRUE(cond) RT_EXPECT_TRUE(cond)
+#define RT_ASSERT_NEAR(a,b,eps) RT_EXPECT_NEAR(a,b,eps)

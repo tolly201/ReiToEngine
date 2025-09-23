@@ -41,7 +41,10 @@ struct event_context{
         i8 i8[16];
         char* c[16];
     } data;
+
+    void* user_data;
 };
+
 struct event_system_state;
 using PFN_on_event = b8(*)(u16 code, void* sender, void* listener, event_context context);
 struct registered_event{
