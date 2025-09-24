@@ -45,7 +45,7 @@ void MacOSXInputMonitor::ProcessNativeEvent(NSEvent* event) {
         if (flags & NSEventModifierFlagOption) inputEvent.modifiers |= KEY_CODE_MODIFIER::ALT;
         if (flags & NSEventModifierFlagCommand) inputEvent.modifiers |= KEY_CODE_MODIFIER::SUPER;
 
-        ProcessKey(inputEvent.data.keyboard.keyCode, true);
+        ProcessKey(inputEvent, true);
         break;
     }
 
@@ -65,7 +65,7 @@ void MacOSXInputMonitor::ProcessNativeEvent(NSEvent* event) {
         if (flags & NSEventModifierFlagOption) inputEvent.modifiers |= KEY_CODE_MODIFIER::ALT;
         if (flags & NSEventModifierFlagCommand) inputEvent.modifiers |= KEY_CODE_MODIFIER::SUPER;
 
-        ProcessKey(inputEvent.data.keyboard.keyCode, false);
+        ProcessKey(inputEvent, false);
         break;
     }
 

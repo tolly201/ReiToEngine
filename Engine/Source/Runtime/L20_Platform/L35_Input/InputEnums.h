@@ -140,7 +140,7 @@ enum class KEY_CODE_KEYBOARD : u8 {
     MENU          = 0x78,
     MAX           = 0xFF
 };
-enum class KEY_CODE_MODIFIER : u8
+enum class KEY_CODE_MODIFIER : u16
 {
     NONE      = 0x00,
     SHIFT     = 0x01,
