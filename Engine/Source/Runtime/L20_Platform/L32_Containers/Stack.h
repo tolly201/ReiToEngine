@@ -8,7 +8,7 @@ namespace ReiToEngine {
 
 // 简化版 stack，底层使用 List，暴露常用接口与 std::stack 一致命名/语义
 template <typename T>
-class RTENGINE_API Stack /* : public IContainer<Stack<T>> */ {
+class Stack /* : public IContainer<Stack<T>> */ {
 public:
     using value_type = T;
     using size_type = u64;

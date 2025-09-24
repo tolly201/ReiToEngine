@@ -13,7 +13,7 @@ namespace ReiToEngine {
 
 // 红黑树有序关联容器：std::map 常用接口/语义
 template <typename Key, typename T, typename Compare = void>
-class RTENGINE_API Map {
+class Map {
 public:
     struct value_type { Key first; T second; };
     using size_type = u64;

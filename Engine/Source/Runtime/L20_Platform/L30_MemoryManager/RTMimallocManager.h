@@ -3,7 +3,7 @@
 #include "IMemoryManager.h"
 namespace ReiToEngine
 {
-class RTMimallocManager : public RTMemoryManager<RTMimallocManager>
+class RTENGINE_API RTMimallocManager : public RTMemoryManager<RTMimallocManager>
 {
     friend class RTMemoryManager<RTMimallocManager>;
 public:

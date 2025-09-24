@@ -25,6 +25,8 @@ endif()
 
 # 针对不同编译器的额外设置
 if(MSVC)
+  # Enforce standard conforming preprocessor and C++20 (guard in case of generator overriding)
+  add_compile_options(/Zc:preprocessor)
 else()
     # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
     # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")

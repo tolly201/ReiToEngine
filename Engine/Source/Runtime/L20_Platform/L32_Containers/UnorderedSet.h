@@ -10,7 +10,7 @@ namespace ReiToEngine {
 
 // 开放寻址哈希集合：std::unordered_set 风格
 template <typename Key, typename Hash = void>
-class RTENGINE_API UnorderedSet {
+class UnorderedSet {
 public:
     using value_type = Key; using size_type = u64;
 

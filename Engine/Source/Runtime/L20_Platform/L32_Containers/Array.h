@@ -8,7 +8,7 @@
 namespace ReiToEngine {
 
 template <typename T, u64 N>
-class RTENGINE_API Array {
+class Array {
 public:
     using value_type = T; using size_type = u64; using reference = T&; using const_reference = const T&;
 

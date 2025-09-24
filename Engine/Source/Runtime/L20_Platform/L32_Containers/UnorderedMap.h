@@ -13,7 +13,7 @@ namespace ReiToEngine {
 
 // 开放寻址哈希表（线性探测）：提供与 std::unordered_map 的常用接口命名/语义一致。
 template <typename Key, typename T, typename Hash = void>
-class RTENGINE_API UnorderedMap {
+class UnorderedMap {
 public:
     struct value_type { Key first; T second; };
     using size_type = u64;

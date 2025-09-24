@@ -10,7 +10,7 @@
 namespace ReiToEngine {
 
 template <typename T>
-class RTENGINE_API Deque {
+class Deque {
 public:
     using value_type = T; using size_type = u64; using difference_type = i64;
 

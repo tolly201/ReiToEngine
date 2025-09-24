@@ -10,7 +10,7 @@
 namespace ReiToEngine {
 
 template <typename T>
-class RTENGINE_API DoublyLinkedList {
+class DoublyLinkedList {
 public:
     using value_type = T; using size_type = u64;
 

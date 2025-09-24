@@ -8,7 +8,7 @@ namespace ReiToEngine
 {
 
 template <typename T>
-class RTENGINE_API List
+class List
 {
 public:
     using value_type = T;

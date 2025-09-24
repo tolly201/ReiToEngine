@@ -9,7 +9,7 @@ namespace ReiToEngine {
 // 一个面向 ECS 的分箱（Binned）分配器：
 // - 小块（<= MaxBinSize）使用固定大小块的页式池分配，降低碎片、提升吞吐
 // - 大块或超对齐需求回退到 mimalloc（对齐版本）
-class BinnedMemoryManager : public RTMemoryManager<BinnedMemoryManager> {
+class RTENGINE_API BinnedMemoryManager : public RTMemoryManager<BinnedMemoryManager> {
     friend class RTMemoryManager<BinnedMemoryManager>;
 
 public:

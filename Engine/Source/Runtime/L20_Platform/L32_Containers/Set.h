@@ -11,7 +11,7 @@ namespace ReiToEngine {
 
 // 红黑树有序集合：std::set 常用接口/语义
 template <typename Key, typename Compare = void>
-class RTENGINE_API Set {
+class Set {
 public:
     using value_type = Key; using size_type = u64;
 
