@@ -4,7 +4,7 @@ project(ReiToEngineTests)
 # Core test framework and runner (module-independent)
 add_executable(ReiToTests
 	Core/main.cpp
-    Core/RuntimeTestInit.cpp
+	Core/RuntimeTestInit.cpp
 )
 
 target_include_directories(ReiToTests PRIVATE
@@ -14,24 +14,22 @@ target_include_directories(ReiToTests PRIVATE
 
 # Keep tests independent of full Runtime by default. If a module needs linking, add it per-module.
 
-# Math tests as object library
-add_subdirectory(Math)
-
-target_sources(ReiToTests PRIVATE
-	$<TARGET_OBJECTS:MathTestsObjs>
-	# 最小 Runtime 实现以满足 ABI
-	${CMAKE_CURRENT_SOURCE_DIR}/../Runtime/L20_Platform/L31_SingletonFactory/SingletonFactory.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../Runtime/L20_Platform/L30_MemoryManager/RTMimallocManager.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../Runtime/L20_Platform/L21_Console/Windows.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/../Runtime/L20_Platform/L20_Memory/Windows.cpp
+# 直接加入 Math 测试源（保持与 Core 平行的 Math 目录）
+file(GLOB TEST_MATH_SOURCES CONFIGURE_DEPENDS
+	${CMAKE_CURRENT_SOURCE_DIR}/Math/*_tests.cpp
 )
 
-# 导出宏以避免 __declspec(dllimport) 在本目标内定义符号
-target_compile_definitions(ReiToTests PRIVATE RT_EXPORTS)
+file(GLOB TEST_MEMORY_SOURCES CONFIGURE_DEPENDS
+	${CMAKE_CURRENT_SOURCE_DIR}/Memory/*_tests.cpp
+)
+file(GLOB TEST_CONTAINER_SOURCES CONFIGURE_DEPENDS
+	${CMAKE_CURRENT_SOURCE_DIR}/Containers/*_tests.cpp
+)
 
-# mimalloc 依赖（供 RTMimallocManager 使用）
-target_link_libraries(ReiToTests PRIVATE mimalloc-static)
-target_include_directories(ReiToTests PRIVATE ${ENGINE_ROOT_DIR}/Thirdparty/mimalloc/include)
+target_sources(ReiToTests PRIVATE ${TEST_MATH_SOURCES} ${TEST_MEMORY_SOURCES} ${TEST_CONTAINER_SOURCES})
+
+# 直接链接完整运行时，而不是复制其源文件，确保平台实现与实际运行时保持一致
+target_link_libraries(ReiToTests PRIVATE ReiToRuntime)
 
 set_target_properties(ReiToTests PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/ReiToEngine/bin/

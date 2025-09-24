@@ -10,7 +10,9 @@ namespace ReiToEngine
 struct MemoryStats
 {
     u64 TotalUsedMemory = 0;
+    u64 PeakUsedMemory = 0; // 运行期峰值（累计分配减去释放后达到的最高 TotalUsedMemory）
     u64 TaggedAllocatedMemory[static_cast<u16>(RT_MEMORY_TAG::MAX_TAG)] = {0};
+    u64 TaggedPeakMemory[static_cast<u16>(RT_MEMORY_TAG::MAX_TAG)] = {0};
 };
 
 template <typename T>
@@ -27,8 +29,12 @@ public:
         }
 
         Stats.TotalUsedMemory += size;
+        if(Stats.TotalUsedMemory > Stats.PeakUsedMemory) Stats.PeakUsedMemory = Stats.TotalUsedMemory;
         Stats.TaggedAllocatedMemory[static_cast<u16>(tag)] += size;
         void* block = static_cast<T*>(this)->AllocateImpl(size, alignment, tag);
+
+        Stats.TaggedPeakMemory[static_cast<u16>(tag)] = RTMAX(Stats.TaggedPeakMemory[static_cast<u16>(tag)], Stats.TaggedAllocatedMemory[static_cast<u16>(tag)]);
+
         ZeroMemoryReiTo(block, size);
         return block;
     }
@@ -62,42 +68,35 @@ public:
         strcpy(buffer, "System memory use (tagged):\n");
         size_t offset = strlen(buffer);
         const size_t capacity = sizeof(buffer);
+        auto format_amount = [](u64 bytes, char* outUnit)->double{
+            double amount = (double)bytes;
+            if(bytes >= GIGABYTE){ outUnit[0]='G'; outUnit[1]='B'; outUnit[2]='\0'; amount = (double)bytes / (double)GIGABYTE; }
+            else if(bytes >= MEGABYTE){ outUnit[0]='M'; outUnit[1]='B'; outUnit[2]='\0'; amount = (double)bytes / (double)MEGABYTE; }
+            else if(bytes >= KILOBYTE){ outUnit[0]='K'; outUnit[1]='B'; outUnit[2]='\0'; amount = (double)bytes / (double)KILOBYTE; }
+            else { outUnit[0]='B'; outUnit[1]='\0'; }
+            return amount;
+        };
+        if(offset < capacity){
+            char u1[4], u2[4];
+            double cur = format_amount(Stats.TotalUsedMemory, u1);
+            double peak = format_amount(Stats.PeakUsedMemory, u2);
+            size_t rem = capacity - offset;
+            int written = snprintf(buffer + offset, rem, "TotalUsed: %.2f %s\nPeakUsed: %.2f %s\n", cur, u1, peak, u2);
+            if(written>0){ offset += (size_t)written; if(offset>=capacity){ buffer[capacity-1]='\0'; return buffer; }}
+        }
 
         for (u16 i = 0; i < static_cast<u16>(RT_MEMORY_TAG::MAX_TAG); ++i) {
-            char unit[3] = "XB";
-            float amount = .0f;
-            if (Stats.TaggedAllocatedMemory[i] >= GIGABYTE) {
-                unit[0] = 'G';
-                amount = static_cast<float>(Stats.TaggedAllocatedMemory[i] / GIGABYTE);
-            } else if (Stats.TaggedAllocatedMemory[i] >= MEGABYTE) {
-                unit[0] = 'M';
-                amount = static_cast<float>(Stats.TaggedAllocatedMemory[i] / MEGABYTE);
-            } else if (Stats.TaggedAllocatedMemory[i] >= KILOBYTE) {
-                unit[0] = 'K';
-                amount = static_cast<float>(Stats.TaggedAllocatedMemory[i] / KILOBYTE);
-            } else {
-                unit[0] = 'B';
-                unit[1] = '\0';
-                amount = static_cast<float>(Stats.TaggedAllocatedMemory[i]);
-            }
-
+            char unitCur[4]; char unitPeak[4];
+            double cur = format_amount(Stats.TaggedAllocatedMemory[i], unitCur);
+            double pk  = format_amount(Stats.TaggedPeakMemory[i], unitPeak);
             if (offset < capacity) {
-                // 计算剩余空间，避免越界
                 size_t remaining = capacity - offset;
-                int written = snprintf(buffer + offset, remaining, "%s: %.2f %s\n", MemoryTags[i], amount, unit);
+                int written = snprintf(buffer + offset, remaining, "%s: %.2f %s (peak %.2f %s)\n", MemoryTags[i], cur, unitCur, pk, unitPeak);
                 if (written > 0) {
-                    // 限制累计偏移不超过容量
-                    offset += static_cast<size_t>(written);
-                    if (offset >= capacity) {
-                        buffer[capacity - 1] = '\0';
-                        break;
-                    }
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
+                    offset += (size_t)written;
+                    if (offset >= capacity) { buffer[capacity - 1] = '\0'; break; }
+                } else { break; }
+            } else { break; }
         }
         return buffer;
     }
