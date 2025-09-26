@@ -1,4 +1,4 @@
-#include "../Include/CFile.h"
+#include "CFile.h"
 #include <iostream>
 #include <cstring>
 namespace ReiToEngine
@@ -6,7 +6,7 @@ namespace ReiToEngine
 	RTCFile::RTCFile() = default;
 	RTCFile::~RTCFile() = default;
 
-bool RTCFile::FlushImpl()
+b8 RTCFile::FlushImpl()
 {
 	fs.flush();
 	if (fs.bad()) {
@@ -16,11 +16,11 @@ bool RTCFile::FlushImpl()
 	}
 	return true;
 }
-bool RTCFile::SeekImpl(uint32_t offset,uint32_t origin)
+b8 RTCFile::SeekImpl(u32 offset,u32 origin)
 {
     fs.clear(); // 清除任何错误标志，这很重要！
 
-    // 将 uint32_t 类型的 origin 转换为 std::ios_base::seekdir
+    // 将 u32 类型的 origin 转换为 std::ios_base::seekdir
     std::ios_base::seekdir seek_origin;
     switch (origin) {
         case 0:
@@ -49,12 +49,19 @@ bool RTCFile::SeekImpl(uint32_t offset,uint32_t origin)
     }
     return true;
 }
-bool RTCFile::OpenImpl(const char * fileName,uint32_t openMode)
+b8 RTCFile::OpenImpl(const char * fileName,EFileOpenFlags openMode)
 {
     auto openmode = std::ios::in;
-    std::cout <<"openMode: "<< openMode;
-    if (openMode & EFileOpenFlags::IO_READ && openMode & EFileOpenFlags::IO_WRITE) {
-        openmode = std::ios::in | std::ios::out; // 同时读写模式
+    if ((openMode & EFileOpenFlags::IO_WRITE) == EFileOpenFlags::IO_WRITE) {
+        openmode = std::ios::in;
+    }
+
+    if ((openMode & EFileOpenFlags::IO_APPEND) == EFileOpenFlags::IO_APPEND) {
+        openmode |= std::ios::app;
+    }
+
+    if ((openMode & EFileOpenFlags::IO_READ) == EFileOpenFlags::IO_READ && (openMode & EFileOpenFlags::IO_WRITE) == EFileOpenFlags::IO_WRITE) {
+        openmode |= std::ios::out; // 同时读写模式
     }
 
     std::cout <<"openmode: "<< openmode << std::endl;
@@ -70,7 +77,7 @@ bool RTCFile::OpenImpl(const char * fileName,uint32_t openMode)
 	}
 	return true;
 }
-bool RTCFile::WriteImpl(const char* buffer,uint32_t size)
+b8 RTCFile::WriteImpl(const char* buffer,u32 size)
 {
 	fs.write(buffer, size);
 	if (fs.bad()) {
@@ -84,7 +91,7 @@ bool RTCFile::WriteImpl(const char* buffer,uint32_t size)
 	}
 	return true;
 }
-bool RTCFile::ReadImpl(char* buffer,uint32_t size)
+b8 RTCFile::ReadImpl(char* buffer,u32 size)
 {
 	fs.read(buffer, size);
 	if (fs.bad()) {
@@ -94,7 +101,7 @@ bool RTCFile::ReadImpl(char* buffer,uint32_t size)
     }
     return fs.gcount() == size;
 }
-bool RTCFile::GetLineImpl(char* buffer,uint32_t size)
+b8 RTCFile::GetLineImpl(char* buffer,u32 size)
 {
 	fs.getline(buffer, size);
 	if (fs.bad()) {
@@ -104,7 +111,7 @@ bool RTCFile::GetLineImpl(char* buffer,uint32_t size)
     }
     return fs.gcount() == size;
 }
-bool RTCFile::CloseImpl()
+b8 RTCFile::CloseImpl()
 {
     std::cout << "close file\n";
 	fs.close();

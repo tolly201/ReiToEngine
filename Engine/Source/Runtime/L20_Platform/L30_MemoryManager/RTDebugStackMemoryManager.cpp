@@ -175,7 +175,7 @@ void* RTDebugStackMemoryManager::allocateSystemCall(uint32_t size, uint32_t alig
     }
 
     // 5. 返回用户可用的内存地址 (跳过 RTBlock 结构)
-    return reinterpret_cast<void*>(block + sizeof(EBlock) + sizeof(block)); // 返回 RTBlock 结构之后的位置，即用户可用的内存起始地址
+    return reinterpret_cast<void*>(block + sizeof(EBLOCK) + sizeof(block)); // 返回 RTBlock 结构之后的位置，即用户可用的内存起始地址
 }
 
 void RTDebugStackMemoryManager::deAllocateSystemCall(void* addr, uint32_t alignment)

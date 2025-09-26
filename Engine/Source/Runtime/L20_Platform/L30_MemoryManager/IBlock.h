@@ -4,7 +4,7 @@
 namespace ReiToEngine
 {
 
-enum class EBlock : u64
+enum class EBLOCK : u64
 {
 	BEGIN_MASK = 0xDEADC0DE,
 	END_MASK = 0xC0DEDEAD,
@@ -44,7 +44,7 @@ class RTBlock
 public:
     RTBlock()
     {
-        for (u32 i = 0; i < static_cast<u64>(EBlock::CALLSTACK_NUM); ++i)
+        for (u32 i = 0; i < static_cast<u64>(EBLOCK::CALLSTACK_NUM); ++i)
         {
             pAddr[i] = nullptr;
         }
@@ -57,7 +57,7 @@ public:
     }
 
     // 内存块信息
-    void* pAddr[static_cast<u64>(EBlock::CALLSTACK_NUM)];
+    void* pAddr[static_cast<u64>(EBLOCK::CALLSTACK_NUM)];
     u32 StackInfoNum;
     u32 Size;
     bool IsArray;

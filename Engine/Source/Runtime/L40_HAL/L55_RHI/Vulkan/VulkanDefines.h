@@ -123,6 +123,29 @@ struct VulkanFence{
     b8 signaled;
 };
 
+struct VulkanShaderStage{
+    VkShaderModuleCreateInfo module_create_info;
+    VkShaderModule handle;
+    VkPipelineShaderStageCreateInfo stage_create_info;
+};
+
+struct VulkanPipeline{
+    VkPipelineLayout layout;
+    VkPipeline handle;
+};
+
+enum class ShaderStageType : u8{
+    VERTEX = 0,
+    FRAGMENT = 1,
+    COMPUTE = 2,
+    MAX = 3,
+};
+
+struct VulkanObjectShader{
+    VulkanShaderStage shader_stages[static_cast<u8>(ShaderStageType::MAX)];
+    VulkanPipeline pipeline;
+};
+
 struct VulkanSwapchainContext{
     VkSurfaceKHR surface;
     VulkanSwapChainSupportInfo swapchain_info;

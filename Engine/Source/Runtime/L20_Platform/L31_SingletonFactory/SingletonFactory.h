@@ -63,12 +63,30 @@ class SingletonFactory {
 
     static MemoryManager& GetMemoryManager()
     {
+        if (!memoryManager.IsSeted())
+        {
+            std::call_once(once_flag_default, []{memoryManager.SetDefaultMemoryManager();});
+
+            RT_LOG_WARN("Memory manager not set. Using default Mimalloc memory manager.");
+        }
         return memoryManager;
+    };
+    static b8 SetMemoryManager(void* MM = nullptr, EMEMORY_MANAGER_TYPE type = EMEMORY_MANAGER_TYPE::DEFAULT)
+    {
+        RT_ASSERT_MESSAGE(type == EMEMORY_MANAGER_TYPE::CUSTOM && MM != nullptr, "When setting a custom memory manager, MM must not be nullptr and type must be CUSTOM.");
+
+        RT_ASSERT_MESSAGE(type != EMEMORY_MANAGER_TYPE::CUSTOM && MM == nullptr, "When not setting a custom memory manager, MM must be nullptr and type must not be CUSTOM.");
+
+        RT_ASSERT_MESSAGE(!memoryManager.IsSeted(), "Memory manager can only be set once.");
+
+        std::call_once(once_flag_set, [&]{memoryManager.SetMemoryManager(MM, type);});
+        return true;
     };
     protected:
     static MemoryManager memoryManager;
+    static std::once_flag once_flag_set;
+    static std::once_flag once_flag_default;
 };
-
 
 template <typename T>
 class Singleton {
@@ -107,6 +125,11 @@ class Singleton {
     Singleton& operator=(const Singleton&) = delete;
 
     static T& Instance() {
+        RT_ASSERT(instance_ptr != nullptr && "Singleton instance not initialized. Call InitializeInstance() first if using IndependentConstruct.");
+        return *instance_ptr;
+    }
+
+    static T& InitializeInstance() {
         std::call_once(once_flag, create_instance);
         return *instance_ptr;
     }
