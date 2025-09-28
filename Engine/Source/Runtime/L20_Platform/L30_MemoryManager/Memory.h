@@ -150,49 +150,83 @@ public:
         void* handle = wrappers->handle;
         EMEMORY_MANAGER_TYPE type = wrappers->type;
     rt_spin_unlock(&lock_state);
+        // Determine desired user alignment (power-of-two rounding for safety)
+        u64 user_alignment = alignment == 0 ? RT_SYSTEM_MAX_ALLIGNMENT : alignment;
+        if (user_alignment < RT_SYSTEM_MAX_ALLIGNMENT) user_alignment = RT_SYSTEM_MAX_ALLIGNMENT;
+        if (user_alignment & (user_alignment - 1)) { u64 p = 1; while (p < user_alignment) p <<= 1; user_alignment = p; }
 
-        void* mem;
+        // Fast path: alignment request does not exceed system max -> we can use a fixed padded header
+        constexpr u64 fixed_head_padded = (sizeof(MemoryManagerWrapperLayerHeadInfo) + RT_SYSTEM_MAX_ALLIGNMENT - 1) & ~(RT_SYSTEM_MAX_ALLIGNMENT - 1);
+        bool use_fixed = user_alignment <= RT_SYSTEM_MAX_ALLIGNMENT;
+
+        u64 request_size = 0;
+        if (use_fixed) {
+            // We just need header (padded) + user size
+            request_size = fixed_head_padded + size;
+        } else {
+            // Fallback: need slack space for larger alignment
+            request_size = size + head_info_size + user_alignment;
+        }
+        void* raw = nullptr;
         switch (type)
         {
             case EMEMORY_MANAGER_TYPE::MIMALLOC:
-                mem = static_cast<RTMimallocManager*>(handle)->Allocate(size + head_info_size, alignment, tag);
-                break;
+                raw = static_cast<RTMimallocManager*>(handle)->Allocate(request_size, (u8)RT_SYSTEM_MAX_ALLIGNMENT, tag); break;
             case EMEMORY_MANAGER_TYPE::STANDARDC:
-                mem = static_cast<RTCMemoryManager*>(handle)->Allocate(size + head_info_size, alignment, tag);
-                break;
-
+                raw = static_cast<RTCMemoryManager*>(handle)->Allocate(request_size, (u8)RT_SYSTEM_MAX_ALLIGNMENT, tag); break;
             case EMEMORY_MANAGER_TYPE::BINNED:
-                mem = static_cast<BinnedMemoryManager*>(handle)->Allocate(size + head_info_size, alignment, tag);
-                break;
+                raw = static_cast<BinnedMemoryManager*>(handle)->Allocate(request_size, (u8)RT_SYSTEM_MAX_ALLIGNMENT, tag); break;
             case EMEMORY_MANAGER_TYPE::CUSTOM:
-                mem = static_cast<ICustomMemoryManager*>(handle)->Allocate(size + head_info_size, alignment, tag);
-                break;
+                raw = static_cast<ICustomMemoryManager*>(handle)->Allocate(request_size, (u8)RT_SYSTEM_MAX_ALLIGNMENT, tag); break;
             default:
                 RT_ASSERT_MESSAGE(false, "Unknown memory manager type in MemoryManager::Allocate.");
                 return nullptr;
         }
-
-        RT_ASSERT_MESSAGE(mem != nullptr, "Memory allocation failed in MemoryManager::Allocate.");
-
-        MemoryManagerWrapperLayerHeadInfo* head = static_cast<MemoryManagerWrapperLayerHeadInfo*>(mem);
-        head->allocator = handle;
-
-        RT_LOG_WARN("Allocated memory from allocator: {}", (void*)handle);
-
-        mem = static_cast<void*>(static_cast<u8*>(mem) + head_info_size);
-        return mem;
+        RT_ASSERT_MESSAGE(raw != nullptr, "Memory allocation failed in MemoryManager::Allocate.");
+        uintptr_t raw_addr = reinterpret_cast<uintptr_t>(raw);
+        if (use_fixed) {
+            // raw is assumed system aligned -> raw + fixed_head_padded is also system aligned, satisfying user_alignment
+            uintptr_t user_addr = raw_addr + fixed_head_padded;
+            uintptr_t header_addr = user_addr - head_info_size; // header sits just before user data inside padded region
+            RT_ASSERT_MESSAGE((user_addr % user_alignment) == 0, "Fixed-path alignment failure (unexpected).\n");
+            MemoryManagerWrapperLayerHeadInfo* head = reinterpret_cast<MemoryManagerWrapperLayerHeadInfo*>(header_addr);
+            head->allocator = handle;
+            head->actual_offset = (u64)(header_addr - raw_addr);
+            head->actual_size = request_size;
+            void* user_ptr = reinterpret_cast<void*>(user_addr);
+            RT_LOG_WARN("Allocated memory (fixed path) from allocator: {}", (void*)handle);
+            return user_ptr;
+        } else {
+            // Dynamic path for larger-than-system alignment
+            uintptr_t search_begin = raw_addr + head_info_size;
+            uintptr_t aligned_candidate = (search_begin + (user_alignment - 1)) & ~(user_alignment - 1);
+            uintptr_t region_end = raw_addr + request_size;
+            while (aligned_candidate + size > region_end) {
+                uintptr_t next = aligned_candidate + user_alignment;
+                if (next <= aligned_candidate || next + size > region_end) {
+                    RT_ASSERT_MESSAGE(false, "Failed to place aligned allocation with header inside reserved block (logic error - dynamic).");
+                    return nullptr;
+                }
+                aligned_candidate = next;
+            }
+            uintptr_t header_addr = aligned_candidate - head_info_size;
+            RT_ASSERT_MESSAGE(header_addr >= raw_addr && header_addr + head_info_size <= region_end, "Header out of reserved range (dynamic).");
+            MemoryManagerWrapperLayerHeadInfo* head = reinterpret_cast<MemoryManagerWrapperLayerHeadInfo*>(header_addr);
+            head->allocator = handle;
+            head->actual_offset = (u64)(header_addr - raw_addr);
+            head->actual_size = request_size;
+            void* user_ptr = reinterpret_cast<void*>(aligned_candidate);
+            RT_ASSERT_MESSAGE(((uintptr_t)user_ptr % user_alignment) == 0, "User pointer is not properly aligned after allocation (dynamic path).");
+            RT_LOG_WARN("Allocated memory (dynamic path) from allocator: {}", (void*)handle);
+            return user_ptr;
+        }
     }
     void Free(void* addr, u64 size, RT_MEMORY_TAG tag)
     {
         if (!addr) return;
     RT_ASSERT_MESSAGE(wrappers, "MemoryManager not initialized in Free.");
-    rt_spin_lock(&lock_state);
-
-    rt_spin_unlock(&lock_state);
-
-    addr = static_cast<void*>(static_cast<u8*>(addr) - head_info_size);
-        MemoryManagerWrapperLayerHeadInfo* head = static_cast<MemoryManagerWrapperLayerHeadInfo*>(addr);
-
+        // Header is stored immediately before user region
+        MemoryManagerWrapperLayerHeadInfo* head = reinterpret_cast<MemoryManagerWrapperLayerHeadInfo*>(static_cast<u8*>(addr) - head_info_size);
         void* allocator = head->allocator;
         RT_LOG_WARN("Freeing memory allocated by allocator: {}", (void*)allocator);
 
@@ -212,19 +246,20 @@ public:
         void* handle = current->handle;
         EMEMORY_MANAGER_TYPE type = current->type;
 
+        u64 total_size = head->actual_size; // total size requested when allocated
         switch (type)
         {
             case EMEMORY_MANAGER_TYPE::MIMALLOC:
-                return static_cast<RTMimallocManager*>(handle)->Free(addr, size + head_info_size, tag);
+                return static_cast<RTMimallocManager*>(handle)->Free((void*)((uintptr_t)head - head->actual_offset), total_size, tag);
             case EMEMORY_MANAGER_TYPE::STANDARDC:
-                return static_cast<RTCMemoryManager*>(handle)->Free(addr, size + head_info_size, tag);
+                return static_cast<RTCMemoryManager*>(handle)->Free((void*)((uintptr_t)head - head->actual_offset), total_size, tag);
             case EMEMORY_MANAGER_TYPE::BINNED:
-                return static_cast<BinnedMemoryManager*>(handle)->Free(addr, size + head_info_size, tag);
+                return static_cast<BinnedMemoryManager*>(handle)->Free((void*)((uintptr_t)head - head->actual_offset), total_size, tag);
             case EMEMORY_MANAGER_TYPE::CUSTOM:
-                return static_cast<ICustomMemoryManager*>(handle)->Free(addr, size + head_info_size, tag);
+                return static_cast<ICustomMemoryManager*>(handle)->Free((void*)((uintptr_t)head - head->actual_offset), total_size, tag);
             default:
                 RT_LOG_ERROR("Unknown memory manager type in MemoryManager::Free. Falling back to Mimalloc.");
-                return static_cast<RTMimallocManager*>(handle)->Free(addr, size + head_info_size, tag);
+                return static_cast<RTMimallocManager*>(handle)->Free((void*)((uintptr_t)head - head->actual_offset), total_size, tag);
         }
     }
     void* ZeroMemoryReiTo(void* addr, u64 size)
@@ -316,10 +351,15 @@ public:
     }
 private:
     struct MemoryManagerWrapperLayerHeadInfo {
-        void* allocator;
+        void* allocator;      // allocator handle
+        u64   actual_offset;  // offset from raw base to header (for debug/back-calc)
+        u64   actual_size;    // total size requested from underlying allocator
     };
-
-    constexpr static u64 head_info_size = RTAligned(sizeof(MemoryManagerWrapperLayerHeadInfo), 32);
+    // Raw header size
+    constexpr static u64 head_info_size = sizeof(MemoryManagerWrapperLayerHeadInfo);
+    // System alignment we want every user pointer to satisfy at minimum.
+    // Using max_align_t to cover fundamental types (C/C++ standard guarantee).
+    // head_padded_size removed: header is placed immediately before the aligned user pointer; we search for a valid placement.
 
     struct MemoryManagerWrapper{
         void* handle;

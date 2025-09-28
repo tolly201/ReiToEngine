@@ -91,4 +91,6 @@ STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 #define MEGABYTE 1048576UL
 #define KILOBYTE 1024UL
 #define SINGLEBYTE 1UL
+
+#define RT_SYSTEM_MAX_ALLIGNMENT alignof(std::max_align_t)
 #endif
