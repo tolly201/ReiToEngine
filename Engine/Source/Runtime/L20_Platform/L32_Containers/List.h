@@ -113,7 +113,7 @@ private:
         _data = static_cast<T*>(GetMemoryManager().Allocate(other._size * sizeof(T), alignment(), RT_MEMORY_TAG::CONTAINER));
         _capacity = _size = other._size;
         if constexpr (std::is_trivially_copyable_v<T>) {
-            GetMemoryManager().CopyMemory(_data, other._data, _size * sizeof(T));
+            GetMemoryManager().CopyMemoryReiTo(_data, other._data, _size * sizeof(T));
         } else {
             for (u64 i = 0; i < _size; ++i) ::new (static_cast<void*>(_data + i)) T(other._data[i]);
         }
@@ -145,7 +145,7 @@ private:
         T* new_mem = static_cast<T*>(GetMemoryManager().Allocate(new_cap * sizeof(T), alignment(), RT_MEMORY_TAG::CONTAINER));
         // 搬迁
         if constexpr (std::is_trivially_copyable_v<T>) {
-            if (_size) GetMemoryManager().CopyMemory(new_mem, _data, _size * sizeof(T));
+            if (_size) GetMemoryManager().CopyMemoryReiTo(new_mem, _data, _size * sizeof(T));
         } else {
             for (u64 i = 0; i < _size; ++i) {
                 ::new (static_cast<void*>(new_mem + i)) T(static_cast<T&&>(_data[i]));

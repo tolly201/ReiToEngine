@@ -4,7 +4,13 @@
 namespace ReiToEngine
 {
 	RTCFile::RTCFile() = default;
-	RTCFile::~RTCFile() = default;
+	RTCFile::~RTCFile() {
+    if (m_cachedBuffer) {
+        delete[] m_cachedBuffer;
+        m_cachedBuffer = nullptr;
+        m_cachedBufferSize = 0;
+    }
+    };
 
 b8 RTCFile::FlushImpl()
 {
@@ -117,4 +123,64 @@ b8 RTCFile::CloseImpl()
 	fs.close();
 	return !fs.fail();
 }
+
+void* RTCFile::GetBufferImpl() {
+    if (!fs.is_open()) {
+        return nullptr;
+    }
+
+    // 保存当前读位置
+    std::streampos originalPos = fs.tellg();
+    fs.clear(); // 清理状态
+
+    // 定位到末尾获取大小
+    fs.seekg(0, std::ios::end);
+    std::streampos endPos = fs.tellg();
+    if (endPos < 0) {
+        // 还原位置
+        fs.clear();
+        fs.seekg(originalPos);
+        return nullptr;
+    }
+
+    size_t fileSize = static_cast<size_t>(endPos);
+    fs.seekg(0, std::ios::beg);
+
+    if (fileSize == 0) {
+        // 空文件释放旧缓冲
+        if (m_cachedBuffer) {
+            delete[] m_cachedBuffer;
+            m_cachedBuffer = nullptr;
+            m_cachedBufferSize = 0;
+        }
+        // 还原位置
+        fs.clear();
+        fs.seekg(originalPos);
+        return nullptr;
+    }
+
+    // 需要容量 = fileSize + 1 (终止符)
+    if (fileSize + 1 > m_cachedBufferSize) {
+        delete[] m_cachedBuffer;
+        m_cachedBuffer = new char[fileSize + 1];
+        m_cachedBufferSize = fileSize + 1;
+    }
+
+    fs.read(m_cachedBuffer, static_cast<std::streamsize>(fileSize));
+    if (!fs) {
+        // 读取失败
+        fs.clear();
+        fs.seekg(originalPos);
+        return nullptr;
+    }
+
+    m_cachedBuffer[fileSize] = '\0'; // 方便当作 C 字符串使用
+
+    // 还原原始位置（若调用方后续继续读）
+    fs.clear();
+    fs.seekg(originalPos);
+
+    return m_cachedBuffer;
+};
+
 }

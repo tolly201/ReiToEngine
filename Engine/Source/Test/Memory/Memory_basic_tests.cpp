@@ -21,7 +21,7 @@ RT_TEST_ST("Memory", BasicAllocFree, "memory","alloc"){
     void* q = mm.Allocate(Size, 8, RT_MEMORY_TAG::APPLICATION);
     RT_EXPECT_TRUE(q != nullptr);
     mm.SetMemory(q, 0xAB, Size);
-    mm.CopyMemory(p, q, Size);
+    mm.CopyMemoryReiTo(p, q, Size);
     bool copied = true;
     for(u64 i=0;i<Size;++i){ if(bytes[i] != 0xAB){ copied=false; break; } }
     RT_EXPECT_TRUE(copied);

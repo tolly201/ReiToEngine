@@ -183,8 +183,10 @@ struct VulkanSwapchainContext{
 };
 
 struct VulkanContextRef{
-    VkInstance& instance;
-    VkAllocationCallbacks*& allocator;
+    VkInstance instance = VK_NULL_HANDLE;
+    VkAllocationCallbacks* allocator = nullptr;
+    VulkanDeviceCombination* device_combination = nullptr;
+    VulkanSwapchainContext* swapchain_context = nullptr;
 };
 
 RT_FORCEINLINE b8 RT_VK_CHECK(VkResult expr) {

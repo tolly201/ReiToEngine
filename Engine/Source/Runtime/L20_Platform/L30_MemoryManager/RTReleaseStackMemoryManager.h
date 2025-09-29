@@ -22,7 +22,7 @@ public:
 protected:
     void* AllocateImpl(u64, u8, RT_MEMORY_TAG) override;
     void FreeImpl(void*, u64, RT_MEMORY_TAG) override;
-    void* ZeroMemory(void*, u64) override;
+    void* ZeroMemoryReiTo(void*, u64) override;
     void* CopyMemoryImpl(void*, const void*, u64) override;
     void* SetMemoryImpl(void*, u8, u64) override;
 private:

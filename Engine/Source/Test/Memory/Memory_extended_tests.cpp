@@ -50,7 +50,7 @@ static void zero_copy_set_cycle(){
     void* p = mgr.Allocate(N, 32, RT_MEMORY_TAG::APPLICATION);
     RT_EXPECT_TRUE(p != nullptr);
     // Zero
-    mgr.ZeroMemory(p, N);
+    mgr.ZeroMemoryReiTo(p, N);
     unsigned char* b = static_cast<unsigned char*>(p);
     bool allZero = true; for(u64 i=0;i<N;++i){ if(b[i] != 0){ allZero=false; break; } }
     RT_EXPECT_TRUE(allZero);
@@ -61,7 +61,7 @@ static void zero_copy_set_cycle(){
     // Copy to another block
     void* q = mgr.Allocate(N, 32, RT_MEMORY_TAG::APPLICATION);
     RT_EXPECT_TRUE(q != nullptr);
-    mgr.CopyMemory(q, p, N);
+    mgr.CopyMemoryReiTo(q, p, N);
     unsigned char* qb = static_cast<unsigned char*>(q);
     bool copyOk = true; for(u64 i=0;i<N;++i){ if(qb[i] != 0x7F){ copyOk=false; break; } }
     RT_EXPECT_TRUE(copyOk);

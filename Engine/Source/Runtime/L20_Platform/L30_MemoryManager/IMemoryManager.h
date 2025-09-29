@@ -35,7 +35,7 @@ public:
 
         Stats.TaggedPeakMemory[static_cast<u16>(tag)] = RTMAX(Stats.TaggedPeakMemory[static_cast<u16>(tag)], Stats.TaggedAllocatedMemory[static_cast<u16>(tag)]);
 
-        ZeroMemory(block, size);
+        ZeroMemoryReiTo(block, size);
         return block;
     }
     void Free(void* addr, u64 size, RT_MEMORY_TAG tag)
@@ -49,11 +49,11 @@ public:
         Stats.TaggedAllocatedMemory[static_cast<u16>(tag)] -= size;
         static_cast<T*>(this)->FreeImpl(addr, size, tag);
     }
-    void* ZeroMemory(void* addr, u64 size)
+    void* ZeroMemoryReiTo(void* addr, u64 size)
     {
         return static_cast<T*>(this)->ZeroMemoryImpl(addr, size);
     }
-    void* CopyMemory(void* dest, const void* src, u64 size)
+    void* CopyMemoryReiTo(void* dest, const void* src, u64 size)
     {
         return static_cast<T*>(this)->CopyMemoryImpl(dest, src, size);
     }

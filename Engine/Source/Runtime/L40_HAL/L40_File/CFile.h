@@ -16,8 +16,11 @@ public:
 	b8 ReadImpl(char* buffer,u32 size) override;
 	b8 GetLineImpl(char* buffer,u32 size) override;
 	b8 CloseImpl() override;
+    void* GetBufferImpl() override;
 protected:
 	std::fstream fs;
+    char*  m_cachedBuffer = nullptr;
+    size_t m_cachedBufferSize = 0; // 已分配容量（含 '\0'）
 };
 
 class RTENGINE_API RTFArchive : public RTCFile

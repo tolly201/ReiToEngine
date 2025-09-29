@@ -238,7 +238,7 @@ namespace ReiToEngine
                 return static_cast<RTMimallocManager*>(handle)->Free((void*)((uintptr_t)head - head->actual_offset), total_size, tag);
         }
     }
-    void* MemoryManager::ZeroMemory(void* addr, u64 size)
+    void* MemoryManager::ZeroMemoryReiTo(void* addr, u64 size)
     {
     RT_ASSERT_MESSAGE(wrappers, "MemoryManager not initialized in ZeroMemoryReiTo.");
     rt_spin_lock(&lock_state);
@@ -248,19 +248,19 @@ namespace ReiToEngine
         switch (type)
         {
             case EMEMORY_MANAGER_TYPE::MIMALLOC:
-                return static_cast<RTMimallocManager*>(handle)->ZeroMemory(addr, size);
+                return static_cast<RTMimallocManager*>(handle)->ZeroMemoryReiTo(addr, size);
             case EMEMORY_MANAGER_TYPE::STANDARDC:
-                return static_cast<RTCMemoryManager*>(handle)->ZeroMemory(addr, size);
+                return static_cast<RTCMemoryManager*>(handle)->ZeroMemoryReiTo(addr, size);
             case EMEMORY_MANAGER_TYPE::BINNED:
-                return static_cast<BinnedMemoryManager*>(handle)->ZeroMemory(addr, size);
+                return static_cast<BinnedMemoryManager*>(handle)->ZeroMemoryReiTo(addr, size);
             case EMEMORY_MANAGER_TYPE::CUSTOM:
-                return static_cast<ICustomMemoryManager*>(handle)->ZeroMemory(addr, size);
+                return static_cast<ICustomMemoryManager*>(handle)->ZeroMemoryReiTo(addr, size);
             default:
                 RT_LOG_ERROR("Unknown memory manager type in MemoryManager::ZeroMemoryReiTo. Falling back to Mimalloc.");
-                return static_cast<RTMimallocManager*>(handle)->ZeroMemory(addr, size);
+                return static_cast<RTMimallocManager*>(handle)->ZeroMemoryReiTo(addr, size);
         }
     }
-    void* MemoryManager::CopyMemory(void* dest, const void* src, u64 size)
+    void* MemoryManager::CopyMemoryReiTo(void* dest, const void* src, u64 size)
     {
     RT_ASSERT_MESSAGE(wrappers, "MemoryManager not initialized in CopyMemoryReiTo.");
     rt_spin_lock(&lock_state);
@@ -270,16 +270,16 @@ namespace ReiToEngine
         switch(type)
         {
             case EMEMORY_MANAGER_TYPE::MIMALLOC:
-                return static_cast<RTMimallocManager*>(handle)->CopyMemory(dest, src, size);
+                return static_cast<RTMimallocManager*>(handle)->CopyMemoryReiTo(dest, src, size);
             case EMEMORY_MANAGER_TYPE::STANDARDC:
-                return static_cast<RTCMemoryManager*>(handle)->CopyMemory(dest, src, size);
+                return static_cast<RTCMemoryManager*>(handle)->CopyMemoryReiTo(dest, src, size);
             case EMEMORY_MANAGER_TYPE::BINNED:
-                return static_cast<BinnedMemoryManager*>(handle)->CopyMemory(dest, src, size);
+                return static_cast<BinnedMemoryManager*>(handle)->CopyMemoryReiTo(dest, src, size);
             case EMEMORY_MANAGER_TYPE::CUSTOM:
-                return static_cast<ICustomMemoryManager*>(handle)->CopyMemory(dest, src, size);
+                return static_cast<ICustomMemoryManager*>(handle)->CopyMemoryReiTo(dest, src, size);
             default:
                 RT_LOG_ERROR("Unknown memory manager type in MemoryManager::CopyMemoryReiTo. Falling back to Mimalloc.");
-                return static_cast<RTMimallocManager*>(handle)->CopyMemory(dest, src, size);
+                return static_cast<RTMimallocManager*>(handle)->CopyMemoryReiTo(dest, src, size);
         }
     }
     void* MemoryManager::SetMemory(void* addr, u8 value, u64 size)

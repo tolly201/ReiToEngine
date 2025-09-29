@@ -7,8 +7,8 @@ InputMonitor::InputMonitor()  = default;
 InputMonitor::~InputMonitor() = default;
 
 b8 InputMonitor::Initialize() {
-    GetMemoryManager().ZeroMemory(&cur_state, sizeof(cur_state));
-    GetMemoryManager().ZeroMemory(&prev_state, sizeof(prev_state));
+    GetMemoryManager().ZeroMemoryReiTo(&cur_state, sizeof(cur_state));
+    GetMemoryManager().ZeroMemoryReiTo(&prev_state, sizeof(prev_state));
     initialized = true;
 
     RT_LOG_INFO("InputMonitor Initialized.");
@@ -23,8 +23,8 @@ b8 InputMonitor::Tick(f64) {
         RT_LOG_FATAL("Update when not initialized.");
         return false;
     }
-    GetMemoryManager().CopyMemory(&prev_state, &cur_state, sizeof(cur_state));
-    GetMemoryManager().ZeroMemory(&cur_state, sizeof(cur_state));
+    GetMemoryManager().CopyMemoryReiTo(&prev_state, &cur_state, sizeof(cur_state));
+    GetMemoryManager().ZeroMemoryReiTo(&cur_state, sizeof(cur_state));
     return true;
 }
 

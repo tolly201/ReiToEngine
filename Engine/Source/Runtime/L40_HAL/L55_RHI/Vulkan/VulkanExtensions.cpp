@@ -42,7 +42,7 @@ b8 get_vulkan_validation_layers(u32& out_layer_count, ReiToEngine::List<const ch
         b8 layer_found = false;
 
         for (u32 j = 0; j < available_layer_count; ++j) {
-            if (RT_CharsCompare(out_layers[i], available_layers[j].layerName)) {
+            if (RT_CStringCompare(out_layers[i], available_layers[j].layerName)) {
                 layer_found = true;
                 break;
             }

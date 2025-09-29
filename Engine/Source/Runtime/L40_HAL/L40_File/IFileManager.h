@@ -4,10 +4,11 @@
 #include <iostream>
 #include "L0_Macro/Include.h"
 #include "CFile.h"
+#include "L20_Platform/Include.h"
 namespace ReiToEngine
 {
 template <typename T>
-class RTENGINE_API RTFileManager
+class RTENGINE_API RTFileManager : public Singleton<RTFileManager<T>>
 {
 public:
     RTFileManager() = default;

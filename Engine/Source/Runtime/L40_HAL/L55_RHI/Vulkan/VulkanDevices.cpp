@@ -423,7 +423,7 @@ u32 physical_device_meets_requirements(VulkanDeviceCombination& device_combinati
             b8 extension_found = false;
             for (u32 j = 0; j < device_combination.supported_extensions.size(); ++j)
             {
-                if (RT_CharsCompare(requirements.required_extensions[i], device_combination.supported_extensions[j].extensionName))
+                if (RT_CStringCompare(requirements.required_extensions[i], device_combination.supported_extensions[j].extensionName))
                 {
                     extension_found = true;
                     break;
