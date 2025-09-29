@@ -36,8 +36,8 @@ public:
     b8 SetDefaultMemoryManager();
     void* Allocate(u64 size, u8 alignment, RT_MEMORY_TAG tag);
     void Free(void* addr, u64 size, RT_MEMORY_TAG tag);
-    void* ZeroMemoryReiTo(void* addr, u64 size);
-    void* CopyMemoryReiTo(void* dest, const void* src, u64 size);
+    void* ZeroMemory(void* addr, u64 size);
+    void* CopyMemory(void* dest, const void* src, u64 size);
     void* SetMemory(void* addr, u8 value, u64 size);
     char* GetMemoryUsageReport();
     private:

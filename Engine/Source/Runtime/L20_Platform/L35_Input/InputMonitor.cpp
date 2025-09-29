@@ -7,8 +7,8 @@ InputMonitor::InputMonitor()  = default;
 InputMonitor::~InputMonitor() = default;
 
 b8 InputMonitor::Initialize() {
-    RT_Platform_SYSZeroMemory(&cur_state, sizeof(cur_state));
-    RT_Platform_SYSZeroMemory(&prev_state, sizeof(prev_state));
+    GetMemoryManager().ZeroMemory(&cur_state, sizeof(cur_state));
+    GetMemoryManager().ZeroMemory(&prev_state, sizeof(prev_state));
     initialized = true;
 
     RT_LOG_INFO("InputMonitor Initialized.");
@@ -23,8 +23,8 @@ b8 InputMonitor::Tick(f64) {
         RT_LOG_FATAL("Update when not initialized.");
         return false;
     }
-    RT_Platform_SYSCopyMemory(&prev_state, &cur_state, sizeof(cur_state));
-    RT_Platform_SYSZeroMemory(&cur_state, sizeof(cur_state));
+    GetMemoryManager().CopyMemory(&prev_state, &cur_state, sizeof(cur_state));
+    GetMemoryManager().ZeroMemory(&cur_state, sizeof(cur_state));
     return true;
 }
 
