@@ -141,9 +141,8 @@ enum class ShaderStageType : u8{
     MAX = 3,
 };
 
-struct VulkanObjectShader{
+struct VulkanShaderSet{
     VulkanShaderStage shader_stages[static_cast<u8>(ShaderStageType::MAX)];
-    VulkanPipeline pipeline;
 };
 
 struct VulkanSwapchainContext{

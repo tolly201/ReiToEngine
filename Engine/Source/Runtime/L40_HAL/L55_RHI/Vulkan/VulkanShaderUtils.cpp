@@ -4,7 +4,7 @@
 namespace ReiToEngine
 {
 b8 create_shader_module(VulkanContextRef context, const char* name, const char* type_str, [[maybe_unused]]VkShaderStageFlagBits stage, u32 stage_index, VulkanShaderStage* out_shader_stages){
-    String filename = String::Format("Asserts/Shaders/%s.%s.spv", name, type_str);
+    String filename = String::Format("../Asserts/Shaders/%s.%s.spv", name, type_str);
     RT_LOG_DEBUG_FMT("Loading shader file: {}", filename.c_str());
 
     out_shader_stages[stage_index].module_create_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

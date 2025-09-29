@@ -7,6 +7,7 @@
 #include "VulkanCommandBuffer.h"
 #include "VulkanFrameBuffer.h"
 #include "VulkanFence.h"
+#include "VulkanObjectShader.h"
 namespace ReiToEngine
 {
 
