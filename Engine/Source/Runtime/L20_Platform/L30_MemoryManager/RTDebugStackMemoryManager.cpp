@@ -26,7 +26,7 @@ RTDebugStackMemoryManager::~RTDebugStackMemoryManager()
     }
 }
 
-void RTDebugStackMemoryManager::TrackAllocation(void* Ptr, size_t Size, const char* File, uint32_t Line)
+void RTDebugStackMemoryManager::TrackAllocation(void* Ptr,[[maybe_unused]] size_t Size, const char* File, uint32_t Line)
 {
     if (!Ptr) return; // 空指针直接返回
 
@@ -37,7 +37,7 @@ void RTDebugStackMemoryManager::TrackAllocation(void* Ptr, size_t Size, const ch
     block->Line = Line;
 }
 
-void RTDebugStackMemoryManager::UntrackAllocation(void* Ptr)
+void RTDebugStackMemoryManager::UntrackAllocation([[maybe_unused]]void* Ptr)
 {
     //  在 deallocateImpl 中处理，这里无需额外操作
 }
@@ -67,7 +67,7 @@ void RTDebugStackMemoryManager::DumpMemoryLeaks()
     std::cout << "---------- 内存泄漏检测报告结束 ----------" << std::endl;
 }
 
-void* RTDebugStackMemoryManager::allocatePoolCall(uint32_t size, uint32_t alignment)
+void* RTDebugStackMemoryManager::allocatePoolCall(uint32_t size,[[maybe_unused]] uint32_t alignment)
 {
      if (size > defaultSmallTargetMemoryAlignment) // 内存池只处理固定大小的内存块
     {
@@ -107,7 +107,7 @@ void* RTDebugStackMemoryManager::allocatePoolCall(uint32_t size, uint32_t alignm
     return reinterpret_cast<void*>(block + 1); // 返回 RTBlock 结构之后的位置，即用户可用的内存起始地址
 }
 
-void RTDebugStackMemoryManager::deAllocatePoolCall(void* addr, uint32_t alignment)
+void RTDebugStackMemoryManager::deAllocatePoolCall(void* addr,[[maybe_unused]] uint32_t alignment)
 {
         if (!addr) return; // 空指针直接返回
 
@@ -178,7 +178,7 @@ void* RTDebugStackMemoryManager::allocateSystemCall(uint32_t size, uint32_t alig
     return reinterpret_cast<void*>(block + sizeof(EBLOCK) + sizeof(block)); // 返回 RTBlock 结构之后的位置，即用户可用的内存起始地址
 }
 
-void RTDebugStackMemoryManager::deAllocateSystemCall(void* addr, uint32_t alignment)
+void RTDebugStackMemoryManager::deAllocateSystemCall(void* addr,[[maybe_unused]] uint32_t alignment)
 {
     if (!addr) return; // 空指针直接返回
 

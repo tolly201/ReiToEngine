@@ -6,7 +6,7 @@ namespace ReiToEngine {
 class KeyboardDevice : public InputDevice<KeyboardDevice> {
 friend class InputDevice<KeyboardDevice>;
 public:
-    void InnerProcessNativeEvent(void* nativeEvent)override{};
+    void InnerProcessNativeEvent([[maybe_unused]]void* nativeEvent)override{};
     void InnerUpdate()override{};
 
     b8 IsKeyDown(KEY_CODE_KEYBOARD keyCode) const;

@@ -1,7 +1,24 @@
+#if defined(_MSC_VER)
+    #pragma warning(push)
+    #pragma warning(disable : 4244 4100) // 把所有 stb 的警告号放这里
+#elif defined(__GNUC__) || defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wsign-compare"
+    #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION // 必须在包含 stb_image.h 之前定义一次
 #include "stb_image.h"
 #include "stb_image_write.h"
+
+// 恢复警告
+#if defined(_MSC_VER)
+    #pragma warning(pop)
+#elif defined(__GNUC__) || defined(__clang__)
+    #pragma GCC diagnostic pop
+#endif
 
 #include "../Include/STBImageParser.h"
 #include <iostream>
@@ -10,7 +27,7 @@ namespace ReiToEngine
 bool STBImageParser::ReadImpl(const char* filename, Image& image)
 {
     int width, height, channels;
-    int format = 0;
+    [[maybe_unused]]int format = 0;
     uint8_t* data = stbi_load(filename, &width, &height, &channels, 0);
     if (!data) {
         std::cerr << "Failed to load image: " << filename << "\n";  // 添加错误日志
@@ -45,7 +62,7 @@ bool STBImageParser::ReadImpl(const char* filename, Image& image)
     // printf("file info:\n height:%d\nwidth:%d\nchannels:%d\n", c.h, c.w, c.channels);
     return true;
 }
-bool STBImageParser::WriteImpl(const char* filename,const Image& image, const bool vflip, const bool rle) const
+bool STBImageParser::WriteImpl(const char* filename,const Image& image,[[maybe_unused]] const bool vflip,[[maybe_unused]] const bool rle) const
 {
     printf("test1\n");
     const uint8_t* data = image.GetData();
@@ -66,6 +83,7 @@ bool STBImageParser::WriteImpl(const char* filename,const Image& image, const bo
     } else if (imageInfo.imageType == EImageType::IMAGE_TGA) {
         return stbi_write_tga(filename, imageInfo.w, imageInfo.h, imageInfo.channels, data);
     }
+    return false;
 }
 }
 

@@ -22,14 +22,8 @@
       "name": "macos-clang-debug-test",
       "displayName": "macOS Clang Debug (with Tests)",
       "description": "Debug build with tests enabled.",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/builds/${presetName}",
-      "toolchainFile": "${sourceDir}/Engine/Scripts/cmake_toolchain/MacOS_CLANG-MacOS-toolchain.cmake",
+      "inherits": "macos-clang-debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic",
-        "CMAKE_CXX_FLAGS_DEBUG": "-ggdb -g -O0",
-        "CMAKE_PROJECT_SOURCE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/",
         "RT_ENABLE_TESTS": "ON"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }

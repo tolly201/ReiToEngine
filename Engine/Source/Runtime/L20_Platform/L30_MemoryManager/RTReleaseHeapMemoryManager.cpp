@@ -36,7 +36,7 @@ RTReleaseHeapMemoryManager::RTReleaseHeapMemoryManager()
 	for( size_t i=0; i < POOL_MAX; i++ )
 	{
 		size_t Index;
-		for( Index=0; PoolTable[Index].BlockSize<i; Index++ );
+		for( Index=0; PoolTable[Index].BlockSize<i; Index++ ){};
 		RT_ASSERT(Index < POOL_COUNT && "POOL MAX OVERSIZE.");
 		MemSizeToPoolTable[i] = &PoolTable[Index];
 	}
@@ -84,7 +84,7 @@ void* RTReleaseHeapMemoryManager::SetMemoryImpl(void* ptr, u8 val, u64 size) {
 	return nullptr;
 };
 
-void* RTReleaseHeapMemoryManager::AllocateImpl(u64 uiSize, uint8_t u8, RT_MEMORY_TAG tag)
+void* RTReleaseHeapMemoryManager::AllocateImpl(u64 uiSize,[[maybe_unused]] uint8_t u8,[[maybe_unused]] RT_MEMORY_TAG tag)
 {
 	std::lock_guard<std::mutex> lock(MemoryMutex); // 加锁保证线程安全
 	FFreeMem* Free;
@@ -175,7 +175,7 @@ void* RTReleaseHeapMemoryManager::AllocateImpl(u64 uiSize, uint8_t u8, RT_MEMORY
 	}
 	return Free;
 }
-void RTReleaseHeapMemoryManager::FreeImpl(void* pcAddr, u64 size,RT_MEMORY_TAG tag)
+void RTReleaseHeapMemoryManager::FreeImpl(void* pcAddr,[[maybe_unused]] u64 size,[[maybe_unused]] RT_MEMORY_TAG tag)
 {
     std::lock_guard<std::mutex> lock(MemoryMutex); // 加锁保证线程安全
 	RT_ASSERT(pcAddr);

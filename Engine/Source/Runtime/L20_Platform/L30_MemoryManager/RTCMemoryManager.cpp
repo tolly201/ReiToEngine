@@ -1,11 +1,11 @@
 #include "RTCMemoryManager.h"
 namespace ReiToEngine
 {
-void* RTCMemoryManager::AllocateImpl(u64 size, u8 alignment, RT_MEMORY_TAG tag)
+void* RTCMemoryManager::AllocateImpl(u64 size,[[maybe_unused]] u8 alignment,[[maybe_unused]] RT_MEMORY_TAG tag)
 {
     return RT_Platform_SYSAlloc(size);
 }
-void RTCMemoryManager::FreeImpl(void* addr, u64 size, RT_MEMORY_TAG tag)
+void RTCMemoryManager::FreeImpl([[maybe_unused]]void* addr, [[maybe_unused]]u64 size, [[maybe_unused]]RT_MEMORY_TAG tag)
 {
     return RT_Platform_SYSFree(addr, 0);
 }

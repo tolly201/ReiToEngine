@@ -1,7 +1,7 @@
 #ifndef RUNTIME_LAUNCH_GAMETYPES_H
 #define RUNTIME_LAUNCH_GAMETYPES_H
 #include "L60_Core/Include.h"
-#include "L80_function/L99_Application/RTApplicationEnums.h"
+#include "L80_Function/L99_Application/RTApplicationEnums.h"
 namespace ReiToEngine
 {
 class IGame

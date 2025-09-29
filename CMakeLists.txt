@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "13.7" CACHE STRING "Minimum macOS deployment version" FORCE)
 project(ReiToEngine)
 # 通用编译设置
 set(CMAKE_CXX_STANDARD 20)

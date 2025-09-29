@@ -24,7 +24,7 @@ void vulkan_swapchain_destroy(VulkanContextRef context, VulkanSwapchainContext& 
     destroy(context, swapchain_context);
 }
 
-b8 vulkan_swapchain_acquire_next_image_index(VulkanContextRef context ,VulkanSwapchainContext& swapchain_context, u32 timeout_us, VkSemaphore& semaphore, VkFence* fence, u32& image_index)
+b8 vulkan_swapchain_acquire_next_image_index([[maybe_unused]]VulkanContextRef context ,VulkanSwapchainContext& swapchain_context, u32 timeout_us, VkSemaphore& semaphore, VkFence* fence,[[maybe_unused]] u32& image_index)
 {
     // 检查 device_combination 是否有效
     if (!swapchain_context.device_combination) {
@@ -65,7 +65,7 @@ b8 vulkan_swapchain_acquire_next_image_index(VulkanContextRef context ,VulkanSwa
     }
     return true;
 }
-b8 vulkan_swapchain_present(VulkanContextRef context ,VulkanSwapchainContext& swapchain_context, VkQueue graphics_queue, VkQueue present_queue, VkSemaphore complete_semaphore, u32 present_image_index)
+b8 vulkan_swapchain_present(VulkanContextRef context ,VulkanSwapchainContext& swapchain_context,[[maybe_unused]] VkQueue graphics_queue, VkQueue present_queue, VkSemaphore complete_semaphore, u32 present_image_index)
 {
     VkPresentInfoKHR present_info{};
     present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -93,7 +93,7 @@ b8 vulkan_swapchain_present(VulkanContextRef context ,VulkanSwapchainContext& sw
     return true;
 }
 
-void create(VulkanContextRef context, VulkanSwapchainContext& swapchain_context, u32 width, u32 height)
+void create(VulkanContextRef context, VulkanSwapchainContext& swapchain_context,[[maybe_unused]] u32 width,[[maybe_unused]] u32 height)
 {
     VkExtent2D extent = { swapchain_context.width, swapchain_context.height };
 

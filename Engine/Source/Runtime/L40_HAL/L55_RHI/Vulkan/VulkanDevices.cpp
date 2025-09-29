@@ -238,7 +238,7 @@ b8 vulkan_logical_device_create(VulkanContextRef ref, VulkanSwapchainContext& sw
     // 并存入你的 SwapchainContext 或设备级缓存。
 
     for (const auto& [type, family_index] : swapchain_context.queue_family_indices) {
-        if (family_index != static_cast<u32>(-1)) {
+        if (family_index != static_cast<i32>(-1)) {
             VkQueue queue = VK_NULL_HANDLE;
             vkGetDeviceQueue(dc.logical_device, family_index, 0, &queue);
             dc.queues[type] = queue;
@@ -322,7 +322,7 @@ b8 vulkan_device_detect_depth_format(VulkanDeviceCombination& device_combination
     return false;
 }
 
-b8 select_physical_device(VkInstance& instance, VulkanSwapchainContext& swapchain_content,  List<VulkanDeviceCombination>& devices, VulkanDeviceCombination*& out_device)
+b8 select_physical_device([[maybe_unused]]VkInstance& instance, VulkanSwapchainContext& swapchain_content,  List<VulkanDeviceCombination>& devices, VulkanDeviceCombination*& out_device)
 {
     RT_LOG_DEBUG_FMT("START SELECT DEVICE: {}", devices.size());
 
@@ -364,7 +364,7 @@ u32 physical_device_meets_requirements(VulkanDeviceCombination& device_combinati
     }
 
     RT_LOG_INFO("Graphics | Present | Compute | Transfer | Name | Flags");
-    u8 min_transfer_score = 255;
+    [[maybe_unused]]u8 min_transfer_score = 255;
 
     for (u8 i = 0; i < static_cast<u8>(VulkanQueueFamilyIndicesType::MAX); ++i)
     {
@@ -400,16 +400,16 @@ u32 physical_device_meets_requirements(VulkanDeviceCombination& device_combinati
     {
         VkBool32 present_support = false;
         RT_VK_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(device_combination.physical_device, i, swapchain_context.surface, &present_support));
-        if (present_support && swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::PRESENT] == static_cast<u32>(-1)) {
+        if (present_support && swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::PRESENT] == static_cast<i32>(-1)) {
             swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::PRESENT] = i;
             break;
         }
     }
 
-    const bool ok_graphics = !requirements.queue_families[VulkanQueueFamilyIndicesType::GRAPHICS] || (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::GRAPHICS] != static_cast<u32>(-1));
-    const bool ok_present  = !requirements.queue_families[VulkanQueueFamilyIndicesType::PRESENT]  || (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::PRESENT]  != static_cast<u32>(-1));
-    const bool ok_compute  = !requirements.queue_families[VulkanQueueFamilyIndicesType::COMPUTE]  || (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::COMPUTE]  != static_cast<u32>(-1));
-    const bool ok_transfer = !requirements.queue_families[VulkanQueueFamilyIndicesType::TRANSFER] || (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::TRANSFER] != static_cast<u32>(-1));
+    const bool ok_graphics = !requirements.queue_families[VulkanQueueFamilyIndicesType::GRAPHICS] || (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::GRAPHICS] != static_cast<i32>(-1));
+    const bool ok_present  = !requirements.queue_families[VulkanQueueFamilyIndicesType::PRESENT]  || (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::PRESENT]  != static_cast<i32>(-1));
+    const bool ok_compute  = !requirements.queue_families[VulkanQueueFamilyIndicesType::COMPUTE]  || (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::COMPUTE]  != static_cast<i32>(-1));
+    const bool ok_transfer = !requirements.queue_families[VulkanQueueFamilyIndicesType::TRANSFER] || (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::TRANSFER] != static_cast<i32>(-1));
 
     if (!(ok_graphics && ok_present && ok_compute && ok_transfer)) {
         RT_LOG_WARN("Physical device misses required queue family.");
@@ -455,10 +455,10 @@ u32 physical_device_meets_requirements(VulkanDeviceCombination& device_combinati
     }
 
     // 队列族独立性（独立传输/计算更佳）
-    if (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::TRANSFER] != static_cast<u32>(-1)) {
+    if (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::TRANSFER] != static_cast<i32>(-1)) {
         score += (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::TRANSFER] != swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::GRAPHICS]) ? 150 : 50;
     }
-    if (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::COMPUTE] != static_cast<u32>(-1)) {
+    if (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::COMPUTE] != static_cast<i32>(-1)) {
         score += (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::COMPUTE] != swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::GRAPHICS]) ? 100 : 30;
     }
 
@@ -467,7 +467,7 @@ u32 physical_device_meets_requirements(VulkanDeviceCombination& device_combinati
         auto& out_indices = swapchain_context.queue_family_indices;
         const auto& gq = queue_families[out_indices[VulkanQueueFamilyIndicesType::GRAPHICS]].queueFamilyProperties;
         score += 10 * gq.queueCount;
-        if (out_indices[VulkanQueueFamilyIndicesType::TRANSFER] != static_cast<u32>(-1)) {
+        if (out_indices[VulkanQueueFamilyIndicesType::TRANSFER] != static_cast<i32>(-1)) {
             const auto& tq = queue_families[out_indices[VulkanQueueFamilyIndicesType::TRANSFER]].queueFamilyProperties;
             score += 5 * tq.queueCount;
         }

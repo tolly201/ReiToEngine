@@ -32,7 +32,7 @@ public:
 private:
     ReiToEngine::List<PlatformWindow*> windows;
     uint8_t* data = nullptr;
-    size_t size = 0;
+    [[maybe_unused]]size_t size = 0;
     size_t width = 0;
     size_t height = 0;
 };

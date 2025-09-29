@@ -98,7 +98,7 @@ void vulkan_renderpass_destroy(VulkanContextRef context, VulkanSwapchainContext&
     }
 }
 
-void vulkan_renderpass_begin(VulkanContextRef context, VulkanSwapchainContext& swapchain_context,VulkanRenderPass& render_pass, VulkanCommandBuffer& command_buffer, VkFramebuffer framebuffer)
+void vulkan_renderpass_begin([[maybe_unused]]VulkanContextRef context,[[maybe_unused]] VulkanSwapchainContext& swapchain_context,VulkanRenderPass& render_pass, VulkanCommandBuffer& command_buffer, VkFramebuffer framebuffer)
 {
     // Ensure valid extents
     RT_ASSERT(render_pass.width > 0 && render_pass.height > 0);
@@ -128,7 +128,7 @@ void vulkan_renderpass_begin(VulkanContextRef context, VulkanSwapchainContext& s
     command_buffer.state = VulkanCommandBufferState::RENDERING;
 }
 
-void vulkan_renderpass_end(VulkanContextRef context, VulkanSwapchainContext& swapchain_context,VulkanRenderPass& render_pass, VulkanCommandBuffer& command_buffer, VkFramebuffer framebuffer)
+void vulkan_renderpass_end([[maybe_unused]]VulkanContextRef context,[[maybe_unused]] VulkanSwapchainContext& swapchain_context,[[maybe_unused]]VulkanRenderPass& render_pass, VulkanCommandBuffer& command_buffer,[[maybe_unused]] VkFramebuffer framebuffer)
 {
     vkCmdEndRenderPass(command_buffer.command_buffer);
     command_buffer.state = VulkanCommandBufferState::RECORDED;

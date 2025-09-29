@@ -47,7 +47,7 @@ static b8 rebuild_swapchain_pipeline(VulkanContextRef context, VulkanSwapchainCo
     return true;
 }
 
-b8 VulkanRenderBackend::Initialize(ERenderBackendType renderer_type, const char* application_name, PlatformState* plat_state) {
+b8 VulkanRenderBackend::Initialize([[maybe_unused]]ERenderBackendType renderer_type, const char* application_name,[[maybe_unused]] PlatformState* plat_state) {
     allocator = nullptr;
 
     VkApplicationInfo app_info{};
@@ -160,7 +160,7 @@ b8 VulkanRenderBackend::Resized(SurfaceDesc& desc, u32 width, u32 height){
     return true;
 }
 
-b8 VulkanRenderBackend::BeginFrame(f64 delta_time){
+b8 VulkanRenderBackend::BeginFrame([[maybe_unused]]f64 delta_time){
     for (auto& device : devices) {
         if (device.is_inused)
         {
@@ -206,7 +206,7 @@ b8 VulkanRenderBackend::BeginFrame(f64 delta_time){
             return false;
         }
 
-        if (!vulkan_swapchain_acquire_next_image_index({instance, allocator}, swapchain, UINT64_MAX, swapchain.image_available_semaphores[swapchain.current_frame], VK_NULL_HANDLE, swapchain.current_image_index)) {
+        if (!vulkan_swapchain_acquire_next_image_index({instance, allocator}, swapchain, UINT32_MAX, swapchain.image_available_semaphores[swapchain.current_frame], VK_NULL_HANDLE, swapchain.current_image_index)) {
             if (swapchain.recreating_swapchain) {
                 RT_LOG_INFO_FMT("Acquire indicated out-of-date for swapchain {}. Marked for rebuild.", swapchain.index);
                 continue; // handle rebuild next loop
@@ -242,7 +242,7 @@ b8 VulkanRenderBackend::BeginFrame(f64 delta_time){
 
     return true;
 }
-b8 VulkanRenderBackend::EndFrame(f64 delta_time){
+b8 VulkanRenderBackend::EndFrame([[maybe_unused]]f64 delta_time){
     for (auto& swapchain : swapchains) {
         VulkanCommandBuffer& command_buffer = swapchain.device_combination->command_buffers[VulkanQueueFamilyIndicesType::GRAPHICS][swapchain.current_image_index];
         vulkan_renderpass_end({instance, allocator}, swapchain, swapchain.render_pass, command_buffer, swapchain.framebuffers[swapchain.current_image_index].handle);

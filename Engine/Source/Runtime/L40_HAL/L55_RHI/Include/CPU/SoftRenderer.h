@@ -98,7 +98,7 @@ class RTENGINE_API SoftRenderer : public IRenderer {
     float GetZ(int y, int x, Vec3d v0, Vec3d v1, Vec3d v2);
     void DrawTriangle(uint8_t* data, double* zBuffer, Vec3d v0, Vec3d v1, Vec3d v2, Vec4d color0, Vec4d color1,
                       Vec4d color2, Matrix4x4d transform, uint32_t width, uint32_t height);
-    void SetColor(uint8_t* data, FrameBuffer& buffer_info, int w, int h, Vec4d color);
+    void SetColor(uint8_t* data, FrameBuffer& buffer_info, u32 w, u32 h, Vec4d color);
     void GetSceneFrameCopy(size_t frame_index, uint8_t*& data, size_t& buffer_size) const override;
 
     void ClearAll()
@@ -125,8 +125,8 @@ class RTENGINE_API SoftRenderer : public IRenderer {
     std::vector<MaterialRenderUnit> materialRenderUnits;
     std::vector<LightingRenderUnit> lightingRenderUnits;
 
-    bool zBufferEnableState;
-    bool zBuffer64Bit;
+    [[maybe_unused]]bool zBufferEnableState;
+    [[maybe_unused]]bool zBuffer64Bit;
 };
 }  // namespace ReiToEngine
 #endif

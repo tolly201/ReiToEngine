@@ -15,8 +15,9 @@ b8 CreateGameInstance(ReiToEngine::Game& game_instance)
     return true;
 }
 
-int RuntimeMainLoopEntry(int argc, const char* argv[])
+int RuntimeMainLoopEntry([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
+    ReiToEngine::RTApplication::SetMemoryManager(nullptr, ReiToEngine::EMEMORY_MANAGER_TYPE::MIMALLOC);
     std::cout << "test" << std::endl;
     RT_LOG_DEBUG("test");
     RT_LOG_ERROR("test");

@@ -90,9 +90,9 @@ b8 create_debugger(VkInstance& instance, VkAllocationCallbacks*& allocator, VkDe
 
 VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(
     VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT              messageTypes,
+    [[maybe_unused]]VkDebugUtilsMessageTypeFlagsEXT              messageTypes,
     const VkDebugUtilsMessengerCallbackDataEXT*  pCallbackData,
-    void*                                        pUserData)
+    [[maybe_unused]]void*                                        pUserData)
 {
     if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
         RT_LOG_ERROR("Vulkan Validation Layer: ", pCallbackData->pMessage);

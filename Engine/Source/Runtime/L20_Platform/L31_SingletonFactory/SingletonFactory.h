@@ -71,11 +71,15 @@ class SingletonFactory {
         }
         return memoryManager;
     };
-    static b8 SetMemoryManager(void* MM = nullptr, EMEMORY_MANAGER_TYPE type = EMEMORY_MANAGER_TYPE::DEFAULT)
+    static b8 SetMemoryManager(void* MM = nullptr, EMEMORY_MANAGER_TYPE type = EMEMORY_MANAGER_TYPE::MIMALLOC)
     {
-        RT_ASSERT_MESSAGE(type == EMEMORY_MANAGER_TYPE::CUSTOM && MM != nullptr, "When setting a custom memory manager, MM must not be nullptr and type must be CUSTOM.");
+        RT_ASSERT_MESSAGE(type != EMEMORY_MANAGER_TYPE::DEFAULT, "EMEMORY_MANAGER_TYPE::DEFAULT is not a valid type for setting memory manager. Use a specific type like MIMALLOC, STANDARDC, BINNED, or CUSTOM.");
 
-        RT_ASSERT_MESSAGE(type != EMEMORY_MANAGER_TYPE::CUSTOM && MM == nullptr, "When not setting a custom memory manager, MM must be nullptr and type must not be CUSTOM.");
+        if (type == EMEMORY_MANAGER_TYPE::CUSTOM) {
+            RT_ASSERT_MESSAGE(MM != nullptr, "When setting a custom memory manager, MM must not be nullptr.");
+        } else {
+            RT_ASSERT_MESSAGE(MM == nullptr, "When not setting a custom memory manager, MM must be nullptr.");
+        }
 
         RT_ASSERT_MESSAGE(!memoryManager.IsSeted(), "Memory manager can only be set once.");
 

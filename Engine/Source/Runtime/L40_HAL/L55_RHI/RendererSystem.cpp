@@ -23,10 +23,10 @@ b8 RendererSystem::Initialize() {
 }
 
 b8 RendererSystem::Tick(f64 delta_time) {
-    SceneData scene_data;
+    [[maybe_unused]]SceneData scene_data;
     for (auto& pipeline : pipelines) {
-        render_packet packet;
-        RenderData data;
+        [[maybe_unused]]render_packet packet;
+        [[maybe_unused]]RenderData data;
 
         // if (!pipeline.frontend->BeginFrame(packet, data))
         // {

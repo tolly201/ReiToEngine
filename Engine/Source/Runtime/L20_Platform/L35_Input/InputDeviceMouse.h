@@ -7,7 +7,7 @@ namespace ReiToEngine {
 class MouseDevice : public InputDevice<MouseDevice> {
 friend class InputDevice<MouseDevice>;
 public:
-    void InnerProcessNativeEvent(void* nativeEvent)override{};
+    void InnerProcessNativeEvent([[maybe_unused]]void* nativeEvent)override{};
     void InnerUpdate()override{};
 
     bool IsButtonDown(int button) const;

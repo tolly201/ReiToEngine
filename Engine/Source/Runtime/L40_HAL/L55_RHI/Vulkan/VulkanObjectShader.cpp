@@ -2,7 +2,7 @@
 
 namespace ReiToEngine
 {
-b8 vulkan_object_shader_create(VulkanContextRef ref, VkDevice& device, const char* file_path, VulkanObjectShader& out_shader)
+b8 vulkan_object_shader_create([[maybe_unused]]VulkanContextRef ref,[[maybe_unused]] VkDevice& device,[[maybe_unused]] const char* file_path,[[maybe_unused]] VulkanObjectShader& out_shader)
 {
     return true;
     // char* stage_names[static_cast<u8>(ShaderStageType::MAX)][5] =

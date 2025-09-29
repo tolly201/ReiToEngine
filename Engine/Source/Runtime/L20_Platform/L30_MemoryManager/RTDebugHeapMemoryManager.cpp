@@ -18,7 +18,7 @@ RTDebugHeapMemoryManager::~RTDebugHeapMemoryManager() {
     RT_Platform_SYSFree(this, sizeof(RTDebugHeapMemoryManager));
 }
 
-void RTDebugHeapMemoryManager::TrackAllocation(void* Ptr, size_t Size, const char* File, uint32_t Line) {
+void RTDebugHeapMemoryManager::TrackAllocation(void* Ptr,[[maybe_unused]] size_t size, const char* File, uint32_t Line) {
     if (!Ptr) return;  // 空指针直接返回
 
     std::lock_guard<std::mutex> lock(MemoryMutex);  // 加锁保证线程安全
@@ -28,7 +28,7 @@ void RTDebugHeapMemoryManager::TrackAllocation(void* Ptr, size_t Size, const cha
     block->Line = Line;
 }
 
-void RTDebugHeapMemoryManager::UntrackAllocation(void* Ptr) {
+void RTDebugHeapMemoryManager::UntrackAllocation([[maybe_unused]]void* Ptr) {
     //  在 deallocateImpl 中处理，这里无需额外操作
 }
 
@@ -64,7 +64,7 @@ void RTDebugHeapMemoryManager::DumpMemoryLeaks() {
     std::cout << "---------- 内存泄漏检测报告结束 ----------" << std::endl;
 }
 
-void* RTDebugHeapMemoryManager::allocatePoolCall(uint32_t size, uint32_t alignment, bool isArray) {
+void* RTDebugHeapMemoryManager::allocatePoolCall(uint32_t size,[[maybe_unused]] uint32_t alignment,[[maybe_unused]] bool isArray) {
     std::lock_guard<std::mutex> lock(MemoryMutex);  // 加锁保证线程安全
 
     if (!HeadSmallTarget) {
@@ -95,7 +95,7 @@ void* RTDebugHeapMemoryManager::allocatePoolCall(uint32_t size, uint32_t alignme
     return reinterpret_cast<void*>(block + 1);  // 返回 RTBlock 结构之后的位置，即用户可用的内存起始地址
 }
 
-void RTDebugHeapMemoryManager::deAllocatePoolCall(void* addr, uint32_t alignment, bool isArray) {
+void RTDebugHeapMemoryManager::deAllocatePoolCall(void* addr,[[maybe_unused]] uint32_t alignment,[[maybe_unused]] bool isArray) {
     if (!addr) return;  // 空指针直接返回
 
     std::lock_guard<std::mutex> lock(MemoryMutex);  // 加锁保证线程安全
@@ -130,7 +130,7 @@ void* RTDebugHeapMemoryManager::allocateSystemCall(uint32_t size, uint32_t align
     // 1. 先分配 RTBlock 结构 + 用户请求的内存
     size_t metadataSize = isArray ? sizeof(size_t) : 0;
     size_t totalSize = size + alignedRTBlockSize + sizeof(EBLOCK) + sizeof(EBLOCK) + metadataSize;
-    printf("RT_Platform_SYSAlloc 申请值: %zu\n", size);  // 立即打印 RT_Platform_SYSAlloc 的返回值
+    printf("RT_Platform_SYSAlloc 申请值: %u\n", size);  // 立即打印 RT_Platform_SYSAlloc 的返回值
     printf("RT_Platform_SYSAlloc 申请值: %zu\n",
            alignedRTBlockSize);  // 立即打印 RT_Platform_SYSAlloc 的返回值
     printf("RT_Platform_SYSAlloc 申请值: %zu\n",
@@ -145,12 +145,12 @@ void* RTDebugHeapMemoryManager::allocateSystemCall(uint32_t size, uint32_t align
     printf("RT_Platform_SYSAlloc metadataSize: %zu\n",
            metadataSize);  // 立即打印 RT_Platform_SYSAlloc 的返回值
     char* ptr = static_cast<char*>(RT_Platform_SYSAlloc(totalSize));
-    printf("RT_Platform_SYSAlloc 返回值: %p\n", ptr);  // 立即打印 RT_Platform_SYSAlloc 的返回值
+    printf("RT_Platform_SYSAlloc 返回值: %s\n", ptr);  // 立即打印 RT_Platform_SYSAlloc 的返回值
     if (!ptr) {
         std::cerr << "RTDebugHeapMemoryManager::allocateImpl 内存分配失败!" << std::endl;
         return nullptr;  // 分配失败
     }
-    printf("内存起始地址: %p\n", ptr);  // 立即打印 RT_Platform_SYSAlloc 的返回值
+    printf("内存起始地址: %s\n", ptr);  // 立即打印 RT_Platform_SYSAlloc 的返回值
     RTBlock* block = reinterpret_cast<RTBlock*>(ptr);
 
     // 2. 初始化 RTBlock 信息
@@ -189,7 +189,7 @@ void* RTDebugHeapMemoryManager::allocateSystemCall(uint32_t size, uint32_t align
     }
 
     // 5. 返回用户可用的内存地址 (跳过 RTBlock 结构)
-    printf("可用内存起始地址: %p\n", ptr);  // 立即打印 RT_Platform_SYSAlloc 的返回值
+    printf("可用内存起始地址: %s\n", ptr);  // 立即打印 RT_Platform_SYSAlloc 的返回值
     // DumpMemoryLeaks();
     return reinterpret_cast<void*>(ptr);  // 返回 RTBlock 结构之后的位置，即用户可用的内存起始地址
 }
@@ -198,7 +198,7 @@ void RTDebugHeapMemoryManager::deAllocateSystemCall(void* addr, uint32_t alignme
     if (!addr) return;  // 空指针直接返回
 
     std::lock_guard<std::mutex> lock(MemoryMutex);  // 加锁保证线程安全
-    printf("DeAllocate, addr:%d, alignment:%d\n", addr, alignment);
+    printf("DeAllocate, addr:%s, alignment:%d\n", static_cast<char*>(addr), alignment);
     size_t metadataSize = isArray ? sizeof(size_t) : 0;
     RTBlock* block = reinterpret_cast<RTBlock*>(
         (char*)addr - (sizeof(EBLOCK) + alignedRTBlockSize + metadataSize));  // 指针回退到 RTBlock 结构起始位置
@@ -227,7 +227,7 @@ void RTDebugHeapMemoryManager::deAllocateSystemCall(void* addr, uint32_t alignme
     RT_Platform_SYSFree(block, size);
 }
 
-void* RTDebugHeapMemoryManager::AllocateImpl(u64 size, u8 alignment, RT_MEMORY_TAG tag)
+void* RTDebugHeapMemoryManager::AllocateImpl(u64 size, u8 alignment,[[maybe_unused]] RT_MEMORY_TAG tag)
 {
     return allocateSystemCall(size, alignment, false);
 }
@@ -242,7 +242,7 @@ void* RTDebugHeapMemoryManager::SetMemoryImpl(void*, u8, u64){
     return nullptr;
 };
 
-void RTDebugHeapMemoryManager::FreeImpl(void* ptr, u64 size, RT_MEMORY_TAG tag) {
+void RTDebugHeapMemoryManager::FreeImpl(void* ptr,[[maybe_unused]] u64 size,[[maybe_unused]] RT_MEMORY_TAG tag) {
     return deAllocateSystemCall(ptr, 8, false);
 }
 }  // namespace ReiToEngine

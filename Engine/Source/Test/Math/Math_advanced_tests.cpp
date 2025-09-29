@@ -7,7 +7,7 @@
 using namespace ReiToEngine;
 
 // 统一辅助比较
-static bool near(double a, double b, double eps=1e-9){ return std::fabs(a-b) <= eps; }
+[[maybe_unused]]static bool near(double a, double b, double eps=1e-9){ return std::fabs(a-b) <= eps; }
 
 // ---- SVector3 高级行为 ----
 RT_TEST_ST("Math", SVector3_normalize_zero, "math-advanced"){

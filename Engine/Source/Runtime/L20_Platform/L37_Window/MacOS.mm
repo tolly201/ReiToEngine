@@ -3,7 +3,7 @@
 #include <AppKit/AppKit.h>
 #include "./MACOSX/MacOSXWindow.h"
 
-b8 RT_Platform_MainWindowInitialize(RT_Platform_State* platform_state)
+b8 RT_Platform_MainWindowInitialize([[maybe_unused]]RT_Platform_State* platform_state)
 {
    // macOS 特定初始化
     [NSApplication sharedApplication];
@@ -33,11 +33,11 @@ b8 RT_Platform_MainWindowInitialize(RT_Platform_State* platform_state)
     return true;
 }
 
-void RT_Platform_MainWindowTerminate(RT_Platform_State* platform_state)
+void RT_Platform_MainWindowTerminate([[maybe_unused]]RT_Platform_State* platform_state)
 {
 }
 
-b8 RT_Platform_MainWindowPumpMessage(RT_Platform_State* platform_state){
+b8 RT_Platform_MainWindowPumpMessage([[maybe_unused]]RT_Platform_State* platform_state){
     NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                         untilDate:[NSDate distantPast]
                                            inMode:NSDefaultRunLoopMode

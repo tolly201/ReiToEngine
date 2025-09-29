@@ -56,6 +56,7 @@ b8 InputSystem::DestroyMonitor(void* window)
         RT_LOG_INFO("Input monitor for handle: ", window, " destroyed.");
         return true;
     }
+    return false;
 }
 
 } // namespace ReiToEngine

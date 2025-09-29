@@ -3,7 +3,7 @@
 #include "L20_Platform/Include.h"
 #include "L40_HAL/Include.h"
 #include "RTApplicationEnums.h"
-#include "L80_function/L99_Game/Game.h"
+#include "L80_Function/L99_Game/Game.h"
 
 namespace ReiToEngine{
 class RTENGINE_API RTApplication : public SingletonFactory

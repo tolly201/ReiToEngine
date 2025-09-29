@@ -26,7 +26,7 @@ class RendererSystem : public Runtime_Singleton<RendererSystem> {
     b8 Terminate() override;
 
     b8 CreateRendererBackend(ERenderBackendType type, const char* application_name, PlatformState* plat_state);
-    b8 CreateRendererFrontend(ERenderFrontendType type, const char* application_name, PlatformState* plat_state){
+    b8 CreateRendererFrontend([[maybe_unused]] ERenderFrontendType type, [[maybe_unused]] const char* application_name, [[maybe_unused]] PlatformState* plat_state){
         return true;
     };
 

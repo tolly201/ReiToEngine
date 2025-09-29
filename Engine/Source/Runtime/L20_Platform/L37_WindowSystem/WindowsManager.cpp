@@ -8,7 +8,7 @@ b8 WindowsManager::Initialize() {
     return true;
 }
 b8 WindowsManager::Terminate() {
-    for (int i = 0; i < windows.size(); ++i)
+    for (u64 i = 0; i < windows.size(); ++i)
     {
         windows[i]->CloseWindow();
     }
@@ -16,7 +16,7 @@ b8 WindowsManager::Terminate() {
     return true;
 }
 b8 WindowsManager::Tick(f64) {
-    for (int i = 0; i < windows.size(); ++i)
+    for (u64 i = 0; i < windows.size(); ++i)
     {
         // windows[i].ShowWindow();
         // windows[i]->Update(data, width, height);
@@ -25,7 +25,7 @@ b8 WindowsManager::Tick(f64) {
 }
 
 #ifdef RT_SYSTEM_APPLE
-MacOSXWindow* InnerCreateWindowMacOSX(u32 width, u32 height,u32 pos_x, u32 pos_y, u8 channel) {
+MacOSXWindow* InnerCreateWindowMacOSX(u32 width, u32 height,u32 pos_x, u32 pos_y,[[maybe_unused]] u8 channel) {
     MacOSXWindow* window = new MacOSXWindow();
     // u8* buffer = new u8[width * height * channel];
     // for (size_t i = 0; i < width * height * channel; ++i) {

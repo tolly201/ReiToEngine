@@ -14,7 +14,7 @@ void PlatformGetVulkanExtensions(ReiToEngine::List<const char*>& out_extensions)
     out_extensions.push_back(VK_EXT_METAL_SURFACE_EXTENSION_NAME);
 }
 
-b8 PlatformCreateVulkanSurface(RT_Platform_State& platform_state, SurfaceDesc& desc, VkInstance& instance, VkSurfaceKHR& out_surface)
+b8 PlatformCreateVulkanSurface([[maybe_unused]]RT_Platform_State& platform_state, SurfaceDesc& desc, VkInstance& instance, VkSurfaceKHR& out_surface)
 {
     if (!desc.p_window)
     {

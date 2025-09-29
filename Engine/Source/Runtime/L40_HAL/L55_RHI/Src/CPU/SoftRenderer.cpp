@@ -7,12 +7,12 @@
 
 namespace {
 
-inline void setColor(int x, int y, int w, int h, uint8_t* data, const ReiToEngine::Vec4d& color, uint8_t bpp)
+inline void setColor([[maybe_unused]]int x, [[maybe_unused]]int y,[[maybe_unused]] int w,[[maybe_unused]] int h,[[maybe_unused]] uint8_t* data,[[maybe_unused]] const ReiToEngine::Vec4d& color,[[maybe_unused]] uint8_t bpp)
 {
-    int index =0;
+    [[maybe_unused]]int index =0;
 }
 
-inline void line(int x0, int y0, int x1, int y1,int w, int h, uint8_t* data, const ReiToEngine::Vec4d& color) {
+[[maybe_unused]] inline void line(int x0, int y0, int x1, int y1,int w, int h, uint8_t* data, const ReiToEngine::Vec4d& color) {
     bool steep = false;
     if (std::abs(x0-x1)<std::abs(y0-y1)) {
         std::swap(x0, y0);
@@ -113,18 +113,17 @@ size_t SoftRenderer::CreateIndiceBuffer(uint32_t* indices, size_t size, bool isL
     indiceBuffers.emplace_back(indices, size, isLine);
     return indiceBuffers.size() - 1;
 }
-size_t SoftRenderer::CreateShaderRenderUnit(std::string& shadercode) {
+size_t SoftRenderer::CreateShaderRenderUnit([[maybe_unused]]std::string& shadercode) {
     // shaderRenderUnits.emplace_back(shadercode);
     shaderRenderUnits.emplace_back();
     return shaderRenderUnits.size() - 1;
 }
-size_t SoftRenderer::CreateTextureRenderUnit(uint32_t w, uint32_t h, uint32_t channels, uint8_t* data) {
+size_t SoftRenderer::CreateTextureRenderUnit([[maybe_unused]]uint32_t w,[[maybe_unused]] uint32_t h,[[maybe_unused]] uint32_t channels,[[maybe_unused]] uint8_t* data) {
     // textureRenderUnits.emplace_back(w, h, channels, data);
     textureRenderUnits.emplace_back();
     return textureRenderUnits.size() - 1;
 }
-size_t SoftRenderer::CreateMaterialRenderUnit(Vec3d ambientColor, Vec3d diffuseColor, Vec3d specularColor,
-                                              float shininess) {
+size_t SoftRenderer::CreateMaterialRenderUnit([[maybe_unused]]Vec3d ambientColor,[[maybe_unused]] Vec3d diffuseColor,[[maybe_unused]] Vec3d specularColor,[[maybe_unused]] float shininess) {
     // materialRenderUnits.emplace_back(ambientColor, diffuseColor, specularColor, shininess);
     materialRenderUnits.emplace_back();
     return materialRenderUnits.size() - 1;
@@ -227,7 +226,7 @@ void SoftRenderer::DrawFrame(size_t frame_index, uint8_t*& data, size_t& buffer_
 }
 
 void SoftRenderer::DrawLine(uint8_t* frame_buffer, double_t* z_buffer, Vec3d v1, Vec3d v2, Vec4d color1, Vec4d color2,
-                            const Matrix4x4d& transform, uint32_t w, uint32_t h) {
+                            const Matrix4x4d& transform, uint32_t w,[[maybe_unused]] uint32_t h) {
     Vec4d transformed_v1 = Vec4d({v1.x, v1.y, v1.z, 1});
     Vec4d transformed_v2 = Vec4d({v2.x, v2.y, v2.z, 1});
     transformed_v1 = transform * transformed_v1;
@@ -383,7 +382,7 @@ void SoftRenderer::DrawTriangle(uint8_t* data, double* zBuffer, Vec3d v0, Vec3d 
                 double gamma = abs_a2 / area;
 
                 // 计算插值后的 z 值
-                double z = 1.0 / (alpha / transformed_v0.w + beta / transformed_v1.w + gamma / transformed_v2.w);
+                [[maybe_unused]]double z = 1.0 / (alpha / transformed_v0.w + beta / transformed_v1.w + gamma / transformed_v2.w);
                 double interpolated_z = alpha * transformed_v0.z + beta * transformed_v1.z + gamma * transformed_v2.z;
 
                 int offset = y * width + x;
@@ -401,7 +400,7 @@ void SoftRenderer::DrawTriangle(uint8_t* data, double* zBuffer, Vec3d v0, Vec3d 
     }
 }
 
-void SoftRenderer::SetColor(uint8_t* data, FrameBuffer& buffer_info, int w, int h, Vec4d color) {
+void SoftRenderer::SetColor(uint8_t* data, FrameBuffer& buffer_info, u32 w, u32 h, Vec4d color) {
     if (!data || w < 0 || w >= buffer_info.width || h < 0 || h >= buffer_info.height) return;
 
     const int offset = (h * buffer_info.width + w) * buffer_info.channels;

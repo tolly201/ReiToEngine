@@ -184,7 +184,7 @@ void MacOSXWindow::ProcessEvents()
     // You might add custom event polling or handling here if needed.
 }
 
-void MacOSXWindow::Update(const u8* buffer, u32 width, u32 height)
+void MacOSXWindow::Update(const u8* buffer,[[maybe_unused]] u32 width,[[maybe_unused]] u32 height)
 {
     // [[NSApplication sharedApplication] run];
         // Placeholder for buffer update and display logic.

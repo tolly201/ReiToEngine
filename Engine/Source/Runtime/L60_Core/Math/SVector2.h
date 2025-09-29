@@ -155,7 +155,7 @@ public:
         return x*other.y - y*other.x;
     }
 
-    [[nodiscard]] SVector2<T> cross4D(const SVector2<T>& other) const noexcept {
+    [[nodiscard]] SVector2<T> cross4D([[maybe_unused]]const SVector2<T>& other) const noexcept {
         return SVector2<T>();
     }
 

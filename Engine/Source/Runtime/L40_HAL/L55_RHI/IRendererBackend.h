@@ -7,7 +7,7 @@
 namespace ReiToEngine {
 
 class IRendererBackend {
-    PlatformState* platform_state;
+    [[maybe_unused]] PlatformState* platform_state;
     public:
     IRendererBackend() = default;
     virtual ~IRendererBackend() = default;

@@ -4,7 +4,7 @@
 #include "L20_Platform/Include.h"
 
 namespace ReiToEngine{
-    b8 application_on_key(u16 code, void* sender, void* listener_inst, event_context context)
+    b8 application_on_key(u16 code, void* sender,[[maybe_unused]] void* listener_inst, event_context context)
     {
         if (sender != RTApplication::Instance().GetApplicationState().main_window.window_ptr->GetInputMonitor())
         {
@@ -15,7 +15,7 @@ namespace ReiToEngine{
         {
             i16 key_code = context.data.u16[2];
             RT_LOG_INFO("catch key event", key_code);
-            InputEvent* event = static_cast<InputEvent*>(context.user_data);
+            [[maybe_unused]]InputEvent* event = static_cast<InputEvent*>(context.user_data);
             RT_LOG_INFO("key code:", static_cast<u16>(key_code));
             u16 mod = static_cast<u16>(context.data.u16[1]);
             RT_LOG_INFO("modifiers:", mod);
@@ -36,16 +36,16 @@ namespace ReiToEngine{
         return true;
     }
 
-    b8 application_on_resize(u16 code, void* sender, void* listener_inst, event_context context)
+    b8 application_on_resize([[maybe_unused]]u16 code, void* sender,[[maybe_unused]] void* listener_inst,[[maybe_unused]] event_context context)
     {
-        IWindow* window = static_cast<IWindow*>(sender);
-        ReiToEngine::RTApplication& app = ReiToEngine::RTApplication::Instance();
+        [[maybe_unused]]IWindow* window = static_cast<IWindow*>(sender);
+        [[maybe_unused]]ReiToEngine::RTApplication& app = ReiToEngine::RTApplication::Instance();
         return true;
     }
 
-    b8 application_on_quit(u16 code, void* sender, void* listener_inst, event_context context){return true;}
+    b8 application_on_quit([[maybe_unused]]u16 code,[[maybe_unused]] void* sender,[[maybe_unused]] void* listener_inst, [[maybe_unused]] event_context context){return true;}
 
-    b8 application_on_mouse(u16 code, void* sender, void* listener_inst, event_context context){return true;}
+    b8 application_on_mouse([[maybe_unused]]u16 code,[[maybe_unused]] void* sender,[[maybe_unused]] void* listener_inst,[[maybe_unused]] event_context context){return true;}
 
     RTApplication::RTApplication() = default;
     RTApplication::~RTApplication() = default;
@@ -83,17 +83,12 @@ namespace ReiToEngine{
         RT_LOG_INFO("Hello, value=", "world", 3.14);
         // declear to make sure be initialzied firstly
 
-        event_system_ptr = &EventSystem::Instance();
-        input_system_ptr = &InputSystem::Instance();
+        event_system_ptr = &EventSystem::InitializeInstance();
+        input_system_ptr = &InputSystem::InitializeInstance();
 
-        RT_LOG_INFO(sizeof(EventSystem));
-        RT_LOG_INFO(sizeof(InputSystem));
-        RT_LOG_INFO(alignof(EventSystem));
-        RT_LOG_INFO(alignof(InputSystem));
-        windowsManager_ptr = &WindowsManager::Instance();
-        RT_LOG_DEBUG("window manager");
+        windowsManager_ptr = &WindowsManager::InitializeInstance();
         //renderManager_ptr = &RenderManager::Instance();
-        renderer_system_ptr = &RendererSystem::Instance();
+        renderer_system_ptr = &RendererSystem::InitializeInstance();
 
         event_system_ptr->Initialize();
         input_system_ptr->Initialize();
@@ -234,7 +229,7 @@ namespace ReiToEngine{
 
     void RTApplication::Terminate()
     {
-        ApplicationState& state = app_state;
+        [[maybe_unused]]ApplicationState& state = app_state;
         renderer_system_ptr->Terminate();
         windowsManager_ptr->Terminate();
         game_instance->Terminate();

@@ -51,6 +51,14 @@ target_compile_definitions(ReiToRuntime PRIVATE RT_EXPORTS)
 
 target_compile_definitions(ReiToRuntime PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
 
+target_compile_options(ReiToRuntime PRIVATE
+    # MSVC specific flags
+    $<$<BOOL:${MSVC_COMPILER}>:/W4 /WX>
+
+    # Clang and GCC specific flags
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:-Wall -Wextra -Wpedantic -Werror>
+)
+
 target_include_directories(ReiToRuntime PRIVATE
 ${CMAKE_CURRENT_SOURCE_DIR}
 ${CMAKE_CURRENT_SOURCE_DIR}/../../Thirdparty/stb/

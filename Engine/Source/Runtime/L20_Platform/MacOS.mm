@@ -43,7 +43,7 @@ void RT_Platform_Terminate(RT_Platform_State*& platform_state)
     delete platform_state;
 }
 
-b8 RT_Platform_PumpMessage(RT_Platform_State*& platform_state){
+b8 RT_Platform_PumpMessage([[maybe_unused]]RT_Platform_State*& platform_state){
     NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                         untilDate:[NSDate distantPast]
                                            inMode:NSDefaultRunLoopMode

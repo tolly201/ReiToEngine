@@ -43,6 +43,14 @@ else()
     )
 endif()
 
+target_compile_options(ReiToEditor PRIVATE
+    # MSVC specific flags
+    $<$<BOOL:${MSVC_COMPILER}>:/W4 /WX>
+
+    # Clang and GCC specific flags
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:-Wall -Wextra -Wpedantic -Werror>
+)
+
 target_compile_options(ReiToEditor PRIVATE -URT_EXPORTS)
 
 target_link_libraries(ReiToEditor ReiToRuntime )
