@@ -84,12 +84,15 @@ if(NOT GLSLC)
 endif()
 
 # 2) 目录设置
-set(RT_SHADER_SRC_DIR "${CMAKE_SOURCE_DIR}/assets/shaders")
+set(RT_SHADER_SRC_DIR "${CMAKE_SOURCE_DIR}/Engine/Assets/Shaders")
+
+message(STATUS "Shader source dir: ${RT_SHADER_SRC_DIR}")
+
 # 若已通过 preset 设置了 CMAKE_RUNTIME_OUTPUT_DIRECTORY，这里复用；否则兜底
 if(CMAKE_PROJECT_SOURCE_OUTPUT_DIRECTORY)
-  set(RT_SHADER_OUT_DIR "${CMAKE_PROJECT_SOURCE_OUTPUT_DIRECTORY}/assets/shaders")
+  set(RT_SHADER_OUT_DIR "${CMAKE_PROJECT_SOURCE_OUTPUT_DIRECTORY}/Assets/Shaders")
 else()
-  set(RT_SHADER_OUT_DIR "${CMAKE_BINARY_DIR}/ReiToEngine/assets/shaders")
+  set(RT_SHADER_OUT_DIR "${CMAKE_BINARY_DIR}/ReiToEngine/Assets/Shaders")
 endif()
 
 # 3) 收集着色器并生成对应的 .spv 规则（支持递归）
@@ -103,7 +106,7 @@ set(RT_SHADER_OUTPUTS "")
 foreach(SRC ${RT_SHADER_SOURCES})
   file(RELATIVE_PATH REL "${RT_SHADER_SRC_DIR}" "${SRC}")
   set(SPV_REL "${REL}")
-  string(REGEX REPLACE "\\.(vert|frag|comp)\\.glsl$" ".spv" SPV_REL "${SPV_REL}")
+  string(REGEX REPLACE "\\.(vert|frag|comp)\\.glsl$" ".\\1.spv" SPV_REL "${SPV_REL}")
   set(OUT "${RT_SHADER_OUT_DIR}/${SPV_REL}")
 
   # 推断 stage
