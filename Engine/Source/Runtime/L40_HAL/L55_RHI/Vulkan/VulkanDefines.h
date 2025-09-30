@@ -6,6 +6,7 @@
 namespace ReiToEngine
 {
 struct VulkanCommandBuffer;
+struct VulkanShaderSet;
 
 enum class VulkanQueueFamilyIndicesType : u8{
     GRAPHICS = 0,
@@ -50,6 +51,8 @@ struct VulkanDeviceCombination{
     b8 is_inused;
     Set<i32> using_swapchains;
     i32 find_memory_index(u32 type_filter, VkMemoryPropertyFlags properties);
+
+    List<VulkanShaderSet> shader_sets;
 };
 
 struct VulkanSwapChainSupportInfo

@@ -57,30 +57,46 @@ b8 RTCFile::SeekImpl(u32 offset,u32 origin)
 }
 b8 RTCFile::OpenImpl(const char * fileName,EFileOpenFlags openMode)
 {
-    auto openmode = std::ios::in;
-    if ((openMode & EFileOpenFlags::IO_WRITE) == EFileOpenFlags::IO_WRITE) {
-        openmode = std::ios::in;
+    std::ios::openmode mode = std::ios::binary;
+    if ((openMode & EFileOpenFlags::IO_READ)  == EFileOpenFlags::IO_READ)  mode |= std::ios::in;
+    if ((openMode & EFileOpenFlags::IO_WRITE) == EFileOpenFlags::IO_WRITE) mode |= std::ios::out;
+    if ((openMode & EFileOpenFlags::IO_APPEND)== EFileOpenFlags::IO_APPEND) {
+        mode |= (std::ios::app | std::ios::out);
+    } else {
+        // 仅写而不 append，通常希望截断
+        if ((mode & std::ios::out) && !(mode & std::ios::in))
+            mode |= std::ios::trunc;
     }
 
-    if ((openMode & EFileOpenFlags::IO_APPEND) == EFileOpenFlags::IO_APPEND) {
-        openmode |= std::ios::app;
-    }
-
-    if ((openMode & EFileOpenFlags::IO_READ) == EFileOpenFlags::IO_READ && (openMode & EFileOpenFlags::IO_WRITE) == EFileOpenFlags::IO_WRITE) {
-        openmode |= std::ios::out; // 同时读写模式
-    }
-
-    std::cout <<"openmode: "<< openmode << std::endl;
-	fs.open(fileName, openmode);
+    std::cout <<"openmode: "<< mode << std::endl;
+	fs.open(fileName, mode);
 	if (fs.bad()) {
         std::cerr << "Failed to open file: " << fileName << std::endl;
         std::cerr << "Error: " << strerror(errno) << std::endl; // 输出错误原因
+        FileState.OpenState = EFileOpenFlags(0);
 		return false;
 	} else if (fs.fail()) {
         std::cerr << "Failed to open file: " << fileName << std::endl;
         std::cerr << "Error: " << strerror(errno) << std::endl; // 输出错误原因
 		return false;
 	}
+
+    // 计算文件大小（仅在可读时）
+    if (mode & std::ios::in) {
+        std::streampos cur = fs.tellg();
+        fs.clear();
+        fs.seekg(0, std::ios::end);
+        std::streampos endPos = fs.tellg();
+        if (endPos >= 0) {
+            FileSize = static_cast<u64>(endPos);
+        } else {
+            FileSize = 0;
+        }
+        fs.clear();
+        fs.seekg(cur); // 还原
+    } else {
+        FileSize = 0;
+    }
 	return true;
 }
 b8 RTCFile::WriteImpl(const char* buffer,u32 size)
@@ -182,5 +198,9 @@ void* RTCFile::GetBufferImpl() {
 
     return m_cachedBuffer;
 };
+
+b8 RTCFile::IsValid() const{
+    return fs.is_open() && fs.good();
+}
 
 }

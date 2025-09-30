@@ -86,12 +86,15 @@ namespace ReiToEngine{
         event_system_ptr = &EventSystem::InitializeInstance();
         input_system_ptr = &InputSystem::InitializeInstance();
 
+        file_manager_ptr = &RTCFileManager::InitializeInstance();
+
         windowsManager_ptr = &WindowsManager::InitializeInstance();
         //renderManager_ptr = &RenderManager::Instance();
         renderer_system_ptr = &RendererSystem::InitializeInstance();
 
         event_system_ptr->Initialize();
         input_system_ptr->Initialize();
+        file_manager_ptr->Initialize();
         renderer_system_ptr->Initialize();
         RT_LOG_DEBUG("render manager");
         windowsManager_ptr->Initialize();

@@ -8,11 +8,15 @@
 namespace ReiToEngine
 {
 template <typename T>
-class RTENGINE_API RTFileManager : public Singleton<RTFileManager<T>>
+class RTENGINE_API RTFileManager : public Runtime_Singleton<T>
 {
 public:
     RTFileManager() = default;
     virtual ~RTFileManager() = 0; // 声明
+
+    virtual b8 Initialize() {return true;};
+    virtual b8 Tick(f64) {return true;};
+    virtual b8 Terminate() {return true;};
 	virtual void ProcessCommandLineOptions() = 0;
 	virtual RTFArchive* CreateFileReader(const char* Filename, u32 ReadFlags = 0 ) = 0;
 	virtual RTFArchive* CreateFileWriter( const char* Filename, u32 WriteFlags=0 )=0;
@@ -49,11 +53,16 @@ public:
 	// virtual b8 SendMessageToServer(const char* Message, IPlatformFile::IFileServerMessageHandler* Handler)=0;
 	// virtual FString GetFilenameOnDisk(const char* Filename) = 0;
 	// static FString DefaultConvertToRelativePath( const char* Filename );
+protected:
+    String RootDir;
 private:
 	virtual RTFArchive* CreateFileReaderInternal(const char* Filename, u32 ReadFlags, u32 BufferSize) = 0;
 	virtual RTFArchive* CreateFileWriterInternal(const char* Filename, u32 WriteFlags, u32 BufferSize) = 0;
 	virtual u32 CopyWithProgress(const char* InDestFile, const char* InSrcFile, b8 ReplaceExisting, b8 EvenIfReadOnly, b8 Attributes, ECopyResult* Progress, EFileRead ReadFlags, EFileWrite WriteFlags) = 0;
 	// virtual void FindFilesRecursiveInternal( TArray<FString>& FileNames, const char* StartDirectory, const char* Filename, b8 Files, b8 Directories) = 0;
 };
+
+template<typename T>
+RTFileManager<T>::~RTFileManager() = default; // 定义
 }
 #endif

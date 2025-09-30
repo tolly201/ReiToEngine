@@ -1,5 +1,6 @@
 #include "VulkanDevices.h"
 #include "VulkanCommandBuffer.h"
+#include "VulkanObjectShader.h"
 namespace ReiToEngine
 {
 b8 vulkan_initalize_physical_devices(VkInstance& instance, List<VulkanDeviceCombination>& out_physical_devices)
@@ -245,12 +246,21 @@ b8 vulkan_logical_device_create(VulkanContextRef ref, VulkanSwapchainContext& sw
         }
     }
 
+    dc.shader_sets.clear();
+    dc.shader_sets.resize(1);
+
+    vulkan_object_shader_create({ref.instance, ref.allocator, &dc, &swapchain_context}, "Builtin.ObjectShader", dc.shader_sets[0]);
+
     RT_LOG_INFO("Logical device created.");
     return true;
 }
 b8 vulkan_physical_device_destroy();
 b8 vulkan_logical_device_destroy(VulkanContextRef ref, VulkanDeviceCombination& dc)
 {
+    for (VulkanShaderSet& shader_set : dc.shader_sets) {
+        vulkan_object_shader_destroy(dc.logical_device, shader_set);
+    }
+
     for (auto& [type, buffers] : dc.command_buffers) {
         for (auto& cb : buffers) {
             if (cb.command_buffer != VK_NULL_HANDLE) {

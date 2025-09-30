@@ -2,20 +2,110 @@
 #define HAL_FILE_CFILEMANAGER_H
 
 #include "IFileManager.h"
+
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+namespace{
+inline std::optional<std::filesystem::path> GetExecutableDir() {
+    namespace fs = std::filesystem;
+#ifdef __APPLE__
+    uint32_t size = 0;
+    _NSGetExecutablePath(nullptr, &size);
+    if (size == 0) return std::nullopt;
+    std::vector<char> buf(size);
+    if (_NSGetExecutablePath(buf.data(), &size) != 0) {
+        return std::nullopt;
+    }
+    try {
+        fs::path p = fs::weakly_canonical(fs::path(buf.data()));
+        if (p.has_filename()) p = p.parent_path();
+        return p;
+    } catch (...) {
+        return std::nullopt;
+    }
+#else
+    // 可扩展 Linux/Windows 获取方式，这里先返回空
+    return std::nullopt;
+#endif
+}
+
+inline std::optional<std::filesystem::path> FindRootDir(const std::string& marker = "ReiToEngine") {
+    namespace fs = std::filesystem;
+    static std::optional<fs::path> cached;
+    if (cached) return cached;
+
+    // 1. 优先使用可执行文件目录
+    fs::path start;
+    if (auto execDir = GetExecutableDir()) {
+        start = *execDir;
+    } else {
+        // 2. 回退当前工作目录
+        try {
+            start = fs::current_path();
+        } catch (...) {
+            return std::nullopt;
+        }
+    }
+
+    // 3. 向上查找
+    for (fs::path p = start; !p.empty(); p = p.parent_path()) {
+        if (p.filename() == marker) {
+            try {
+                cached = fs::weakly_canonical(p);
+            } catch (...) {
+                cached = p;
+            }
+            return cached;
+        }
+    }
+
+    // 4. 附加搜索：在若干上层目录里“一层子目录扫描”（防止运行于 builds/xxx 目录深处）
+    fs::path probe = start;
+    for (int i = 0; i < 4 && !probe.empty(); ++i) {
+        try {
+            for (auto& entry : fs::directory_iterator(probe)) {
+                if (entry.is_directory() && entry.path().filename() == marker) {
+                    try {
+                        cached = fs::weakly_canonical(entry.path());
+                    } catch (...) {
+                        cached = entry.path();
+                    }
+                    return cached;
+                }
+            }
+        } catch (...) { /* 忽略权限错误 */ }
+        probe = probe.parent_path();
+    }
+
+    return std::nullopt;
+}
+}
 namespace ReiToEngine
 {
 class RTENGINE_API RTCFileManager : public RTFileManager<RTCFileManager>
 {
+    friend class Runtime_Singleton<RTCFileManager>;
     friend class RTFileManager<RTCFileManager>;
+    friend class RTFileManager;
 public:
     RTCFileManager() = default;
     ~RTCFileManager() = default;
+    b8 Initialize() override {
+        RootDir = String(
+        FindRootDir().has_value() ? FindRootDir().value().string() : "");
+        RT_LOG_INFO_FMT("RootDir: {}", RootDir.c_str());
+        return true;
+    };
+    b8 Tick([[maybe_unused]]f64) override {return true;};
+    b8 Terminate() override {return true;};
 	void ProcessCommandLineOptions() override {}
 	RTFArchive* CreateFileReader([[maybe_unused]]const char* Filename,[[maybe_unused]] u32 ReadFlags = 0) override { return nullptr; }
 	RTFArchive* CreateFileWriter([[maybe_unused]] const char* Filename,[[maybe_unused]] u32 WriteFlags=0 ) override { return nullptr; };
 	RTFArchive* CreateDebugFileWriter(const char* Filename,[[maybe_unused]] u32 WriteFlags=0 ) override {
+        String file_path = RootDir + "/" + Filename;
         RTFArchive* ret = new RTFArchive();
-        ret->Open(Filename, EFileOpenFlags::IO_READ | EFileOpenFlags::IO_WRITE);
+        ret->Open(file_path.c_str(), EFileOpenFlags::IO_READ | EFileOpenFlags::IO_WRITE);
         return ret;
     }
 	b8 IsReadOnly([[maybe_unused]] const char* Filename ) override { return false; }
@@ -56,8 +146,6 @@ private:
 	u32 CopyWithProgress([[maybe_unused]]const char* InDestFile,[[maybe_unused]] const char* InSrcFile,[[maybe_unused]] b8 ReplaceExisting,[[maybe_unused]] b8 EvenIfReadOnly,[[maybe_unused]] b8 Attributes, [[maybe_unused]]ECopyResult* Progress,[[maybe_unused]] EFileRead ReadFlags,[[maybe_unused]] EFileWrite WriteFlags) override { return 0; }
 	// void FindFilesRecursiveInternal( TArray<FString>& FileNames, const char* StartDirectory, const char* Filename, b8 Files, b8 Directories) override {}
 };
-template <typename T>
-RTFileManager<T>::~RTFileManager() = default;
 }
 
 #endif

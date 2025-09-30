@@ -17,6 +17,7 @@ public:
 	b8 GetLineImpl(char* buffer,u32 size) override;
 	b8 CloseImpl() override;
     void* GetBufferImpl() override;
+    b8 IsValid() const;
 protected:
 	std::fstream fs;
     char*  m_cachedBuffer = nullptr;

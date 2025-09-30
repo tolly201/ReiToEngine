@@ -2,7 +2,7 @@
 #include "VulkanShaderUtils.h"
 namespace ReiToEngine
 {
-b8 vulkan_object_shader_create([[maybe_unused]]VulkanContextRef ref,[[maybe_unused]] VkDevice& device,[[maybe_unused]] const char* file_path,[[maybe_unused]] VulkanShaderSet& out_shader)
+b8 vulkan_object_shader_create([[maybe_unused]]VulkanContextRef ref, [[maybe_unused]] const char* file_path,[[maybe_unused]] VulkanShaderSet& out_shader)
 {
     String stage_names[static_cast<u8>(ShaderStageType::MAX)] =
     {
@@ -27,7 +27,17 @@ b8 vulkan_object_shader_create([[maybe_unused]]VulkanContextRef ref,[[maybe_unus
         }
     }
     return true;
-
 };
+
+void vulkan_object_shader_destroy(VkDevice& device, VulkanShaderSet& shader)
+{
+    for (u8 i = 0; i < static_cast<u8>(ShaderStageType::MAX); ++i)
+    {
+        if (shader.shader_stages[i].handle != VK_NULL_HANDLE) {
+            vkDestroyShaderModule(device, shader.shader_stages[i].handle, nullptr);
+            shader.shader_stages[i].handle = VK_NULL_HANDLE;
+        }
+    }
+}
 
 }

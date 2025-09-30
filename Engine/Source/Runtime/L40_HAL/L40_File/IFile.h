@@ -45,6 +45,8 @@ public:
     RT_FORCEINLINE void* GetBuffer() {
         return static_cast<T*>(this)->GetBufferImpl();
     }
+
+    b8 IsValid() const;
 protected:
 	virtual b8 FlushImpl() = 0;
 	virtual b8 SeekImpl(u32 offset,u32 origin) = 0;
@@ -59,9 +61,6 @@ protected:
 	SFileStatData FileState;
 	};
 template <typename T>
-RTFile<T>::~RTFile()
-{
-    Close();
-};
+RTFile<T>::~RTFile() = default;
 }
 #endif

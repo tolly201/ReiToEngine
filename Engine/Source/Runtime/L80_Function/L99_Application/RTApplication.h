@@ -32,6 +32,8 @@ public:
     static RTApplication* instance_ptr;
     EventSystem* event_system_ptr;
     InputSystem* input_system_ptr;
+
+    RTCFileManager* file_manager_ptr;
     RendererSystem* renderer_system_ptr;
 
     RT_Platform_State* platform_state;
