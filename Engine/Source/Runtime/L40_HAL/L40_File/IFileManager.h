@@ -8,7 +8,7 @@
 namespace ReiToEngine
 {
 template <typename T>
-class RTENGINE_API RTFileManager : public Runtime_Singleton<T>
+class RTFileManager : public Runtime_Singleton<T>
 {
 public:
     RTFileManager() = default;

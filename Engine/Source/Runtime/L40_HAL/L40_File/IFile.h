@@ -5,7 +5,7 @@
 namespace ReiToEngine
 {
 template <typename T>
-class RTENGINE_API RTFile
+class RTFile
 {
 public:
 	RTFile() = default;

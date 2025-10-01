@@ -1,4 +1,29 @@
 #include "Memory.h"
+
+#if defined(_MSC_VER)
+extern "C" long _InterlockedExchange(volatile long* Target, long Value);
+#endif
+
+RT_FORCEINLINE void ReiToEngine::MemoryManager::rt_spin_lock(volatile u32* s) {
+#if defined(__clang__) || defined(__GNUC__)
+    while (__sync_lock_test_and_set(s, 1)) {
+        // busy-wait
+    }
+#elif defined(_MSC_VER)
+    while (_InterlockedExchange((volatile long*)s, 1) != 0) { /* spin */ }
+#else
+#   error "Unsupported compiler for spinlock"
+#endif
+}
+RT_FORCEINLINE void ReiToEngine::MemoryManager::rt_spin_unlock(volatile u32* s) {
+#if defined(__clang__) || defined(__GNUC__)
+    __sync_lock_release(s);
+#elif defined(_MSC_VER)
+    *s = 0;
+#endif
+}
+
+
 namespace ReiToEngine
 {
     // static void rt_spin_lock(volatile u32* s);
@@ -325,24 +350,4 @@ namespace ReiToEngine
                 return static_cast<RTMimallocManager*>(handle)->GetMemoryUsageReport();
         }
     }
-
-RT_FORCEINLINE void ReiToEngine::MemoryManager::rt_spin_lock(volatile u32* s) {
-#if defined(__clang__) || defined(__GNUC__)
-    while (__sync_lock_test_and_set(s, 1)) {
-        // busy-wait
-    }
-#elif defined(_MSC_VER)
-    extern "C" long _InterlockedExchange(volatile long* Target, long Value);
-    while (_InterlockedExchange((volatile long*)s, 1) != 0) { /* spin */ }
-#else
-#   error "Unsupported compiler for spinlock"
-#endif
-}
-RT_FORCEINLINE void ReiToEngine::MemoryManager::rt_spin_unlock(volatile u32* s) {
-#if defined(__clang__) || defined(__GNUC__)
-    __sync_lock_release(s);
-#elif defined(_MSC_VER)
-    *s = 0;
-#endif
-}
 }

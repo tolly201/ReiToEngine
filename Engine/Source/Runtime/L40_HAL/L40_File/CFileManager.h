@@ -2,7 +2,8 @@
 #define HAL_FILE_CFILEMANAGER_H
 
 #include "IFileManager.h"
-
+#include <filesystem>
+#include <optional>
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif

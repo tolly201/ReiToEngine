@@ -8,7 +8,7 @@
 #include <ostream>
 #include <cstddef>
 #include <algorithm>
-
+#include <cstdarg>
 namespace ReiToEngine {
 
 class RTENGINE_API String {
