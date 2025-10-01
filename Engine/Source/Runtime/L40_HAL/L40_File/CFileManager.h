@@ -7,6 +7,10 @@
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif
+#ifdef _WIN32
+#   include <windows.h>
+#   include <vector>
+#endif
 namespace{
 inline std::optional<std::filesystem::path> GetExecutableDir() {
     namespace fs = std::filesystem;
@@ -25,8 +29,39 @@ inline std::optional<std::filesystem::path> GetExecutableDir() {
     } catch (...) {
         return std::nullopt;
     }
+#elif defined(_WIN32)
+    // Windows: 使用 GetModuleFileNameW (宽字符) 取得当前模块路径，然后取其父目录
+    std::vector<wchar_t> buffer(512);
+    DWORD len = 0;
+    while (true) {
+        len = GetModuleFileNameW(nullptr, buffer.data(), static_cast<DWORD>(buffer.size()));
+        RT_LOG_DEBUG_FMT("GetModuleFileNameW returned len = {}", len);
+        if (len == 0) {
+            RT_LOG_ERROR("GetModuleFileNameW failed.");
+            return std::nullopt; // 失败
+        }
+        // 若返回长度小于缓冲区 - 1，则表示完整；否则需要扩容重试
+        if (len < buffer.size() - 1) {
+            break;
+        }
+        buffer.resize(buffer.size() * 2);
+        if (buffer.size() > 1 << 15) { // 防止无限扩张 (~32K chars 足够)
+            return std::nullopt;
+        }
+    }
+    try {
+        fs::path p(buffer.data());
+        // 规整路径 (weakly_canonical 避免软链接/相对跳转)
+        try { p = fs::weakly_canonical(p); } catch (...) {}
+        if (p.has_filename()) p = p.parent_path();
+
+        RT_LOG_DEBUG_FMT("Executable path: {}", p.string().c_str());
+        return p;
+    } catch (...) {
+        return std::nullopt;
+    }
 #else
-    // 可扩展 Linux/Windows 获取方式，这里先返回空
+    // 其它平台尚未实现。可后续用 /proc/self/exe (Linux) 或 argv[0] 结合 realpath 实现。
     return std::nullopt;
 #endif
 }

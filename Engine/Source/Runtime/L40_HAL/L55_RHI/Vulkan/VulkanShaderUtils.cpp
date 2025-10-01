@@ -12,7 +12,7 @@ b8 create_shader_module(VulkanContextRef context, const char* name, const char* 
     RTCFileManager::Instance().FileExists(filename.c_str());
     RTFArchive* file = RTCFileManager::Instance().CreateDebugFileWriter(filename.c_str());
     if (!file->IsValid()) {
-        RT_LOG_ERROR_FMT("Failed to open shader file: {}", filename.c_str());
+        RT_LOG_WARN_FMT("Failed to open shader file: {}", filename.c_str());
         return false;
     }
 

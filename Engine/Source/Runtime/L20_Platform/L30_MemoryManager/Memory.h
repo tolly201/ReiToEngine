@@ -15,7 +15,7 @@ enum class EMEMORY_MANAGER_TYPE
     BINNED,
     CUSTOM,
 };
-class MemoryManager
+class RTENGINE_API MemoryManager
 {
 private:
     // Forward declarations for spinlock helpers (defined after class)
