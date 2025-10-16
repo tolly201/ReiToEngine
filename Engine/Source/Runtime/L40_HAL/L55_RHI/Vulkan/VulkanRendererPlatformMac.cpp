@@ -18,7 +18,7 @@ b8 PlatformCreateVulkanSurface([[maybe_unused]]RT_Platform_State& platform_state
 {
     if (!desc.p_window)
     {
-        RT_LOG_ERROR("PlatformCreateVulkanSurface: desc.p_window is null");
+        RT_LOG_ERROR_PLATFORM("PlatformCreateVulkanSurface: desc.p_window is null");
         return false;
     }
 
@@ -30,14 +30,14 @@ b8 PlatformCreateVulkanSurface([[maybe_unused]]RT_Platform_State& platform_state
         static_cast<MacOSXWindow*>(desc.p_window)->cocoaView->GetViewInstance().layer);
 
     RT_VK_CHECK(vkCreateMetalSurfaceEXT(instance, &create_info, nullptr, &out_surface));
-    RT_LOG_INFO("PlatformCreateVulkanSurface: Vulkan surface created successfully");
+    RT_LOG_INFO_PLATFORM("PlatformCreateVulkanSurface: Vulkan surface created successfully");
     return true;
 };
 
 b8 PlatformDestroyVulkanSurface(VkInstance& instance, VkSurfaceKHR& surface)
 {
     vkDestroySurfaceKHR(instance, surface, nullptr);
-    RT_LOG_INFO("PlatformDestroyVulkanSurface: Vulkan surface destroyed successfully");
+    RT_LOG_INFO_PLATFORM("PlatformDestroyVulkanSurface: Vulkan surface destroyed successfully");
     return true;
 }
 

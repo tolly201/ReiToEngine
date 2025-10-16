@@ -28,23 +28,23 @@ b8 vulkan_swapchain_acquire_next_image_index([[maybe_unused]]VulkanContextRef co
 {
     // 检查 device_combination 是否有效
     if (!swapchain_context.device_combination) {
-        RT_LOG_FATAL("swapchain_context.device_combination is nullptr!");
+        RT_LOG_FATAL_PLATFORM("swapchain_context.device_combination is nullptr!");
         return false;
     }
 
     // 检查信号量和 fence 是否有效
     if (semaphore == VK_NULL_HANDLE) {
-        RT_LOG_FATAL("semaphore is VK_NULL_HANDLE!");
+        RT_LOG_FATAL_PLATFORM("semaphore is VK_NULL_HANDLE!");
         return false;
     }
     if (fence && *fence == VK_NULL_HANDLE) {
-        RT_LOG_FATAL("fence is VK_NULL_HANDLE!");
+        RT_LOG_FATAL_PLATFORM("fence is VK_NULL_HANDLE!");
         return false;
     }
 
     // 检查 current_frame 是否越界
     if (swapchain_context.current_frame >= swapchain_context.image_available_semaphores.size()) {
-        RT_LOG_FATAL("current_frame out of range!");
+        RT_LOG_FATAL_PLATFORM("current_frame out of range!");
         return false;
     }
 
@@ -60,7 +60,7 @@ b8 vulkan_swapchain_acquire_next_image_index([[maybe_unused]]VulkanContextRef co
     }
     else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
     {
-        RT_LOG_ERROR("Failed to acquire swap chain image!");
+        RT_LOG_ERROR_PLATFORM("Failed to acquire swap chain image!");
         return false;
     }
     return true;
@@ -85,7 +85,7 @@ b8 vulkan_swapchain_present(VulkanContextRef context ,VulkanSwapchainContext& sw
     }
     else if (result != VK_SUCCESS)
     {
-        RT_LOG_FATAL("Failed to present swap chain image!");
+        RT_LOG_FATAL_PLATFORM("Failed to present swap chain image!");
         return false;
     }
 
@@ -215,12 +215,12 @@ void create(VulkanContextRef context, VulkanSwapchainContext& swapchain_context,
 
     if (!vulkan_device_detect_depth_format(*swapchain_context.device_combination)) {
         swapchain_context.device_combination->depth_format = VK_FORMAT_UNDEFINED;
-        RT_LOG_ERROR("Failed to find a supported depth format.");
+        RT_LOG_ERROR_PLATFORM("Failed to find a supported depth format.");
     }
 
     vulkan_image_create(context, swapchain_context, VK_IMAGE_TYPE_2D, extent.width, extent.height, swapchain_context.device_combination->depth_format, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, true, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_TILING_OPTIMAL, swapchain_context.depth_image);
 
-    RT_LOG_INFO("Swapchain created.");
+    RT_LOG_INFO_PLATFORM("Swapchain created.");
 }
 
 void destroy(VulkanContextRef context, VulkanSwapchainContext& swapchain_context)

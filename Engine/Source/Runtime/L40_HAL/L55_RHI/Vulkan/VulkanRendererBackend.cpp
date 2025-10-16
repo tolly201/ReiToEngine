@@ -86,7 +86,7 @@ b8 VulkanRenderBackend::Initialize([[maybe_unused]]ERenderBackendType renderer_t
 
     vulkan_initalize_physical_devices(instance, devices);
 
-    RT_LOG_INFO("Vulkan Instance created successfully.");
+    RT_LOG_INFO_PLATFORM("Vulkan Instance created successfully.");
     return true;
 }
 b8 VulkanRenderBackend::Terminate(){
@@ -136,12 +136,12 @@ b8 VulkanRenderBackend::Terminate(){
 
     if (debugger_enabled) {
         PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-        RT_ASSERT_MESSAGE(func != nullptr, "Failed to get vkDestroyDebugUtilsMessengerEXT function.");
+        RT_ASSERT_MESSAGE_PLATFORM(func != nullptr, "Failed to get vkDestroyDebugUtilsMessengerEXT function.");
         func(instance, debug_messenger, allocator);
-        RT_LOG_DEBUG("Vulkan Debug Messenger destroyed.");
+        RT_LOG_DEBUG_PLATFORM("Vulkan Debug Messenger destroyed.");
         debug_messenger = VK_NULL_HANDLE;
     }
-    RT_LOG_INFO("Destroying Vulkan Instance.");
+    RT_LOG_INFO_PLATFORM("Destroying Vulkan Instance.");
     vkDestroyInstance(instance, allocator);
     return true;
 }
@@ -149,7 +149,7 @@ b8 VulkanRenderBackend::Tick(){return true;}
 b8 VulkanRenderBackend::Resized(SurfaceDesc& desc, u32 width, u32 height){
     VulkanSwapchainContext* swapchain = swapchain_map[desc.p_window];
     if(swapchain == nullptr) {
-        RT_LOG_ERROR("Failed to find swapchain for window during resize.");
+        RT_LOG_ERROR_PLATFORM("Failed to find swapchain for window during resize.");
         return false;
     }
 
@@ -166,7 +166,7 @@ b8 VulkanRenderBackend::BeginFrame([[maybe_unused]]f64 delta_time){
         if (device.is_inused)
         {
             if (vkDeviceWaitIdle(device.logical_device) != VK_SUCCESS) {
-                RT_LOG_ERROR_FMT("Failed to wait device idle for device {}.", device.device_properties.properties.deviceName);
+                RT_LOG_ERROR_FMT_PLATFORM("Failed to wait device idle for device {}.", device.device_properties.properties.deviceName);
                 return false;
             }
         };
@@ -177,11 +177,11 @@ b8 VulkanRenderBackend::BeginFrame([[maybe_unused]]f64 delta_time){
         {
             VkResult result = vkDeviceWaitIdle(swapchain.device_combination->logical_device);
             if (result != VK_SUCCESS) {
-                RT_LOG_ERROR_FMT("Failed to wait device idle before rebuilding swapchain {}.", swapchain.index);
+                RT_LOG_ERROR_FMT_PLATFORM("Failed to wait device idle before rebuilding swapchain {}.", swapchain.index);
                 return false;
             }
             if (!rebuild_swapchain_pipeline({instance, allocator}, swapchain)) {
-                RT_LOG_ERROR_FMT("Failed to rebuild swapchain {}.", swapchain.index);
+                RT_LOG_ERROR_FMT_PLATFORM("Failed to rebuild swapchain {}.", swapchain.index);
                 return false;
             }
             swapchain.recreating_swapchain = false;
@@ -193,26 +193,26 @@ b8 VulkanRenderBackend::BeginFrame([[maybe_unused]]f64 delta_time){
         if (swapchain.frame_size_generation != swapchain.last_frame_size_generation) {
             VkResult result = vkDeviceWaitIdle(swapchain.device_combination->logical_device);
             if (result != VK_SUCCESS) {
-                RT_LOG_ERROR_FMT("Failed to wait device idle before recreating swapchain {}.", swapchain.index);
+                RT_LOG_ERROR_FMT_PLATFORM("Failed to wait device idle before recreating swapchain {}.", swapchain.index);
                 return false;
             }
             swapchain.recreating_swapchain = true;
-            RT_LOG_INFO_FMT("Marked swapchain {} for recreation.", swapchain.index);
+            RT_LOG_INFO_FMT_PLATFORM("Marked swapchain {} for recreation.", swapchain.index);
             continue; // handle on next loop
         }
 
 
         if (!vulkan_fence_wait(swapchain.device_combination->logical_device, swapchain.in_flight_fences[swapchain.current_frame], UINT64_MAX)) {
-            RT_LOG_ERROR_FMT("Failed to wait for in-flight fence for swapchain {}.", swapchain.index);
+            RT_LOG_ERROR_FMT_PLATFORM("Failed to wait for in-flight fence for swapchain {}.", swapchain.index);
             return false;
         }
 
         if (!vulkan_swapchain_acquire_next_image_index({instance, allocator}, swapchain, UINT32_MAX, swapchain.image_available_semaphores[swapchain.current_frame], VK_NULL_HANDLE, swapchain.current_image_index)) {
             if (swapchain.recreating_swapchain) {
-                RT_LOG_INFO_FMT("Acquire indicated out-of-date for swapchain {}. Marked for rebuild.", swapchain.index);
+                RT_LOG_INFO_FMT_PLATFORM("Acquire indicated out-of-date for swapchain {}. Marked for rebuild.", swapchain.index);
                 continue; // handle rebuild next loop
             }
-            RT_LOG_ERROR_FMT("Failed to acquire next image index for swapchain {}.", swapchain.index);
+            RT_LOG_ERROR_FMT_PLATFORM("Failed to acquire next image index for swapchain {}.", swapchain.index);
             return false;
         }
 
@@ -274,7 +274,7 @@ b8 VulkanRenderBackend::EndFrame([[maybe_unused]]f64 delta_time){
 
         VkResult result = vkQueueSubmit(swapchain.device_combination->queues[VulkanQueueFamilyIndicesType::GRAPHICS], 1, &submit_info, swapchain.in_flight_fences[swapchain.current_frame].handle);
         if (result != VK_SUCCESS) {
-            RT_LOG_ERROR_FMT("Failed to submit draw command buffer for swapchain {}.", swapchain.index);
+            RT_LOG_ERROR_FMT_PLATFORM("Failed to submit draw command buffer for swapchain {}.", swapchain.index);
             return false;
         }
 
@@ -292,7 +292,7 @@ b8 VulkanRenderBackend::EndFrame([[maybe_unused]]f64 delta_time){
                 present_queue,
                 swapchain.render_finished_semaphores[swapchain.current_frame],
                 swapchain.current_image_index)) {
-            RT_LOG_ERROR_FMT("Present reported suboptimal/out-of-date for swapchain {}. Will rebuild.", swapchain.index);
+            RT_LOG_ERROR_FMT_PLATFORM("Present reported suboptimal/out-of-date for swapchain {}. Will rebuild.", swapchain.index);
             swapchain.recreating_swapchain = true;
             // Let the next frame handle rebuild
         }
@@ -305,8 +305,8 @@ b8 VulkanRenderBackend::EndFrame([[maybe_unused]]f64 delta_time){
 
 b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, SurfaceDesc& desc)
 {
-    RT_LOG_INFO("CreateSurface");
-    RT_LOG_DEBUG_FMT("width: {}, height: {}", desc.width, desc.height);
+    RT_LOG_INFO_PLATFORM("CreateSurface");
+    RT_LOG_DEBUG_FMT_PLATFORM("width: {}, height: {}", desc.width, desc.height);
 
     swapchains.emplace_back();
     VulkanSwapchainContext& swapchain = swapchains.back();

@@ -101,7 +101,7 @@ void vulkan_renderpass_destroy(VulkanContextRef context, VulkanSwapchainContext&
 void vulkan_renderpass_begin([[maybe_unused]]VulkanContextRef context,[[maybe_unused]] VulkanSwapchainContext& swapchain_context,VulkanRenderPass& render_pass, VulkanCommandBuffer& command_buffer, VkFramebuffer framebuffer)
 {
     // Ensure valid extents
-    RT_ASSERT(render_pass.width > 0 && render_pass.height > 0);
+    RT_ASSERT_PLATFORM(render_pass.width > 0 && render_pass.height > 0);
 
     VkRenderPassBeginInfo rpbi{};
     rpbi.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

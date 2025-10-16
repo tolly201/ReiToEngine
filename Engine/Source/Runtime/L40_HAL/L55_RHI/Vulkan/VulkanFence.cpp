@@ -34,19 +34,19 @@ b8 vulkan_fence_wait(VkDevice& device, VulkanFence& fence, u64 timeout)
             fence.signaled = true;
             return true;
         case VK_TIMEOUT:
-            RT_LOG_WARN("Vulkan Fence wait timed out.");
+            RT_LOG_WARN_PLATFORM("Vulkan Fence wait timed out.");
             return false;
         case VK_ERROR_DEVICE_LOST:
-            RT_LOG_ERROR("Vulkan Fence wait failed: VK_ERROR_DEVICE_LOST");
+            RT_LOG_ERROR_PLATFORM("Vulkan Fence wait failed: VK_ERROR_DEVICE_LOST");
             return false;
         case VK_ERROR_OUT_OF_HOST_MEMORY:
-            RT_LOG_ERROR("Vulkan Fence wait failed: VK_ERROR_OUT_OF_HOST_MEMORY");
+            RT_LOG_ERROR_PLATFORM("Vulkan Fence wait failed: VK_ERROR_OUT_OF_HOST_MEMORY");
             return false;
         case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-            RT_LOG_ERROR("Vulkan Fence wait failed: VK_ERROR_OUT_OF_DEVICE_MEMORY");
+            RT_LOG_ERROR_PLATFORM("Vulkan Fence wait failed: VK_ERROR_OUT_OF_DEVICE_MEMORY");
             return false;
         default:
-            RT_LOG_ERROR("Vulkan Fence wait failed: Unknown error");
+            RT_LOG_ERROR_PLATFORM("Vulkan Fence wait failed: Unknown error");
             return false;
         }
     }
@@ -64,16 +64,16 @@ b8 vulkan_fence_reset(VkDevice& device, VulkanFence& fence)
             fence.signaled = false;
             return true;
         case VK_ERROR_DEVICE_LOST:
-            RT_LOG_ERROR("Vulkan Fence reset failed: VK_ERROR_DEVICE_LOST");
+            RT_LOG_ERROR_PLATFORM("Vulkan Fence reset failed: VK_ERROR_DEVICE_LOST");
             return false;
         case VK_ERROR_OUT_OF_HOST_MEMORY:
-            RT_LOG_ERROR("Vulkan Fence reset failed: VK_ERROR_OUT_OF_HOST_MEMORY");
+            RT_LOG_ERROR_PLATFORM("Vulkan Fence reset failed: VK_ERROR_OUT_OF_HOST_MEMORY");
             return false;
         case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-            RT_LOG_ERROR("Vulkan Fence reset failed: VK_ERROR_OUT_OF_DEVICE_MEMORY");
+            RT_LOG_ERROR_PLATFORM("Vulkan Fence reset failed: VK_ERROR_OUT_OF_DEVICE_MEMORY");
             return false;
         default:
-            RT_LOG_ERROR("Vulkan Fence reset failed: Unknown error");
+            RT_LOG_ERROR_PLATFORM("Vulkan Fence reset failed: Unknown error");
             return false;
         }
     }

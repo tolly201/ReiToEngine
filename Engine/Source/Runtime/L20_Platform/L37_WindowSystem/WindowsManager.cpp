@@ -79,7 +79,7 @@ PlatformWindow* WindowsManager::GetWindow(u32 index) {
     if (index < windows.size()) {
         return windows[index];
     }
-    RT_LOG_ERROR("Index out of bounds when getting window: ", index);
+    RT_LOG_ERROR_PLATFORM("Index out of bounds when getting window: ", index);
     return nullptr;
 }
 }  // namespace ReiToEngine

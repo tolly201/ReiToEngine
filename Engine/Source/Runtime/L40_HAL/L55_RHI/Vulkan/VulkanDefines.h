@@ -192,7 +192,7 @@ struct VulkanContextRef{
 };
 
 RT_FORCEINLINE b8 RT_VK_CHECK(VkResult expr) {
-    RT_ASSERT(expr == VK_SUCCESS);
+    RT_ASSERT_PLATFORM(expr == VK_SUCCESS);
     return expr == VK_SUCCESS;
 }
 

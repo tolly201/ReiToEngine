@@ -2,9 +2,9 @@
 #define CORE_HAL_INPUT_SYSTEM_H
 #include "L0_Macro/Include.h"
 #include "InputEnums.h"
-#include "L20_Platform/L31_SingletonFactory/RuntimeSingleton.h"
+#include "L20_Platform/L23_SingletonFactory/RuntimeSingleton.h"
 #include "InputMonitor.h"
-#include "L20_Platform/L32_Containers/Map.h"
+#include "L20_Platform/L24_Containers/Map.h"
 #ifdef RT_SYSTEM_WINDOWS
     #include "WindowsInputMonitor.h"
     using PlatformInputMonitor = ReiToEngine::WindowsInputMonitor;

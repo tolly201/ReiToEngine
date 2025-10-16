@@ -30,7 +30,7 @@ IWindow* WaylandWindow::Create(const char* title, u32 width, u32 height, u32 pos
     // 连接到Wayland显示服务器
     m_display = wl_display_connect(nullptr);
     if (!m_display) {
-        RT_LOG_FATAL("无法连接到Wayland显示服务器");
+        RT_LOG_FATAL_PLATFORM("无法连接到Wayland显示服务器");
         return nullptr;
     }
 
@@ -43,7 +43,7 @@ IWindow* WaylandWindow::Create(const char* title, u32 width, u32 height, u32 pos
 
     // 验证所需的Wayland接口是否可用
     if (!m_compositor || !m_shell) {
-        RT_LOG_FATAL("无法获取必要的Wayland接口");
+        RT_LOG_FATAL_PLATFORM("无法获取必要的Wayland接口");
         CloseWindow();
         return nullptr;
     }
@@ -51,7 +51,7 @@ IWindow* WaylandWindow::Create(const char* title, u32 width, u32 height, u32 pos
     // 创建表面
     m_surface = wl_compositor_create_surface(m_compositor);
     if (!m_surface) {
-        RT_LOG_FATAL("无法创建Wayland表面");
+        RT_LOG_FATAL_PLATFORM("无法创建Wayland表面");
         CloseWindow();
         return nullptr;
     }
@@ -59,7 +59,7 @@ IWindow* WaylandWindow::Create(const char* title, u32 width, u32 height, u32 pos
     // 创建shell表面
     m_shell_surface = wl_shell_get_shell_surface(m_shell, m_surface);
     if (!m_shell_surface) {
-        RT_LOG_FATAL("无法创建Wayland shell表面");
+        RT_LOG_FATAL_PLATFORM("无法创建Wayland shell表面");
         CloseWindow();
         return nullptr;
     }
@@ -69,7 +69,7 @@ IWindow* WaylandWindow::Create(const char* title, u32 width, u32 height, u32 pos
     wl_shell_surface_set_title(m_shell_surface, this->title);
     wl_shell_surface_set_toplevel(m_shell_surface);
 
-    RT_LOG_INFO("Wayland窗口创建成功");
+    RT_LOG_INFO_PLATFORM("Wayland窗口创建成功");
     return this;
 }
 
@@ -164,7 +164,7 @@ void WaylandWindow::Update(const uint8_t* buffer_data, uint32_t width, uint32_t 
     // // 创建共享内存文件
     // int fd = memfd_create("buffer", 0);
     // if (fd < 0) {
-    //     RT_LOG_ERROR("无法创建共享内存文件");
+    //     RT_LOG_ERROR_PLATFORM("无法创建共享内存文件");
     //     return;
     // }
 
@@ -177,7 +177,7 @@ void WaylandWindow::Update(const uint8_t* buffer_data, uint32_t width, uint32_t 
     // void* data = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     // if (data == MAP_FAILED) {
     //     close(fd);
-    //     RT_LOG_ERROR("无法映射共享内存");
+    //     RT_LOG_ERROR_PLATFORM("无法映射共享内存");
     //     return;
     // }
 

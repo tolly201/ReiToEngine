@@ -37,8 +37,8 @@ class RendererSystem : public Runtime_Singleton<RendererSystem> {
         auto it = backends.find(ERenderBackendType::VULKAN);
         if (it == backends.end())
         {
-        RT_LOG_DEBUG_FMT("width: {}, height: {}", desc.width, desc.height);
-            RT_LOG_ERROR("CreateWindowsSurface: Vulkan backend not found");
+        RT_LOG_DEBUG_FMT_PLATFORM("width: {}, height: {}", desc.width, desc.height);
+            RT_LOG_ERROR_PLATFORM("CreateWindowsSurface: Vulkan backend not found");
             return false;
         }
         return it->second->CreateSurface(platform_state, desc);

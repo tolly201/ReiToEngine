@@ -1,6 +1,6 @@
 #include "../Core/TestCore.h"
-#include "L20_Platform/L30_MemoryManager/Memory.h"
-#include "L20_Platform/L31_SingletonFactory/SingletonFactory.h"
+#include "L20_Platform/L23_MemoryManager/Memory.h"
+#include "L20_Platform/L23_SingletonFactory/SingletonFactory.h"
 #include <string>
 #include <cstring>
 
@@ -33,7 +33,7 @@ RT_TEST_ST("Memory", StatsIncreaseAndRollback, "memory","stats"){
     const char* after = mm.GetMemoryUsageReport();
     float afterApp = extract_amount_for_tag(after, "APPLICATION");
     RT_EXPECT_TRUE(afterApp <= midApp);
-    RT_LOG_INFO(after);
+    RT_LOG_INFO_PLATFORM(after);
 }
 
 // 同时申请 APPLICATION 与 CONTAINER 各自独立增长并释放后回滚
@@ -66,5 +66,5 @@ RT_TEST_ST("Memory", MixedTagIndependentStats, "memory","stats","mixed"){
     const char* finalRep = mm.GetMemoryUsageReport();
     float finalApp = extract_amount_for_tag(finalRep, "APPLICATION");
     RT_EXPECT_TRUE(finalApp <= afterAppStill);
-    RT_LOG_INFO(finalRep);
+    RT_LOG_INFO_PLATFORM(finalRep);
 }

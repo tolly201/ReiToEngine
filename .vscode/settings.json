@@ -137,7 +137,22 @@
         "xhash": "cpp",
         "xiosbase": "cpp",
         "xtree": "cpp",
-        "source_location": "cpp"
+        "source_location": "cpp",
+        "expected": "cpp",
+        "iterator": "cpp",
+        "stop_token": "cpp",
+        "utility": "cpp",
+        "xfacet": "cpp",
+        "xlocale": "cpp",
+        "xlocbuf": "cpp",
+        "xlocinfo": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp",
+        "xmemory": "cpp",
+        "xtr1common": "cpp",
+        "xutility": "cpp"
     },
 
     "todo-tree.general.tags": [

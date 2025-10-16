@@ -1,7 +1,7 @@
 #include "../Core/TestCore.h"
-#include "L20_Platform/L32_Containers/UnorderedMap.h"
-#include "L20_Platform/L32_Containers/Deque.h"
-#include "L20_Platform/L32_Containers/Set.h"
+#include "L20_Platform/L24_Containers/UnorderedMap.h"
+#include "L20_Platform/L24_Containers/Deque.h"
+#include "L20_Platform/L24_Containers/Set.h"
 #include <string>
 
 using namespace ReiToEngine;

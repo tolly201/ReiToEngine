@@ -1,8 +1,8 @@
 #ifndef PLATFORM_INCLUDE_WINDOWS_MANAGER_H
 #define PLATFORM_INCLUDE_WINDOWS_MANAGER_H
 #include "L20_Platform/L37_Window/IWindow.h"
-#include "L20_Platform/L31_SingletonFactory/RuntimeSingleton.h"
-#include "L20_Platform/L32_Containers/List.h"
+#include "L20_Platform/L23_SingletonFactory/RuntimeSingleton.h"
+#include "L20_Platform/L24_Containers/List.h"
 
 #include "L20_Platform/L37_Window/IWindow.h"
 #include "L20_Platform/L37_Window/IWindowView.h"

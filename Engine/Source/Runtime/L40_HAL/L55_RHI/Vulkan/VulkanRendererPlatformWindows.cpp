@@ -16,7 +16,7 @@ b8 PlatformCreateVulkanSurface(RT_Platform_State& platform_state, SurfaceDesc& d
 {
     if (!desc.p_window)
     {
-        RT_LOG_ERROR("PlatformCreateVulkanSurface: desc.p_window is null");
+        RT_LOG_ERROR_PLATFORM("PlatformCreateVulkanSurface: desc.p_window is null");
         return false;
     }
 
@@ -28,7 +28,7 @@ b8 PlatformCreateVulkanSurface(RT_Platform_State& platform_state, SurfaceDesc& d
     VkResult result = vkCreateWin32SurfaceKHR(instance, &create_info, nullptr, &out_surface);
     if (result != VK_SUCCESS)
     {
-        RT_LOG_ERROR("PlatformCreateVulkanSurface: vkCreateWin32SurfaceKHR failed with error code %d", result);
+        RT_LOG_ERROR_PLATFORM("PlatformCreateVulkanSurface: vkCreateWin32SurfaceKHR failed with error code %d", result);
         return false;
     }
 
@@ -38,7 +38,7 @@ b8 PlatformCreateVulkanSurface(RT_Platform_State& platform_state, SurfaceDesc& d
 b8 PlatformDestroyVulkanSurface(VkInstance& instance, VkSurfaceKHR& surface)
 {
     vkDestroySurfaceKHR(instance, surface, nullptr);
-    RT_LOG_INFO("PlatformDestroyVulkanSurface: Vulkan surface destroyed successfully");
+    RT_LOG_INFO_PLATFORM("PlatformDestroyVulkanSurface: Vulkan surface destroyed successfully");
     return true;
 };
 

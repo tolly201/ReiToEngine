@@ -73,7 +73,7 @@
       "architecture": { "value": "x64" },
       "toolchainFile": "${sourceDir}/Engine/Scripts/cmake_toolchain/Windows_MSVC-Windows-toolchain.cmake",
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS": "/W4 /EHsc /source-charset:utf-8 /DUNICODE /D_UNICODE /D_CRT_SECURE_NO_WARNINGS",
+        "CMAKE_CXX_FLAGS": "/W4 /EHsc /source-charset:utf-8 /DUNICODE /D_UNICODE /D_CRT_SECURE_NO_WARNINGS /execution-charset:utf-8",
         "CMAKE_CXX_FLAGS_DEBUG": "/Zi /Od /MDd",
         "CMAKE_CXX_FLAGS_RELEASE": "/O2 /MD",
         "CMAKE_PROJECT_SOURCE_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/ReiToEngine/"

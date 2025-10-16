@@ -1,6 +1,6 @@
 #include "../Core/TestCore.h"
-#include "L20_Platform/L30_MemoryManager/Memory.h"
-#include "L20_Platform/L31_SingletonFactory/SingletonFactory.h"
+#include "L20_Platform/L23_MemoryManager/Memory.h"
+#include "L20_Platform/L23_SingletonFactory/SingletonFactory.h"
 #include <cstring>
 
 using namespace ReiToEngine;
@@ -28,7 +28,7 @@ RT_TEST_ST("Memory", BasicAllocFree, "memory","alloc"){
     mm.Free(q, Size, RT_MEMORY_TAG::APPLICATION);
     mm.Free(p, Size, RT_MEMORY_TAG::APPLICATION);
     const char* report = mm.GetMemoryUsageReport();
-    RT_LOG_INFO(report);
+    RT_LOG_INFO_PLATFORM(report);
 }
 
 // 对齐：请求较高对齐并检测指针地址满足对齐
@@ -40,7 +40,7 @@ RT_TEST_ST("Memory", AlignmentAlloc, "memory","alignment"){
     RT_EXPECT_TRUE(p != nullptr);
     RT_EXPECT_TRUE(reinterpret_cast<uintptr_t>(p) % Align == 0);
     mm.Free(p, Size, RT_MEMORY_TAG::APPLICATION);
-    RT_LOG_INFO(mm.GetMemoryUsageReport());
+    RT_LOG_INFO_PLATFORM(mm.GetMemoryUsageReport());
 }
 
 // 批量：多次分配再释放，保证全部非空；不做性能断言，仅健壮性
@@ -55,7 +55,7 @@ RT_TEST_ST("Memory", BulkAlloc, "memory","alloc","stress"){
     for(int i=0;i<N;++i){
         mm.Free(blocks[i], 32 + i, RT_MEMORY_TAG::APPLICATION);
     }
-    RT_LOG_INFO(mm.GetMemoryUsageReport());
+    RT_LOG_INFO_PLATFORM(mm.GetMemoryUsageReport());
 }
 
 // 大块分配：超出典型小块/中等分箱阈值（例如 1MB+），验证成功并可写入/释放
@@ -69,5 +69,5 @@ RT_TEST_ST("Memory", LargeAllocationFallback, "memory","alloc","large"){
     bytes[0]=0xCD; bytes[Size-1]=0xEF;
     RT_EXPECT_TRUE(bytes[0]==0xCD && bytes[Size-1]==0xEF);
     mm.Free(p, Size, RT_MEMORY_TAG::APPLICATION);
-    RT_LOG_INFO(mm.GetMemoryUsageReport());
+    RT_LOG_INFO_PLATFORM(mm.GetMemoryUsageReport());
 }

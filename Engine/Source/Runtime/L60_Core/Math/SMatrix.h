@@ -6,7 +6,7 @@
 #include <cmath>
 #include <utility>
 #include <new>
-#include "L20_Platform/L31_SingletonFactory/SingletonFactory.h"
+#include "L20_Platform/L23_SingletonFactory/SingletonFactory.h"
 #include "VectorInclude.h" // For Vector<DIM, T> alias used in methods
 namespace ReiToEngine
 {

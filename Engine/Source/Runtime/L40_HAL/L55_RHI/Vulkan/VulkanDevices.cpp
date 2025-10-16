@@ -8,7 +8,7 @@ b8 vulkan_initalize_physical_devices(VkInstance& instance, List<VulkanDeviceComb
     u32 device_count = 0;
     RT_VK_CHECK(vkEnumeratePhysicalDevices(instance, &device_count, nullptr));
     if (device_count == 0) {
-        RT_LOG_FATAL("Failed to find GPUs with Vulkan support.");
+        RT_LOG_FATAL_PLATFORM("Failed to find GPUs with Vulkan support.");
         return false;
     }
 
@@ -86,27 +86,27 @@ b8 vulkan_initalize_physical_devices(VkInstance& instance, List<VulkanDeviceComb
 
         out_physical_devices.push_back(std::move(device_combination));
 
-        RT_LOG_INFO_FMT("Found physical device: {}.", std::string(device_combination.device_properties.properties.deviceName));
+        RT_LOG_INFO_FMT_PLATFORM("Found physical device: {}.", std::string(device_combination.device_properties.properties.deviceName));
 
-        RT_LOG_INFO_FMT("VendorID: {}, DeviceID: {}.", device_combination.device_properties.properties.vendorID, device_combination.device_properties.properties.deviceID);
-        RT_LOG_INFO_FMT("Type: {}.", (device_combination.device_properties.properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) ? "Discrete" : "Integrated");
-        RT_LOG_INFO_FMT("API Version: {}.{}.{}.",
+        RT_LOG_INFO_FMT_PLATFORM("VendorID: {}, DeviceID: {}.", device_combination.device_properties.properties.vendorID, device_combination.device_properties.properties.deviceID);
+        RT_LOG_INFO_FMT_PLATFORM("Type: {}.", (device_combination.device_properties.properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) ? "Discrete" : "Integrated");
+        RT_LOG_INFO_FMT_PLATFORM("API Version: {}.{}.{}.",
         VK_VERSION_MAJOR(device_combination.device_properties.properties.apiVersion),
         VK_VERSION_MINOR(device_combination.device_properties.properties.apiVersion),
         VK_VERSION_PATCH(device_combination.device_properties.properties.apiVersion));
-        RT_LOG_INFO_FMT("Driver Version: {}.", device_combination.device_properties.properties.driverVersion);
-        RT_LOG_INFO_FMT("Max Memory: {} MB.", device_combination.memory_properties.memoryProperties.memoryHeaps[0].size / (1024 * 1024));
+        RT_LOG_INFO_FMT_PLATFORM("Driver Version: {}.", device_combination.device_properties.properties.driverVersion);
+        RT_LOG_INFO_FMT_PLATFORM("Max Memory: {} MB.", device_combination.memory_properties.memoryProperties.memoryHeaps[0].size / (1024 * 1024));
 
         // 打印支持的扩展
-        RT_LOG_INFO("Supported extensions:");
+        RT_LOG_INFO_PLATFORM("Supported extensions:");
         for (const auto& ext : device_combination.supported_extensions) {
-            RT_LOG_INFO_FMT("{}", std::string(ext.extensionName));
+            RT_LOG_INFO_FMT_PLATFORM("{}", std::string(ext.extensionName));
         }
 
         // 打印队列族信息
-        RT_LOG_INFO("Queue Families:");
+        RT_LOG_INFO_PLATFORM("Queue Families:");
         for (u32 q = 0; q < device_combination.queue_families.size(); ++q) {
-            RT_LOG_INFO_FMT("[{}] Flags: {}, Count: {}", q, device_combination.queue_families[q].queueFamilyProperties.queueFlags, device_combination.queue_families[q].queueFamilyProperties.queueCount);
+            RT_LOG_INFO_FMT_PLATFORM("[{}] Flags: {}, Count: {}", q, device_combination.queue_families[q].queueFamilyProperties.queueFlags, device_combination.queue_families[q].queueFamilyProperties.queueCount);
         }
     }
     return true;
@@ -116,11 +116,11 @@ b8 select_physical_device(VkInstance& instance, VulkanSwapchainContext& swapchai
 u32 physical_device_meets_requirements(VulkanDeviceCombination&, VulkanSwapchainContext&);
 b8 vulkan_physical_device_select(VkInstance& instance, VulkanSwapchainContext& swapchain_content, List<VulkanDeviceCombination>& devices)
 {
-    RT_LOG_DEBUG("START SELECT PHYSICAL DEVICE:");
+    RT_LOG_DEBUG_PLATFORM("START SELECT PHYSICAL DEVICE:");
     VulkanDeviceCombination* device_combination = nullptr;
     select_physical_device(instance, swapchain_content, devices, device_combination);
     if (device_combination == nullptr) {
-        RT_LOG_FATAL("Failed to find a suitable GPU for the swapchain.");
+        RT_LOG_FATAL_PLATFORM("Failed to find a suitable GPU for the swapchain.");
         return false;
     }
     swapchain_content.device_combination = const_cast<VulkanDeviceCombination*>(device_combination);
@@ -128,7 +128,7 @@ b8 vulkan_physical_device_select(VkInstance& instance, VulkanSwapchainContext& s
     for (u8 i = 0; i < static_cast<u8>(VulkanQueueFamilyIndicesType::MAX); ++i)
     {
         VulkanQueueFamilyIndicesType type = static_cast<VulkanQueueFamilyIndicesType>(i);
-        RT_LOG_INFO_FMT("Selected queue family index for type {}: {}", static_cast<u8>(type), swapchain_content.queue_family_indices[type]);
+        RT_LOG_INFO_FMT_PLATFORM("Selected queue family index for type {}: {}", static_cast<u8>(type), swapchain_content.queue_family_indices[type]);
     }
 
     return true;
@@ -154,11 +154,11 @@ b8 vulkan_logical_device_create(VulkanContextRef ref, VulkanSwapchainContext& sw
     add_family(swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::TRANSFER]);
 
     if (families.empty()) {
-        RT_LOG_ERROR("No queue families selected to create logical device.");
+        RT_LOG_ERROR_PLATFORM("No queue families selected to create logical device.");
         return false;
     }
 
-    RT_LOG_INFO_FMT("Creating {} families.", families.size());
+    RT_LOG_INFO_FMT_PLATFORM("Creating {} families.", families.size());
 
 
     // 2) 组装队列创建信息（每族先要 1 条队列）
@@ -172,15 +172,15 @@ b8 vulkan_logical_device_create(VulkanContextRef ref, VulkanSwapchainContext& sw
 
     for (u32 family : families) {
         // 容错：若索引越界则跳过
-        RT_LOG_DEBUG_FMT("Creating queue for family index: {} / {}.", family, dc.queue_families.size());
+        RT_LOG_DEBUG_FMT_PLATFORM("Creating queue for family index: {} / {}.", family, dc.queue_families.size());
         if (family >= dc.queue_families.size()) continue;
         const auto& qfp = dc.queue_families[family].queueFamilyProperties;
 
-        RT_LOG_DEBUG_FMT("Creating queue for family index Priority: {}.", qfp.queueCount);
+        RT_LOG_DEBUG_FMT_PLATFORM("Creating queue for family index Priority: {}.", qfp.queueCount);
 
         if (qfp.queueCount == 0) continue;
 
-        RT_LOG_DEBUG_FMT("Create queue for family index Priority: {}.", family);
+        RT_LOG_DEBUG_FMT_PLATFORM("Create queue for family index Priority: {}.", family);
         VkDeviceQueueCreateInfo qci{};
         qci.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         qci.queueFamilyIndex = family;
@@ -195,12 +195,12 @@ b8 vulkan_logical_device_create(VulkanContextRef ref, VulkanSwapchainContext& sw
     }
 
     if (qcis.empty()) {
-        RT_LOG_ERROR("No valid queue families to create device queues.");
+        RT_LOG_ERROR_PLATFORM("No valid queue families to create device queues.");
         return false;
     }
     else
     {
-        RT_LOG_INFO_FMT("Creating {} device queues.", qcis.size());
+        RT_LOG_INFO_FMT_PLATFORM("Creating {} device queues.", qcis.size());
     }
 
     VkPhysicalDeviceFeatures enabled{};
@@ -219,7 +219,7 @@ b8 vulkan_logical_device_create(VulkanContextRef ref, VulkanSwapchainContext& sw
     dci.pEnabledFeatures = &enabled; // 如需 Features2/链，可改用 pNext
 
     if (!RT_VK_CHECK(vkCreateDevice(dc.physical_device, &dci, ref.allocator, &dc.logical_device))) {
-        RT_LOG_ERROR("vkCreateDevice failed.");
+        RT_LOG_ERROR_PLATFORM("vkCreateDevice failed.");
         dc.logical_device = VK_NULL_HANDLE;
         return false;
     }
@@ -251,7 +251,7 @@ b8 vulkan_logical_device_create(VulkanContextRef ref, VulkanSwapchainContext& sw
 
     vulkan_object_shader_create({ref.instance, ref.allocator, &dc, &swapchain_context}, "Builtin.ObjectShader", dc.shader_sets[0]);
 
-    RT_LOG_INFO("Logical device created.");
+    RT_LOG_INFO_PLATFORM("Logical device created.");
     return true;
 }
 b8 vulkan_physical_device_destroy();
@@ -283,7 +283,7 @@ b8 vulkan_logical_device_destroy(VulkanContextRef ref, VulkanDeviceCombination& 
         dc.logical_device = VK_NULL_HANDLE;
         dc.is_inused = false;
         dc.inuse_queue_family_indices.clear();
-        RT_LOG_INFO("Logical device destroyed.");
+        RT_LOG_INFO_PLATFORM("Logical device destroyed.");
     }
     return true;
 }
@@ -317,24 +317,24 @@ b8 vulkan_device_detect_depth_format(VulkanDeviceCombination& device_combination
         // 检查是否支持作为深度/模板附件使用
         if ((props3.linearTilingFeatures & flags) == flags) {
             device_combination.depth_format = format;
-            RT_LOG_INFO_FMT("Selected depth format: {}", static_cast<u32>(format));
+            RT_LOG_INFO_FMT_PLATFORM("Selected depth format: {}", static_cast<u32>(format));
             return true;
         }
 
         else if ((props3.optimalTilingFeatures & flags) == flags) {
             device_combination.depth_format = format;
-            RT_LOG_INFO_FMT("Selected depth format: {}", static_cast<u32>(format));
+            RT_LOG_INFO_FMT_PLATFORM("Selected depth format: {}", static_cast<u32>(format));
             return true;
         }
     }
 
-    RT_LOG_ERROR("Failed to find a supported depth format.");
+    RT_LOG_ERROR_PLATFORM("Failed to find a supported depth format.");
     return false;
 }
 
 b8 select_physical_device([[maybe_unused]]VkInstance& instance, VulkanSwapchainContext& swapchain_content,  List<VulkanDeviceCombination>& devices, VulkanDeviceCombination*& out_device)
 {
-    RT_LOG_DEBUG_FMT("START SELECT DEVICE: {}", devices.size());
+    RT_LOG_DEBUG_FMT_PLATFORM("START SELECT DEVICE: {}", devices.size());
 
     u32 highest_score = 0;
 
@@ -342,13 +342,13 @@ b8 select_physical_device([[maybe_unused]]VkInstance& instance, VulkanSwapchainC
         VulkanDeviceCombination& device_combination = devices[i];
 
 
-        RT_LOG_DEBUG_FMT("Querying swapchain support for device: {}", i);
+        RT_LOG_DEBUG_FMT_PLATFORM("Querying swapchain support for device: {}", i);
         u32 score = physical_device_meets_requirements(device_combination, swapchain_content);
 
         if (score > highest_score) {
             highest_score = score;
             out_device = &device_combination;
-            RT_LOG_DEBUG_FMT("New best device found: {} with score {}.", i, score);
+            RT_LOG_DEBUG_FMT_PLATFORM("New best device found: {} with score {}.", i, score);
         }
     }
 
@@ -357,7 +357,7 @@ b8 select_physical_device([[maybe_unused]]VkInstance& instance, VulkanSwapchainC
 
 u32 physical_device_meets_requirements(VulkanDeviceCombination& device_combination, VulkanSwapchainContext& swapchain_context)
 {
-    RT_LOG_DEBUG("START evaluating physical device:");
+    RT_LOG_DEBUG_PLATFORM("START evaluating physical device:");
 
     swapchain_context.queue_family_indices.clear();
 
@@ -368,18 +368,18 @@ u32 physical_device_meets_requirements(VulkanDeviceCombination& device_combinati
     {
         if(device_combination.device_properties.properties.deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
         {
-            RT_LOG_WARN("Physical device is not a discrete GPU.");
+            RT_LOG_WARN_PLATFORM("Physical device is not a discrete GPU.");
             return 0;
         }
     }
 
-    RT_LOG_INFO("Graphics | Present | Compute | Transfer | Name | Flags");
+    RT_LOG_INFO_PLATFORM("Graphics | Present | Compute | Transfer | Name | Flags");
     [[maybe_unused]]u8 min_transfer_score = 255;
 
     for (u8 i = 0; i < static_cast<u8>(VulkanQueueFamilyIndicesType::MAX); ++i)
     {
         VulkanQueueFamilyIndicesType type = static_cast<VulkanQueueFamilyIndicesType>(i);
-        RT_LOG_DEBUG_FMT("Checking queue family type: {}", static_cast<u8>(type));
+        RT_LOG_DEBUG_FMT_PLATFORM("Checking queue family type: {}", static_cast<u8>(type));
 
         if (type == VulkanQueueFamilyIndicesType::PRESENT)
         {
@@ -391,7 +391,7 @@ u32 physical_device_meets_requirements(VulkanDeviceCombination& device_combinati
             if (device_combination.dedicated_queue_family_indices.find(type) == device_combination.dedicated_queue_family_indices.end()
             && device_combination.available_queue_family_indices.find(type) == device_combination.available_queue_family_indices.end())
             {
-                RT_LOG_WARN("Physical device misses required queue family. Index:", static_cast<u8>(type));
+                RT_LOG_WARN_PLATFORM("Physical device misses required queue family. Index:", static_cast<u8>(type));
                 return 0;
             }
 
@@ -422,7 +422,7 @@ u32 physical_device_meets_requirements(VulkanDeviceCombination& device_combinati
     const bool ok_transfer = !requirements.queue_families[VulkanQueueFamilyIndicesType::TRANSFER] || (swapchain_context.queue_family_indices[VulkanQueueFamilyIndicesType::TRANSFER] != static_cast<i32>(-1));
 
     if (!(ok_graphics && ok_present && ok_compute && ok_transfer)) {
-        RT_LOG_WARN("Physical device misses required queue family.");
+        RT_LOG_WARN_PLATFORM("Physical device misses required queue family.");
         return 0;
     }
 
@@ -442,14 +442,14 @@ u32 physical_device_meets_requirements(VulkanDeviceCombination& device_combinati
 
             if (!extension_found)
             {
-                RT_LOG_WARN_FMT("Physical device is missing required extension: {}", std::string(requirements.required_extensions[i]));
+                RT_LOG_WARN_FMT_PLATFORM("Physical device is missing required extension: {}", std::string(requirements.required_extensions[i]));
                 return 0;
             }
         }
     }
 
     if (requirements.sample_anisotropy && !device_combination.device_features.features.samplerAnisotropy) {
-        RT_LOG_WARN("Physical device does not support sampler anisotropy.");
+        RT_LOG_WARN_PLATFORM("Physical device does not support sampler anisotropy.");
         return 0;
     }
 
@@ -508,7 +508,7 @@ u32 physical_device_meets_requirements(VulkanDeviceCombination& device_combinati
 
     if (swapchain_context.swapchain_info.formats.size() <= 0 || swapchain_context.swapchain_info.present_modes.size() <= 0)
     {
-        RT_LOG_WARN("Physical device has no swapchain support.");
+        RT_LOG_WARN_PLATFORM("Physical device has no swapchain support.");
         return 0;
         }
 
@@ -539,7 +539,7 @@ u32 physical_device_meets_requirements(VulkanDeviceCombination& device_combinati
     // 特性偏好
     if (device_combination.device_features.features.samplerAnisotropy) score += 50;
 
-    RT_LOG_INFO_FMT("Score for device {}: {}", std::string(device_combination.device_properties.properties.deviceName), score);
+    RT_LOG_INFO_FMT_PLATFORM("Score for device {}: {}", std::string(device_combination.device_properties.properties.deviceName), score);
     return score;
 }
 
@@ -584,7 +584,7 @@ i32 VulkanDeviceCombination::find_memory_index(u32 type_filter, VkMemoryProperty
             return i;
         }
     }
-    RT_LOG_WARN("Failed to find suitable memory type.");
+    RT_LOG_WARN_PLATFORM("Failed to find suitable memory type.");
     return -1;
 }
 

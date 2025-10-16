@@ -1,11 +1,11 @@
 #include "../Core/TestCore.h"
-#include "L20_Platform/L32_Containers/Array.h"
-#include "L20_Platform/L32_Containers/Stack.h"
-#include "L20_Platform/L32_Containers/Set.h"
-#include "L20_Platform/L32_Containers/Map.h"
-#include "L20_Platform/L32_Containers/UnorderedMap.h"
-#include "L20_Platform/L32_Containers/UnorderedSet.h"
-#include "L20_Platform/L32_Containers/DoublyLinkedList.h"
+#include "L20_Platform/L24_Containers/Array.h"
+#include "L20_Platform/L24_Containers/Stack.h"
+#include "L20_Platform/L24_Containers/Set.h"
+#include "L20_Platform/L24_Containers/Map.h"
+#include "L20_Platform/L24_Containers/UnorderedMap.h"
+#include "L20_Platform/L24_Containers/UnorderedSet.h"
+#include "L20_Platform/L24_Containers/DoublyLinkedList.h"
 #include <string>
 #include <vector>
 

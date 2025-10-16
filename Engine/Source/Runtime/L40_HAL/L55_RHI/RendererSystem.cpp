@@ -7,11 +7,11 @@ RendererSystem::~RendererSystem() = default;
 
 b8 RendererSystem::Initialize() {
     // Initialization logic for the renderer system
-    RT_LOG_INFO("RendererSystem Initialized.");
+    RT_LOG_INFO_PLATFORM("RendererSystem Initialized.");
     CreateRendererBackend(ERenderBackendType::VULKAN, "ReiToEngine", nullptr);
-    RT_LOG_INFO("RendererSystem Frontend Initialized.");
+    RT_LOG_INFO_PLATFORM("RendererSystem Frontend Initialized.");
     CreateRendererFrontend(ERenderFrontendType::MESH, "ReiToEngine", nullptr);
-    RT_LOG_INFO("RendererSystem Frontend Initialized.");
+    RT_LOG_INFO_PLATFORM("RendererSystem Frontend Initialized.");
 
     pipelines.emplace_back();
     RendererPipeline& pipeline = pipelines.back();
@@ -30,7 +30,7 @@ b8 RendererSystem::Tick(f64 delta_time) {
 
         // if (!pipeline.frontend->BeginFrame(packet, data))
         // {
-        //     RT_LOG_ERROR("Failed to begin frame for frontend.");
+        //     RT_LOG_ERROR_PLATFORM("Failed to begin frame for frontend.");
         //     return false;
         // }
         if (!pipeline.backend->BeginFrame(delta_time)) {
@@ -65,7 +65,7 @@ b8 RendererSystem::Terminate() {
     }
     frontends.clear();
     pipelines.clear();
-    RT_LOG_INFO("RendererSystem Terminated.");
+    RT_LOG_INFO_PLATFORM("RendererSystem Terminated.");
     return true;
 }
 
@@ -77,16 +77,16 @@ b8 RendererSystem::CreateRendererBackend(ERenderBackendType type, const char* ap
             break;
         // Add cases for other backend types as needed
         default:
-            RT_LOG_ERROR("Unsupported renderer backend type: {}", static_cast<u32>(type));
+            RT_LOG_ERROR_PLATFORM("Unsupported renderer backend type: {}", static_cast<u32>(type));
             return false;
     }
 
     if (backend && backend->Initialize(type, application_name, plat_state)) {
         backends[type] = backend;
-        RT_LOG_INFO("Renderer backend of type", static_cast<u32>(type) ,"created and initialized.");
+        RT_LOG_INFO_PLATFORM("Renderer backend of type", static_cast<u32>(type) ,"created and initialized.");
         return true;
     } else {
-        RT_LOG_ERROR("Failed to initialize renderer backend of type:", static_cast<u32>(type));
+        RT_LOG_ERROR_PLATFORM("Failed to initialize renderer backend of type:", static_cast<u32>(type));
         delete backend;
         return false;
     }

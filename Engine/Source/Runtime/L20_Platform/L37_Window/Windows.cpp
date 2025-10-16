@@ -1,7 +1,7 @@
 #include "Functions.h"
 #ifdef RT_SYSTEM_WINDOWS
 #include <windows.h>
-#include "L20_Platform/L23_Logger/Include.h"
+#include "L20_Platform/L21_Logger/Include.h"
 #include "WindowEnums.h"
 #include "L20_Platform/L35_Input/Include.h"
 #include "L20_Platform/L37_Window/Windows/WindowsWindow.h"
@@ -49,13 +49,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 WideCharToMultiByte(CP_UTF8, 0, wmessage_buf, -1, message_buf, mb_len, NULL, NULL);
 
                 MessageBoxW(NULL, wmessage_buf, L"Error!", MB_ICONEXCLAMATION | MB_OK);
-                    RT_LOG_FATAL(message_buf);
+                    RT_LOG_FATAL_PLATFORM(message_buf);
 
                 delete[] message_buf;
                 LocalFree(wmessage_buf);
             } else {
                 MessageBoxW(0, L"Window registration failed", L"Error", MB_ICONEXCLAMATION | MB_OK);
-                RT_LOG_FATAL("Window registration failed!");
+                RT_LOG_FATAL_PLATFORM("Window registration failed!");
             }
         }
     }

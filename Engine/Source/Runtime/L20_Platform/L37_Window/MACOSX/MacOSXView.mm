@@ -3,7 +3,7 @@
 #include "MacOSXView.h"
 #import <AppKit/AppKit.h>
 #include "MacOSXWindow.h"
-#include "L20_Platform/L23_Logger/Include.h"
+#include "L20_Platform/L21_Logger/Include.h"
 #import <QuartzCore/CAMetalLayer.h>
 @implementation OSXView {
 
@@ -47,7 +47,7 @@
     }
     self->currentImage = [[NSImage alloc] initWithCGImage:cgImage size:NSMakeSize(width, height)];
     [self setNeedsDisplay:YES]; // 标记视图需要重绘，触发 drawRect:
-    RT_LOG_DEBUG("setNeed");
+    RT_LOG_DEBUG_PLATFORM("setNeed");
     //  Release resources
     CGImageRelease(cgImage);
     CGContextRelease(context);
@@ -55,7 +55,7 @@
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
-    RT_LOG_DEBUG("Drawing OSXView with currentImage");
+    RT_LOG_DEBUG_PLATFORM("Drawing OSXView with currentImage");
     NSRect imageRect = NSMakeRect(0, 0, self->currentImage.size.width, self->currentImage.size.height);
     [self->currentImage drawInRect:self.bounds fromRect:imageRect operation:NSCompositingOperationSourceOver fraction:1.0]; // 绘制 NSImage 缩放到视图 bounds
     [super drawRect:dirtyRect]; // 调用父类的 drawRect: 实现
@@ -110,7 +110,7 @@
     return 0;
 }
 - (void) keyDown:(NSEvent *)event {
-    RT_LOG_DEBUG("KeyDown event received in OSXView");
+    RT_LOG_DEBUG_PLATFORM("KeyDown event received in OSXView");
     self->ownerWindow->GetInputMonitor()->ProcessNativeEvent(event);
     [super keyDown:event];
 }
@@ -168,7 +168,7 @@ OSXView* MacOSXView::GetViewInstance()
 
 void MacOSXView::Draw()
 {
-    RT_LOG_DEBUG("Drawing MacOSXView with buffer: %p, width: %d, height: %d, channel: %d", buffer, width, height, channel);
+    RT_LOG_DEBUG_PLATFORM("Drawing MacOSXView with buffer: %p, width: %d, height: %d, channel: %d", buffer, width, height, channel);
     [osxView displayBuffer:buffer width:width height:height channel:channel]; // 调用 OSXView 的 displayBuffer 更新 image
 }
 #endif

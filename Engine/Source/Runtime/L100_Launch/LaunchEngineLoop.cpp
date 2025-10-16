@@ -18,41 +18,34 @@ b8 CreateGameInstance(ReiToEngine::Game& game_instance)
 int RuntimeMainLoopEntry([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
     ReiToEngine::RTApplication::SetMemoryManager(nullptr, ReiToEngine::EMEMORY_MANAGER_TYPE::MIMALLOC);
-    std::cout << "test" << std::endl;
-    RT_LOG_DEBUG("test");
-    RT_LOG_ERROR("test");
-    RT_LOG_FATAL("test");
-    RT_LOG_INFO("test");
-    RT_LOG_TRACE("test");
-    RT_LOG_WARN("test");
 
     ReiToEngine::Game game_instance;
-    RT_LOG_DEBUG("start game instance");
+    RT_LOG_DEBUG_PLATFORM("start game instance");
     if (!CreateGameInstance(game_instance)) {
-        RT_LOG_FATAL("Failed to create game instance");
+        RT_LOG_FATAL_PLATFORM("Failed to create game instance");
         return -1;
     }
 
-    RT_LOG_DEBUG("pass game instance");
-    RT_LOG_DEBUG("start application initialize");
+    RT_LOG_DEBUG_PLATFORM("pass game instance");
+    RT_LOG_DEBUG_PLATFORM("start application initialize");
 
     if (!ReiToEngine::RTApplication::Instance().Initialize(&game_instance)) {
-        RT_LOG_FATAL("Failed to initialize application");
+        RT_LOG_FATAL_PLATFORM("Failed to initialize application");
         return -1;
     }
 
-    RT_LOG_DEBUG("start application start game");
+    RT_LOG_DEBUG_PLATFORM("start application start game");
 
     if (!ReiToEngine::RTApplication::Instance().StartGame()) {
-        RT_LOG_FATAL("Failed to start game");
+        RT_LOG_FATAL_PLATFORM("Failed to start game");
         return -1;
     }
 
-    RT_LOG_DEBUG("start application main loop");
+    RT_LOG_DEBUG_PLATFORM("start application main loop");
 
     if (!ReiToEngine::RTApplication::Instance().Run())
     {
-        RT_LOG_FATAL("Game Exit State Wrong");
+        RT_LOG_FATAL_PLATFORM("Game Exit State Wrong");
         return -2;
     }
 

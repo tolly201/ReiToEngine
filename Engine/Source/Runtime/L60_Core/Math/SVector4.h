@@ -8,7 +8,7 @@
 #include <cmath>
 #include <type_traits>
 #include <new>
-#include "L20_Platform/L31_SingletonFactory/SingletonFactory.h"
+#include "L20_Platform/L23_SingletonFactory/SingletonFactory.h"
 
 namespace ReiToEngine
 {

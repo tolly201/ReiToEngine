@@ -1,6 +1,6 @@
 #include "InputSystem.h"
 
-#include "L20_Platform/L23_Logger/Include.h"
+#include "L20_Platform/L21_Logger/Include.h"
 namespace ReiToEngine {
 
 InputSystem::InputSystem()  = default;
@@ -11,7 +11,7 @@ b8 InputSystem::Initialize() {
     // global_input_monitor->Initialize();
     initialized = true;
 
-    RT_LOG_INFO("InputSystem Initialized.");
+    RT_LOG_INFO_PLATFORM("InputSystem Initialized.");
     return true;
 }
 b8 InputSystem::Terminate() {
@@ -25,12 +25,12 @@ b8 InputSystem::Terminate() {
 }
 b8 InputSystem::Tick(f64 tick) {
     if (!initialized) {
-        RT_LOG_FATAL("Update when not initialized.");
+        RT_LOG_FATAL_PLATFORM("Update when not initialized.");
         return false;
     }
     for (auto& monitor : input_monitors) {
         if (!monitor.second->Tick(tick)) {
-            RT_LOG_ERROR("Failed to tick input monitor for handle: ", monitor.first);
+            RT_LOG_ERROR_PLATFORM("Failed to tick input monitor for handle: ", monitor.first);
         }
     }
     // global_input_monitor->Tick(tick);
@@ -41,7 +41,7 @@ PlatformInputMonitor* InputSystem::CreateOrGetMonitor(void* window)
 {
     input_monitors[window] = new PlatformInputMonitor();
     if (!input_monitors[window]->Initialize()) {
-        RT_LOG_ERROR("Failed to initialize input monitor for handle: ", window);
+        RT_LOG_ERROR_PLATFORM("Failed to initialize input monitor for handle: ", window);
         return nullptr;
     }
     return input_monitors[window];
@@ -53,7 +53,7 @@ b8 InputSystem::DestroyMonitor(void* window)
         monitor->Terminate();
         delete monitor;
         input_monitors.erase(window);
-        RT_LOG_INFO("Input monitor for handle: ", window, " destroyed.");
+        RT_LOG_INFO_PLATFORM("Input monitor for handle: ", window, " destroyed.");
         return true;
     }
     return false;

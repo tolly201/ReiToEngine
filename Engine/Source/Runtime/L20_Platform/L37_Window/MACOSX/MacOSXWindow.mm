@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <cstdio>
 #include <iostream>
-#include "L20_Platform/L23_Logger/Include.h"
+#include "L20_Platform/L21_Logger/Include.h"
 @implementation OSXWindow
 
 - (id)initWithContentRect:(NSRect)contentRect
@@ -76,7 +76,7 @@
 
 IWindow* MacOSXWindow::Create(const char* title, u32 _width, u32 _height, u32 pos_x, u32 pos_y)
 {
-    RT_LOG_DEBUG("Creating MacOSXWindow with title: %s, size: %dx%d, position: (%d, %d)", title, _width, _height, pos_x, pos_y);
+    RT_LOG_DEBUG_PLATFORM("Creating MacOSXWindow with title: %s, size: %dx%d, position: (%d, %d)", title, _width, _height, pos_x, pos_y);
     NSRect contentRect = NSMakeRect(0, 0, _width, _height);
     NSWindowStyleMask styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
     cocoaWindow = [[OSXWindow alloc] initWithContentRect:contentRect
@@ -154,7 +154,7 @@ u32 MacOSXWindow::GetHeight() const
 
 void MacOSXWindow::ShowWindow()
 {
-    RT_LOG_DEBUG("Showing MacOSXWindow");
+    RT_LOG_DEBUG_PLATFORM("Showing MacOSXWindow");
         if (cocoaWindow) {
             [cocoaWindow makeKeyAndOrderFront:nil];
         }
@@ -169,7 +169,7 @@ void MacOSXWindow::HideWindow()
 
 void MacOSXWindow::CloseWindow()
 {
-    RT_LOG_DEBUG("Close MacOSXWindow");
+    RT_LOG_DEBUG_PLATFORM("Close MacOSXWindow");
 
     if (cocoaWindow) {
         [cocoaWindow close];

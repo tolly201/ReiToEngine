@@ -38,7 +38,7 @@ void vulkan_image_create(VulkanContextRef context, VulkanSwapchainContext& swapc
     i32 memory_type = swapchain_context.device_combination->find_memory_index(type_bits, memort_properties);
 
     if (memory_type == -1) {
-        RT_LOG_ERROR("Failed to find suitable memory type for image.");
+        RT_LOG_ERROR_PLATFORM("Failed to find suitable memory type for image.");
         return;
     }
 

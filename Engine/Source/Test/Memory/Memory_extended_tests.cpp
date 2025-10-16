@@ -1,7 +1,7 @@
 #include "../Core/TestCore.h"
-#include "L20_Platform/L30_MemoryManager/RTMimallocManager.h"
-#include "L20_Platform/L30_MemoryManager/BinnedMemoryManager.h"
-#include "L20_Platform/L30_MemoryManager/RTCMemoryManager.h"
+#include "L20_Platform/L23_MemoryManager/RTMimallocManager.h"
+#include "L20_Platform/L23_MemoryManager/BinnedMemoryManager.h"
+#include "L20_Platform/L23_MemoryManager/RTCMemoryManager.h"
 #include <vector>
 #include <cstdint>
 #include <cstring>
@@ -83,18 +83,18 @@ static void repeated_alloc_free_pattern(){
 
 // Mimalloc
 RT_TEST_ST("Memory", Mimalloc_alignment_sweep, "memory","memory-advanced","mm-impl"){ alloc_alignment_sweep<RTMimallocManager>(); }
-RT_TEST_ST("Memory", Mimalloc_size_gradient,   "memory","memory-advanced","mm-impl"){ size_gradient_bins<RTMimallocManager>(); RT_LOG_INFO("Mimalloc size gradient done"); }
-RT_TEST_ST("Memory", Mimalloc_zero_copy_set,   "memory","memory-advanced","mm-impl"){ zero_copy_set_cycle<RTMimallocManager>(); RT_LOG_INFO("Mimalloc zero/copy/set done"); }
-RT_TEST_ST("Memory", Mimalloc_repeated_alloc_free, "memory","memory-advanced","mm-impl"){ repeated_alloc_free_pattern<RTMimallocManager>(); RT_LOG_INFO("Mimalloc repeated alloc/free done"); }
+RT_TEST_ST("Memory", Mimalloc_size_gradient,   "memory","memory-advanced","mm-impl"){ size_gradient_bins<RTMimallocManager>(); RT_LOG_INFO_PLATFORM("Mimalloc size gradient done"); }
+RT_TEST_ST("Memory", Mimalloc_zero_copy_set,   "memory","memory-advanced","mm-impl"){ zero_copy_set_cycle<RTMimallocManager>(); RT_LOG_INFO_PLATFORM("Mimalloc zero/copy/set done"); }
+RT_TEST_ST("Memory", Mimalloc_repeated_alloc_free, "memory","memory-advanced","mm-impl"){ repeated_alloc_free_pattern<RTMimallocManager>(); RT_LOG_INFO_PLATFORM("Mimalloc repeated alloc/free done"); }
 
 // Binned
 RT_TEST_ST("Memory", Binned_alignment_sweep, "memory","memory-advanced","mm-impl","binned"){ alloc_alignment_sweep<BinnedMemoryManager>(); }
-RT_TEST_ST("Memory", Binned_size_gradient,   "memory","memory-advanced","mm-impl","binned"){ size_gradient_bins<BinnedMemoryManager>(); RT_LOG_INFO("Binned size gradient done"); }
-RT_TEST_ST("Memory", Binned_zero_copy_set,   "memory","memory-advanced","mm-impl","binned"){ zero_copy_set_cycle<BinnedMemoryManager>(); RT_LOG_INFO("Binned zero/copy/set done"); }
-RT_TEST_ST("Memory", Binned_repeated_alloc_free, "memory","memory-advanced","mm-impl","binned"){ repeated_alloc_free_pattern<BinnedMemoryManager>(); RT_LOG_INFO("Binned repeated alloc/free done"); }
+RT_TEST_ST("Memory", Binned_size_gradient,   "memory","memory-advanced","mm-impl","binned"){ size_gradient_bins<BinnedMemoryManager>(); RT_LOG_INFO_PLATFORM("Binned size gradient done"); }
+RT_TEST_ST("Memory", Binned_zero_copy_set,   "memory","memory-advanced","mm-impl","binned"){ zero_copy_set_cycle<BinnedMemoryManager>(); RT_LOG_INFO_PLATFORM("Binned zero/copy/set done"); }
+RT_TEST_ST("Memory", Binned_repeated_alloc_free, "memory","memory-advanced","mm-impl","binned"){ repeated_alloc_free_pattern<BinnedMemoryManager>(); RT_LOG_INFO_PLATFORM("Binned repeated alloc/free done"); }
 
 // RTC
 RT_TEST_ST("Memory", RTC_alignment_sweep, "memory","memory-advanced","mm-impl"){ alloc_alignment_sweep<RTCMemoryManager>(); }
-RT_TEST_ST("Memory", RTC_size_gradient,   "memory","memory-advanced","mm-impl"){ size_gradient_bins<RTCMemoryManager>(); RT_LOG_INFO("RTC size gradient done"); }
-RT_TEST_ST("Memory", RTC_zero_copy_set,   "memory","memory-advanced","mm-impl"){ zero_copy_set_cycle<RTCMemoryManager>(); RT_LOG_INFO("RTC zero/copy/set done"); }
-RT_TEST_ST("Memory", RTC_repeated_alloc_free, "memory","memory-advanced","mm-impl"){ repeated_alloc_free_pattern<RTCMemoryManager>(); RT_LOG_INFO("RTC repeated alloc/free done"); }
+RT_TEST_ST("Memory", RTC_size_gradient,   "memory","memory-advanced","mm-impl"){ size_gradient_bins<RTCMemoryManager>(); RT_LOG_INFO_PLATFORM("RTC size gradient done"); }
+RT_TEST_ST("Memory", RTC_zero_copy_set,   "memory","memory-advanced","mm-impl"){ zero_copy_set_cycle<RTCMemoryManager>(); RT_LOG_INFO_PLATFORM("RTC zero/copy/set done"); }
+RT_TEST_ST("Memory", RTC_repeated_alloc_free, "memory","memory-advanced","mm-impl"){ repeated_alloc_free_pattern<RTCMemoryManager>(); RT_LOG_INFO_PLATFORM("RTC repeated alloc/free done"); }

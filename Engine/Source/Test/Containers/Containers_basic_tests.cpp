@@ -1,6 +1,6 @@
 #include "../Core/TestCore.h"
-#include "L20_Platform/L32_Containers/Deque.h"
-#include "L20_Platform/L32_Containers/List.h"
+#include "L20_Platform/L24_Containers/Deque.h"
+#include "L20_Platform/L24_Containers/List.h"
 #include <string>
 
 using namespace ReiToEngine;

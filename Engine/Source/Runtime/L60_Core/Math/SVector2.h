@@ -4,9 +4,9 @@
 #include <initializer_list>
 #include <cmath>
 #include <type_traits>
-#include "L20_Platform/L23_Logger/Include.h"
+#include "L20_Platform/L21_Logger/Include.h"
 #include <new>
-#include "L20_Platform/L31_SingletonFactory/SingletonFactory.h"
+#include "L20_Platform/L23_SingletonFactory/SingletonFactory.h"
 namespace ReiToEngine
 {
 template <typename T>
@@ -112,12 +112,12 @@ public:
     }
 
     T& operator[](int index) noexcept {
-        RT_ASSERT(index >= 0 && index < 2);
+        RT_ASSERT_PLATFORM(index >= 0 && index < 2);
         return index == 0 ? x : y;
     }
 
     [[nodiscard]] const T& operator[](int index) const noexcept {
-        RT_ASSERT(index >= 0 && index < 2);
+        RT_ASSERT_PLATFORM(index >= 0 && index < 2);
         return index == 0 ? x : y;
     }
 
