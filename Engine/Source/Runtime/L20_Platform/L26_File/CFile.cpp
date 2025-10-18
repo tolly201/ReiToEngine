@@ -68,7 +68,6 @@ b8 RTCFile::OpenImpl(const char * fileName,EFileOpenFlags openMode)
             mode |= std::ios::trunc;
     }
 
-    std::cout <<"openmode: "<< mode << std::endl;
 	fs.open(fileName, mode);
 	if (fs.bad()) {
         std::cerr << "Failed to open file: " << fileName << std::endl;

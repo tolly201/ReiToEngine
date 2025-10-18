@@ -98,14 +98,10 @@ namespace ReiToEngine{
         file_manager_ptr->Initialize();
 
         logger_system_ptr->Initialize();
-        RT_LOG_DEBUG("file manager");
         renderer_system_ptr->Initialize();
-        RT_LOG_DEBUG_PLATFORM("render manager");
         windowsManager_ptr->Initialize();
-        RT_LOG_DEBUG_PLATFORM("win iniite manager");
-
         //renderManager_ptr->Initialize();
-        RT_LOG_DEBUG_PLATFORM("render init manager");
+
         initialized = true;
         return true;
     }

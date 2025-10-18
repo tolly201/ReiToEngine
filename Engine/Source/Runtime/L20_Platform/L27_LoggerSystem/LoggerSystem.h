@@ -30,18 +30,14 @@ namespace
 template <typename... Args>
 void InnerLog(E_LOG_LEVEL level, Args&&... args)
 {
-    ReiToEngine::String str(Log(level, std::forward<Args>(args)...).c_str());
-
-    RT_LOG_FATAL_PLATFORM(str.c_str());
-
-    ReiToEngine::RTLoggerSystem::Instance().LogToFile(str.c_str());
+    ReiToEngine::RTLoggerSystem::Instance().LogToFile(Log(level, std::forward<Args>(args)...).c_str());
 }
 
 template <typename... Args>
 void InnerLogFmt(E_LOG_LEVEL level, std::format_string<Args...> fmt, Args&&... args)
 {
     ReiToEngine::RTLoggerSystem::Instance().LogToFile(
-    LogFmt(level, fmt, std::forward<Args>(args)...));
+    LogFmt(level, fmt, std::forward<Args>(args)...).c_str());
 }
 }
 
