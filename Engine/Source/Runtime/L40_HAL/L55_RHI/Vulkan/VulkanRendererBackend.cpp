@@ -18,6 +18,8 @@ b8 create_debugger(VkInstance& instance, VkAllocationCallbacks*& allocator, VkDe
 
 VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,VkDebugUtilsMessageTypeFlagsEXT              messageTypes,const VkDebugUtilsMessengerCallbackDataEXT*  pCallbackData, void* pUserData);
 
+b8 create_buffers(VulkanContextRef context);
+
 void create_command_buffers(VulkanSwapchainContext& swapchain);
 void regenerate_frame_buffers(VulkanContextRef context, VulkanSwapchainContext& swapchain, VulkanRenderPass& render_pass);
 b8 recreate_swapchain(VulkanContextRef context, VulkanSwapchainContext& swapchain);
@@ -375,6 +377,8 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
 
     swapchain.images_in_flight.resize(swapchain.image_count, nullptr);
 
+    create_buffers({instance, allocator, swapchain.device_combination, &swapchain});
+
     return true;
 }
 
@@ -415,5 +419,10 @@ void regenerate_frame_buffers(VulkanContextRef context, VulkanSwapchainContext& 
 
         vulkan_frame_buffer_create(context, swapchain, render_pass, swapchain.width, swapchain.height, attachment_count, attachments, swapchain.framebuffers[i]);
     }
+}
+
+b8 create_buffers(VulkanContextRef context)
+{
+    return true;
 }
 } // namespace ReiToEngine

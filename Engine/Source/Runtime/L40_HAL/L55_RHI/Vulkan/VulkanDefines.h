@@ -16,6 +16,16 @@ enum class VulkanQueueFamilyIndicesType : u8{
     MAX = 4,
 };
 
+struct VulkanBuffer{
+    u64 total_size;
+    VkBuffer handle;
+    VkBufferUsageFlagBits usage;
+    b8 is_locked;
+    VkDeviceMemory memory;
+    i32 memory_index;
+    u32 memory_property_flags;
+};
+
 struct VulkanPhysicalDeviceRequirements{
     Map<VulkanQueueFamilyIndicesType, b8> queue_families;
 
