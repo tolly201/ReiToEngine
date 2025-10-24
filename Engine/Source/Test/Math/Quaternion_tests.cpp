@@ -1,6 +1,5 @@
 #include "../Core/TestCore.h"
-#include "L60_Core/Math/Quaternion.h"
-
+#include "L20_Platform/L24_Math/Include.h"
 using namespace ReiToEngine;
 
 RT_TEST_ST("Math", Quaternion_default_and_copy){

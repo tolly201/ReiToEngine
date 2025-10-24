@@ -1,6 +1,5 @@
 #include "../Core/TestCore.h"
-#include "L60_Core/Math/SVector4.h"
-#include "L60_Core/Math/Quaternion.h"
+#include "L20_Platform/L24_Math/Include.h"
 #include <type_traits>
 #include <cstdint>
 

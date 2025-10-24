@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "L0_Macro/Include.h"
-#include "L60_Core/Math/IMath.h"
+#include "L20_Platform/Include.h"
 #include "RenderStructs.h"
 namespace ReiToEngine {
 class RTENGINE_API IRenderer {

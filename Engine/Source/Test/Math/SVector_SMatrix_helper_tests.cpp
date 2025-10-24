@@ -1,6 +1,6 @@
 #include "../Core/TestCore.h"
-#include "L60_Core/Math/VectorInclude.h"
-#include "L60_Core/Math/SMatrix.h"
+#include "L20_Platform/L24_Math/Include.h"
+#include "L20_Platform/L24_Math/Include.h"
 #include <cmath>
 
 using namespace ReiToEngine;

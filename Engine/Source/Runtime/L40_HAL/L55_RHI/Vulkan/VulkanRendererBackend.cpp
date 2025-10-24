@@ -350,6 +350,8 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
 
     vulkan_renderpass_create({instance, allocator}, swapchain, swapchain.render_pass);
 
+    vulkan_object_shader_create({instance, allocator, swapchain.device_combination, &swapchain}, "Builtin.ObjectShader", swapchain.device_combination->shader_sets[0]);
+
     regenerate_frame_buffers({instance, allocator}, swapchain, swapchain.render_pass);
 
     create_command_buffers(swapchain);

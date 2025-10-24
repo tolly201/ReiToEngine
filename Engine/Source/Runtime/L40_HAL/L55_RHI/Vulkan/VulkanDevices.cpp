@@ -249,8 +249,6 @@ b8 vulkan_logical_device_create(VulkanContextRef ref, VulkanSwapchainContext& sw
     dc.shader_sets.clear();
     dc.shader_sets.resize(1);
 
-    vulkan_object_shader_create({ref.instance, ref.allocator, &dc, &swapchain_context}, "Builtin.ObjectShader", dc.shader_sets[0]);
-
     RT_LOG_INFO_PLATFORM("Logical device created.");
     return true;
 }

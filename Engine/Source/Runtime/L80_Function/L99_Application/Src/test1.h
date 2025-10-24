@@ -7,12 +7,12 @@
 // #include <iostream>
 
 // #include "camera.h"
-// #include "L60_Core/Math/VectorInclude.h"
+// #include "L20_Platform/Include.h"
 // #include "Platform/Application/Include/RTApplication.h"
 // #include "Platform/Application/Src/geometry.h"
 // #include "L60_Core/HAL/System/Include/SystemInfo.h"
 // #include "L60_Core/HAL/Window/Include/IWindow.h"
-// #include "L60_Core/Math/IMath.h"
+// #include "L20_Platform/Include.h"
 
 // #include "Function/RenderManager/Include/RenderManager.h"
 // #include "Platform/ImageParser/Include/STBImageParser.h"

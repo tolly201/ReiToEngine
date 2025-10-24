@@ -130,6 +130,7 @@ struct VulkanShaderStage{
     VkShaderModuleCreateInfo module_create_info;
     VkShaderModule handle;
     VkPipelineShaderStageCreateInfo stage_create_info;
+    b8 is_valid;
 };
 
 struct VulkanPipeline{
@@ -146,6 +147,7 @@ enum class ShaderStageType : u8{
 
 struct VulkanShaderSet{
     VulkanShaderStage shader_stages[static_cast<u8>(ShaderStageType::MAX)];
+    VulkanPipeline pipeline;
 };
 
 struct VulkanSwapchainContext{

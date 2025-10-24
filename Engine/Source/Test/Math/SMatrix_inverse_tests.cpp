@@ -1,5 +1,5 @@
 #include "../Core/TestCore.h"
-#include "L60_Core/Math/SMatrix.h"
+#include "L20_Platform/L24_Math/Include.h"
 
 using namespace ReiToEngine;
 
