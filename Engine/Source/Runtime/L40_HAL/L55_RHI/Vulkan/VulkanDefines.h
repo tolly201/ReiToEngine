@@ -26,6 +26,15 @@ struct VulkanBuffer{
     u32 memory_property_flags;
 };
 
+struct VulkanMesh
+{
+    VulkanBuffer vertex_buffer;
+    VulkanBuffer index_buffer;
+    u32 vertex_count = 0;
+    u32 index_count  = 0;
+    VkIndexType index_type = VK_INDEX_TYPE_UINT32;
+};
+
 struct VulkanPhysicalDeviceRequirements{
     Map<VulkanQueueFamilyIndicesType, b8> queue_families;
 
@@ -48,8 +57,6 @@ struct VulkanDeviceCombination{
 
     Map<VulkanQueueFamilyIndicesType, VkQueue> queues;
     Map<VulkanQueueFamilyIndicesType, List<i32>> inuse_queue_family_indices;
-
-
     VkFormat depth_format;
 
     // mark logical device is initialized
@@ -58,11 +65,18 @@ struct VulkanDeviceCombination{
     Map<VulkanQueueFamilyIndicesType, VkCommandPool> command_pools;
     Map<VulkanQueueFamilyIndicesType, List<VulkanCommandBuffer>> command_buffers;
 
+
+
     b8 is_inused;
     Set<i32> using_swapchains;
     i32 find_memory_index(u32 type_filter, VkMemoryPropertyFlags properties);
 
     List<VulkanShaderSet> shader_sets;
+
+    VulkanBuffer vertex_buffer;
+    VulkanBuffer index_buffer;
+    u64 geometry_vertex_offset;
+    u64 geometry_index_offset;
 };
 
 struct VulkanSwapChainSupportInfo
@@ -120,7 +134,7 @@ enum class VulkanCommandBufferState : u8{
 };
 
 struct VulkanCommandBuffer{
-    VkCommandBuffer command_buffer;
+    VkCommandBuffer handle;
     VulkanCommandBufferState state;
 };
 

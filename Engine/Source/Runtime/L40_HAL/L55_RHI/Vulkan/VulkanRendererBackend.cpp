@@ -8,6 +8,7 @@
 #include "VulkanFrameBuffer.h"
 #include "VulkanFence.h"
 #include "VulkanObjectShader.h"
+#include "VulkanBuffer.h"
 namespace ReiToEngine
 {
 
@@ -237,8 +238,8 @@ b8 VulkanRenderBackend::BeginFrame([[maybe_unused]]f64 delta_time){
         scissor.extent.height = swapchain.height;
 
 
-        vkCmdSetViewport(command_buffer.command_buffer, 0, 1, &viewport);
-        vkCmdSetScissor(command_buffer.command_buffer, 0, 1, &scissor);
+        vkCmdSetViewport(command_buffer.handle, 0, 1, &viewport);
+        vkCmdSetScissor(command_buffer.handle, 0, 1, &scissor);
 
         vulkan_renderpass_begin({instance, allocator}, swapchain, swapchain.render_pass, command_buffer, swapchain.framebuffers[swapchain.current_image_index].handle);
     }
@@ -262,7 +263,7 @@ b8 VulkanRenderBackend::EndFrame([[maybe_unused]]f64 delta_time){
         submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
         submit_info.commandBufferCount = 1;
-        submit_info.pCommandBuffers = &command_buffer.command_buffer;
+        submit_info.pCommandBuffers = &command_buffer.handle;
 
         submit_info.waitSemaphoreCount = 1;
         submit_info.pWaitSemaphores = &swapchain.image_available_semaphores[swapchain.current_frame];
@@ -423,6 +424,29 @@ void regenerate_frame_buffers(VulkanContextRef context, VulkanSwapchainContext& 
 
 b8 create_buffers(VulkanContextRef context)
 {
+    VkMemoryPropertyFlagBits memory_properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+    const u64 vertex_buffer_size = sizeof(Vertex3D) * 1024 * 1024; // 1 million vertices
+
+    if (!vulkan_buffer_create(context, vertex_buffer_size, static_cast<VkBufferUsageFlagBits>(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT), memory_properties, context.device_combination->vertex_buffer)) {
+        RT_LOG_ERROR("Failed to create vertex buffer.");
+        return false;
+    }
+
+    vulkan_buffer_bind(context, context.device_combination->vertex_buffer, 0);
+
+    context.device_combination->geometry_vertex_offset = 0;
+
+    const u64 index_buffer_size = sizeof(u32) * 1024 * 1024; // 1 million indices
+
+    if (!vulkan_buffer_create(context, index_buffer_size, static_cast<VkBufferUsageFlagBits>(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT), memory_properties, context.device_combination->index_buffer)) {
+        RT_LOG_ERROR("Failed to create index buffer.");
+        return false;
+    }
+
+    vulkan_buffer_bind(context, context.device_combination->index_buffer, 0);
+
+    context.device_combination->geometry_index_offset = 0;
     return true;
 }
 } // namespace ReiToEngine

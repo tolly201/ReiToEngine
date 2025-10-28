@@ -13,14 +13,14 @@ void vulkan_command_buffer_allocate(VkDevice& device, VkCommandPool commandPool,
 
     out_command_buffer.state = VulkanCommandBufferState::NOT_ALLOCATED;
 
-    RT_VK_CHECK(vkAllocateCommandBuffers(device, &alloc_info, &out_command_buffer.command_buffer));
+    RT_VK_CHECK(vkAllocateCommandBuffers(device, &alloc_info, &out_command_buffer.handle));
     out_command_buffer.state = VulkanCommandBufferState::READY;
 }
 
 void vulkan_command_buffer_free(VkDevice& device, VkCommandPool commandPool, VulkanCommandBuffer& out_command_buffer)
 {
-    vkFreeCommandBuffers(device, commandPool, 1, &out_command_buffer.command_buffer);
-    out_command_buffer.command_buffer = VK_NULL_HANDLE;
+    vkFreeCommandBuffers(device, commandPool, 1, &out_command_buffer.handle);
+    out_command_buffer.handle = VK_NULL_HANDLE;
     out_command_buffer.state = VulkanCommandBufferState::NOT_ALLOCATED;
 }
 
@@ -41,13 +41,13 @@ void vulkan_command_buffer_begin(VulkanCommandBuffer& command_buffer, b8 is_sing
 
     begin_info.pNext = nullptr;
 
-    RT_VK_CHECK(vkBeginCommandBuffer(command_buffer.command_buffer, &begin_info));
+    RT_VK_CHECK(vkBeginCommandBuffer(command_buffer.handle, &begin_info));
     command_buffer.state = VulkanCommandBufferState::RECORDING;
 }
 
 void vulkan_command_buffer_end(VulkanCommandBuffer& command_buffer)
 {
-    RT_VK_CHECK(vkEndCommandBuffer(command_buffer.command_buffer));
+    RT_VK_CHECK(vkEndCommandBuffer(command_buffer.handle));
     command_buffer.state = VulkanCommandBufferState::RECORDED;
 }
 
@@ -74,7 +74,7 @@ void vulkan_command_buffer_end_single_use(VkDevice& device, VkCommandPool comman
     VkSubmitInfo submit_info{};
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = &out_command_buffer.command_buffer;
+    submit_info.pCommandBuffers = &out_command_buffer.handle;
     submit_info.pNext = nullptr;
 
     RT_VK_CHECK(vkQueueSubmit(queue, 1, &submit_info, VK_NULL_HANDLE));

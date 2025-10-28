@@ -1,6 +1,7 @@
 #include "VulkanDevices.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanObjectShader.h"
+#include "VulkanBuffer.h"
 namespace ReiToEngine
 {
 b8 vulkan_initalize_physical_devices(VkInstance& instance, List<VulkanDeviceCombination>& out_physical_devices)
@@ -255,13 +256,16 @@ b8 vulkan_logical_device_create(VulkanContextRef ref, VulkanSwapchainContext& sw
 b8 vulkan_physical_device_destroy();
 b8 vulkan_logical_device_destroy(VulkanContextRef ref, VulkanDeviceCombination& dc)
 {
+    vulkan_buffer_destroy({ref.instance, ref.allocator, &dc}, dc.vertex_buffer);
+    vulkan_buffer_destroy({ref.instance, ref.allocator, &dc}, dc.index_buffer);
+
     for (VulkanShaderSet& shader_set : dc.shader_sets) {
         vulkan_object_shader_destroy(dc.logical_device, shader_set);
     }
 
     for (auto& [type, buffers] : dc.command_buffers) {
         for (auto& cb : buffers) {
-            if (cb.command_buffer != VK_NULL_HANDLE) {
+            if (cb.handle != VK_NULL_HANDLE) {
                 vulkan_command_buffer_free(dc.logical_device, dc.command_pools[type], cb);
             }
         }

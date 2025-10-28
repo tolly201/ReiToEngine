@@ -1,4 +1,5 @@
 #include "VulkanBuffer.h"
+#include "VulkanCommandBuffer.h"
 namespace ReiToEngine
 {
 b8 vulkan_buffer_create(VulkanContextRef context_ref, u64 size, VkBufferUsageFlagBits usage, VkMemoryPropertyFlags memory_property_flags, VulkanBuffer& out_buffer)
@@ -62,11 +63,11 @@ b8 vulkan_buffer_resize(VulkanContextRef context_ref, u64 new_size, VkQueue queu
     buffer_info.usage = buffer.usage;
     buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    VulkanBuffer new_buffer;
-    RT_VK_CHECK(vkCreateBuffer(context_ref.device_combination->logical_device, &buffer_info, context_ref.allocator, &new_buffer.handle));
+    VkBuffer new_buffer;
+    RT_VK_CHECK(vkCreateBuffer(context_ref.device_combination->logical_device, &buffer_info, context_ref.allocator, &new_buffer));
 
     VkMemoryRequirements mem_requirements;
-    vkGetBufferMemoryRequirements(context_ref.device_combination->logical_device, new_buffer.handle, &mem_requirements);
+    vkGetBufferMemoryRequirements(context_ref.device_combination->logical_device, new_buffer, &mem_requirements);
 
     VkMemoryAllocateInfo alloc_info{};
     alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -76,20 +77,59 @@ b8 vulkan_buffer_resize(VulkanContextRef context_ref, u64 new_size, VkQueue queu
     VkDeviceMemory new_memory;
     RT_VK_CHECK(vkAllocateMemory(context_ref.device_combination->logical_device, &alloc_info, context_ref.allocator, &new_memory));
 
-    RT_VK_CHECK(vkBindBufferMemory(context_ref.device_combination->logical_device, new_buffer.handle, new_memory, 0));
+    RT_VK_CHECK(vkBindBufferMemory(context_ref.device_combination->logical_device, new_buffer, new_memory, 0));
 
     vulkan_buffer_copy_to(context_ref, command_pool, VK_NULL_HANDLE, queue, buffer.handle, 0, new_buffer, 0, new_size);
 
     vkDeviceWaitIdle(context_ref.device_combination->logical_device);
 
     vulkan_buffer_destroy(context_ref, buffer);
+
+    buffer.total_size = new_size;
+    buffer.handle = new_buffer;
+    buffer.memory = new_memory;
+    return true;
 }
 
-void vulkan_buffer_bind(VulkanContextRef context_ref, VulkanBuffer& buffer, u64 offset);
+void vulkan_buffer_bind(VulkanContextRef context_ref, VulkanBuffer& buffer, u64 offset)
+{
+    RT_VK_CHECK(vkBindBufferMemory(context_ref.device_combination->logical_device, buffer.handle, buffer.memory, offset));
+}
 
-void* vulkan_buffer_lock_memory(VulkanContextRef context_ref, VulkanBuffer& buffer, u64 offset, u64 size, u32 flags);
-void vulkan_buffer_unlock_memory(VulkanContextRef context_ref, VulkanBuffer& buffer);
-void vulkan_buffer_load_data(VulkanContextRef context_ref, VulkanBuffer& buffer, u64 offset, u64 size, u32 flags, const void* data);
+void* vulkan_buffer_lock_memory(VulkanContextRef context_ref, VulkanBuffer& buffer, u64 offset, u64 size, u32 flags)
+{
+    void* data;
+    RT_VK_CHECK(vkMapMemory(context_ref.device_combination->logical_device, buffer.memory, offset, size, flags, &data));
+    buffer.is_locked = true;
+    return data;
+}
+void vulkan_buffer_unlock_memory(VulkanContextRef context_ref, VulkanBuffer& buffer)
+{
+    vkUnmapMemory(context_ref.device_combination->logical_device, buffer.memory);
+    buffer.is_locked = false;
+}
 
-void vulkan_buffer_copy_to(VulkanContextRef context_ref, VkCommandPool command_pool,VkFence fence, VkQueue queue,  VulkanBuffer& src_buffer, u64 src_offset, VulkanBuffer& dst_buffer,u64 dest_offset, u64 size);
+void vulkan_buffer_load_data(VulkanContextRef context_ref, VulkanBuffer& buffer, u64 offset, u64 size, u32 flags, const void* data)
+{
+    void* data_ptr;
+    RT_VK_CHECK(vkMapMemory(context_ref.device_combination->logical_device, buffer.memory, offset, size, flags, &data_ptr));
+    RT_Platform_SYSCopyMemory(data_ptr, data, size);
+    vkUnmapMemory(context_ref.device_combination->logical_device, buffer.memory);
+}
+
+void vulkan_buffer_copy_to(VulkanContextRef context_ref, VkCommandPool command_pool,[[maybe_unused]]VkFence fence, VkQueue queue,  VkBuffer src_buffer, u64 src_offset, VkBuffer dst_buffer,u64 dest_offset, u64 size)
+{
+    vkQueueWaitIdle(queue);
+
+    VulkanCommandBuffer command_buffer;
+    vulkan_command_buffer_allocate_and_begin_single_use(context_ref.device_combination->logical_device, command_pool, command_buffer);
+
+    VkBufferCopy copy_region{};
+    copy_region.srcOffset = src_offset;
+    copy_region.dstOffset = dest_offset;
+    copy_region.size = size;
+    vkCmdCopyBuffer(command_buffer.handle, src_buffer, dst_buffer, 1, &copy_region);
+
+    vulkan_command_buffer_end_single_use(context_ref.device_combination->logical_device, command_pool, command_buffer, queue);
+}
 }

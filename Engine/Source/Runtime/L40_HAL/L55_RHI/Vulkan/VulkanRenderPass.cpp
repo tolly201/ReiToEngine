@@ -124,13 +124,13 @@ void vulkan_renderpass_begin([[maybe_unused]]VulkanContextRef context,[[maybe_un
     rpbi.clearValueCount = clear_values.size();
     rpbi.pClearValues = clear_values.data();
 
-    vkCmdBeginRenderPass(command_buffer.command_buffer, &rpbi, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(command_buffer.handle, &rpbi, VK_SUBPASS_CONTENTS_INLINE);
     command_buffer.state = VulkanCommandBufferState::RENDERING;
 }
 
 void vulkan_renderpass_end([[maybe_unused]]VulkanContextRef context,[[maybe_unused]] VulkanSwapchainContext& swapchain_context,[[maybe_unused]]VulkanRenderPass& render_pass, VulkanCommandBuffer& command_buffer,[[maybe_unused]] VkFramebuffer framebuffer)
 {
-    vkCmdEndRenderPass(command_buffer.command_buffer);
+    vkCmdEndRenderPass(command_buffer.handle);
     command_buffer.state = VulkanCommandBufferState::RECORDED;
 
 }
