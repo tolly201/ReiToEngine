@@ -105,4 +105,9 @@ void vulkan_object_shader_destroy(VkDevice& device, VulkanShaderSet& shader)
     }
 }
 
+void vulkan_object_shader_use([[maybe_unused]]VulkanContextRef ref, VkCommandBuffer& cmd_buffer, VulkanShaderSet& shader)
+{
+    vulkan_graphics_pipeline_bind(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader.pipeline);
+}
+
 }

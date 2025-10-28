@@ -10,7 +10,7 @@ b8 CreateGameInstance(ReiToEngine::Game& game_instance)
     game_instance.app_config.start_pos_x = 100;
     game_instance.app_config.start_pos_y = 100;
     game_instance.app_config.start_height = 600;
-    game_instance.app_config.start_width = 800;
+    game_instance.app_config.start_width = 600;
     game_instance.app_config.name = "ReiToEngine Game";
     return true;
 }

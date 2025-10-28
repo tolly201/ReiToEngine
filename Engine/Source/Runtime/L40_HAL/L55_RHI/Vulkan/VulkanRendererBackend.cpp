@@ -25,6 +25,8 @@ void create_command_buffers(VulkanSwapchainContext& swapchain);
 void regenerate_frame_buffers(VulkanContextRef context, VulkanSwapchainContext& swapchain, VulkanRenderPass& render_pass);
 b8 recreate_swapchain(VulkanContextRef context, VulkanSwapchainContext& swapchain);
 
+void upload_data_range(VulkanContextRef context, VkCommandPool command_pool, VkFence fence, VkQueue queue, VulkanBuffer& buffer, u64 offset, u64 size, void* data);
+
 static b8 rebuild_swapchain_pipeline(VulkanContextRef context, VulkanSwapchainContext& swapchain) {
     // Destroy old framebuffers first
     for (auto& fb : swapchain.framebuffers) {
@@ -242,6 +244,16 @@ b8 VulkanRenderBackend::BeginFrame([[maybe_unused]]f64 delta_time){
         vkCmdSetScissor(command_buffer.handle, 0, 1, &scissor);
 
         vulkan_renderpass_begin({instance, allocator}, swapchain, swapchain.render_pass, command_buffer, swapchain.framebuffers[swapchain.current_image_index].handle);
+
+        //todo temp
+        vulkan_object_shader_use({instance, allocator, swapchain.device_combination, &swapchain}, command_buffer.handle, swapchain.device_combination->shader_sets[0]);
+
+        VkDeviceSize offsets[1] = { 0 };
+        vkCmdBindVertexBuffers(command_buffer.handle, 0, 1, &swapchain.device_combination->vertex_buffer.handle, offsets);
+        vkCmdBindIndexBuffer(command_buffer.handle, swapchain.device_combination->index_buffer.handle, 0, VK_INDEX_TYPE_UINT32);
+
+        vkCmdDrawIndexed(command_buffer.handle, 6, 1, 0, 0, 0);
+        //todo temp end
     }
 
     return true;
@@ -380,6 +392,22 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
 
     create_buffers({instance, allocator, swapchain.device_combination, &swapchain});
 
+    //todo temp
+    const u32 vert_count = 4;
+    Vertex3D verts[vert_count];
+    verts[0].position.x = 0.0f; verts[0].position.y = -0.5f; verts[0].position.z = 0.0f;
+    verts[1].position.x = 0.5f; verts[1].position.y = 0.0f; verts[1].position.z = 0.0f;
+
+    verts[2].position.x = 0.0f; verts[2].position.y = 0.0f; verts[2].position.z = 0.0f;
+
+    verts[3].position.x = 0.5f; verts[3].position.y = -0.5f; verts[3].position.z = 0.0f;
+
+    const u32 index_count = 6;
+    u32 indices[index_count] = {0,1,2,0,3,1};
+    upload_data_range({instance, allocator, swapchain.device_combination, &swapchain}, swapchain.device_combination->command_pools[VulkanQueueFamilyIndicesType::GRAPHICS], VK_NULL_HANDLE, swapchain.device_combination->queues[VulkanQueueFamilyIndicesType::GRAPHICS], swapchain.device_combination->vertex_buffer, 0, sizeof(Vertex3D) * vert_count, verts);
+    upload_data_range({instance, allocator, swapchain.device_combination, &swapchain}, swapchain.device_combination->command_pools[VulkanQueueFamilyIndicesType::GRAPHICS], VK_NULL_HANDLE, swapchain.device_combination->queues[VulkanQueueFamilyIndicesType::GRAPHICS], swapchain.device_combination->index_buffer, 0, sizeof(u32) * index_count, indices);
+
+    //todo end temp
     return true;
 }
 
@@ -398,7 +426,6 @@ void create_command_buffers(VulkanSwapchainContext& swapchain)
     for (u32 i = 0; i < swapchain.image_count; ++i)
     {
         vulkan_command_buffer_allocate(swapchain.device_combination->logical_device, swapchain.device_combination->command_pools[VulkanQueueFamilyIndicesType::GRAPHICS], true, command_buffers[i]);
-
     }
 }
 
@@ -448,5 +475,18 @@ b8 create_buffers(VulkanContextRef context)
 
     context.device_combination->geometry_index_offset = 0;
     return true;
+}
+
+void upload_data_range(VulkanContextRef context, VkCommandPool command_pool, VkFence fence, VkQueue queue, VulkanBuffer& buffer, u64 offset, u64 size, void* data)
+{
+    VkBufferUsageFlags flags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+
+    VulkanBuffer staging_buffer;
+    vulkan_buffer_create(context, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, flags, staging_buffer);
+    vulkan_buffer_bind(context, staging_buffer, 0);
+    vulkan_buffer_load_data(context, staging_buffer, 0, size, 0, data);
+
+    vulkan_buffer_copy_to(context, command_pool, fence, queue, staging_buffer.handle, 0, buffer.handle, offset, size);
+    vulkan_buffer_destroy(context, staging_buffer);
 }
 } // namespace ReiToEngine
