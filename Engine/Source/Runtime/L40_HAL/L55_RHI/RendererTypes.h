@@ -48,5 +48,13 @@ struct SceneData {
 struct PlatformState {
     void* data;
 };
+
+struct global_uniform_object {
+    Matrix4x4d view_matrix;
+    Matrix4x4d projection_matrix;
+    Matrix4x4d m_reserved0;
+    Matrix4x4d m_reserved1;
+};
+
 }
 #endif

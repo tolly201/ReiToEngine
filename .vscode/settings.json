@@ -152,9 +152,12 @@
         "xloctime": "cpp",
         "xmemory": "cpp",
         "xtr1common": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "*.vert.glsl": "glsl",
+        "*.frag.glsl": "glsl",
+        "*.geom.glsl": "glsl",
+        "*.comp.glsl": "glsl"
     },
-
     "todo-tree.general.tags": [
         "TODO",
         "FIXME",
