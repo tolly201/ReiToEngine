@@ -24,6 +24,7 @@ public:
 
     b8 CreateSurface(RT_Platform_State& platform_state, SurfaceDesc& desc) override;
 
+    void UpdateGlobalState(Matrix4x4f projection, Matrix4x4f view,Vec3f view_point, Vec4f ambient_color, i32 mode) override;
 private:
     VkInstance instance;
     VkAllocationCallbacks* allocator;

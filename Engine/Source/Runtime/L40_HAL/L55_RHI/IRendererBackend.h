@@ -20,6 +20,9 @@ class IRendererBackend {
     virtual b8 BeginFrame(f64 delta_time) = 0;
     virtual b8 EndFrame(f64 delta_time) = 0;
 
+    virtual void UpdateGlobalState(Matrix4x4f projection, Matrix4x4f view,Vec3f view_point, Vec4f ambient_color, i32 mode) = 0;
+
+
     virtual b8 CreateSurface(RT_Platform_State& platform_state, SurfaceDesc& desc) = 0;
 };
 }

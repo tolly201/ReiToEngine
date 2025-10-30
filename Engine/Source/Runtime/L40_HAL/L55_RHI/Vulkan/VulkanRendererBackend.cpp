@@ -134,7 +134,7 @@ b8 VulkanRenderBackend::Terminate(){
     swapchains.clear();
 
     for (auto& device : devices) {
-        vulkan_logical_device_destroy({instance, allocator}, device);
+        vulkan_logical_device_destroy({instance, allocator, &device}, device);
         device.is_inused = false;
         device.logical_device = VK_NULL_HANDLE;
     }
@@ -316,6 +316,21 @@ b8 VulkanRenderBackend::EndFrame([[maybe_unused]]f64 delta_time){
     }
 
     return true;
+}
+
+void VulkanRenderBackend::UpdateGlobalState(Matrix4x4f projection, Matrix4x4f view, [[maybe_unused]]Vec3f view_point, [[maybe_unused]]Vec4f ambient_color, [[maybe_unused]]i32 mode)
+{
+    //todo multi windows support
+    VulkanCommandBuffer& command_buffer = swapchains[0].device_combination->command_buffers[VulkanQueueFamilyIndicesType::GRAPHICS][swapchains[0].current_image_index];
+
+    vulkan_object_shader_use({instance, allocator, swapchains[0].device_combination, &swapchains[0]}, command_buffer.handle, swapchains[0].device_combination->shader_sets[0]);
+
+    swapchains[0].device_combination->shader_sets[0].global_ubo.projection_matrix = projection;
+    swapchains[0].device_combination->shader_sets[0].global_ubo.view_matrix = view;
+
+    //todo upload ambient color and mode if needed
+
+    vulkan_object_shader_update_global_state({instance, allocator, swapchains[0].device_combination, &swapchains[0]}, swapchains[0].device_combination->shader_sets[0]);
 }
 
 b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, SurfaceDesc& desc)

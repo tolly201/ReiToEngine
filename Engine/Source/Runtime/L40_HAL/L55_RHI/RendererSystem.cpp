@@ -37,6 +37,8 @@ b8 RendererSystem::Tick(f64 delta_time) {
             return false;
         }
 
+        pipeline.backend->UpdateGlobalState(
+            Matrix4x4f::Identity(), Matrix4x4f::Identity(), Vec3f(0.0f), Vec4f(1.0f), 0);
         // if (!pipeline.frontend->EndFrame(packet, data)) {
         //     return false;
         // }

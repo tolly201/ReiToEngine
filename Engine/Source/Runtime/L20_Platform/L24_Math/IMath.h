@@ -43,5 +43,9 @@ typedef SMatrix<2,2,double> Matrix2x2d;
 typedef SMatrix<3,3,double> Matrix3x3d;
 typedef SMatrix<4,4,double> Matrix4x4d;
 
+typedef SMatrix<2,2,float> Matrix2x2f;
+typedef SMatrix<3,3,float> Matrix3x3f;
+typedef SMatrix<4,4,float> Matrix4x4f;
+
 }
 #endif

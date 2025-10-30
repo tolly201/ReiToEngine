@@ -50,10 +50,10 @@ struct PlatformState {
 };
 
 struct global_uniform_object {
-    Matrix4x4d view_matrix;
-    Matrix4x4d projection_matrix;
-    Matrix4x4d m_reserved0;
-    Matrix4x4d m_reserved1;
+    Matrix4x4f view_matrix;
+    Matrix4x4f projection_matrix;
+    Matrix4x4f m_reserved0;
+    Matrix4x4f m_reserved1;
 };
 
 }

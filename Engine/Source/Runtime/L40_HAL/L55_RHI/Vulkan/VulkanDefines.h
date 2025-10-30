@@ -75,6 +75,12 @@ struct VulkanDeviceCombination{
     VulkanBuffer index_buffer;
     u64 geometry_vertex_offset;
     u64 geometry_index_offset;
+
+    VkDescriptorSetLayout set0_global_layout;   // projection/view 等
+    VkDescriptorSetLayout set1_material_layout; // 材质参数 + 纹理
+    VkDescriptorSetLayout set2_object_layout;   // 模型矩阵/实例数据（若使用）
+    VkDescriptorPool device_descriptor_pool;           // 一个或少量池，容量按需要预留
+    VkPipelineCache pipeline_cache;             // 可选，加速管线创建
 };
 
 struct VulkanSwapChainSupportInfo
@@ -167,9 +173,24 @@ enum class ShaderStageType : u8{
     MAX = 3,
 };
 
+struct VulkanPerFrame {
+    VulkanCommandBuffer cmd;
+    VulkanFence fence;
+    VkSemaphore image_available, render_finished;
+
+    // 每帧全局 UBO + 对应的 DescriptorSet（set=0）
+    VulkanBuffer global_ubo_buffer;     // VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
+    VkDescriptorSet descriptionSet; // 从 swapchain.descriptor_pool 分配
+};
+
 struct VulkanShaderSet{
     VulkanShaderStage shader_stages[static_cast<u8>(ShaderStageType::MAX)];
     VulkanPipeline pipeline;
+    VulkanBuffer global_uniform_buffer;
+    List<VkDescriptorSet> description_set; // 从 swapchain.descriptor_pool 分配
+    global_uniform_object global_ubo;
+
+    VulkanPerFrame tempframe;
 };
 
 struct VulkanSwapchainContext{
@@ -183,6 +204,9 @@ struct VulkanSwapchainContext{
 
     VkSurfaceFormat2KHR selected_surface_format;
     u8 max_frames_in_flight;
+
+    List<VulkanPerFrame> per_frames;
+
     VkSwapchainKHR swapchain;
     u32 image_count;
     List<VulkanImage> images;
@@ -202,7 +226,7 @@ struct VulkanSwapchainContext{
     VulkanPhysicalDeviceRequirements requirements;
 
     VulkanRenderPass render_pass;
-
+    VkDescriptorPool swapchain_per_frame_descriptor_pool;
     i32 index;
     u32 frame_size_generation;
     u32 last_frame_size_generation;

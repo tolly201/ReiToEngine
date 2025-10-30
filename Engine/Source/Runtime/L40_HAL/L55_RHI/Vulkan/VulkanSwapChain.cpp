@@ -220,11 +220,24 @@ void create(VulkanContextRef context, VulkanSwapchainContext& swapchain_context,
 
     vulkan_image_create(context, swapchain_context, VK_IMAGE_TYPE_2D, extent.width, extent.height, swapchain_context.device_combination->depth_format, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, true, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_TILING_OPTIMAL, swapchain_context.depth_image);
 
+    VkDescriptorPoolSize pool_size{};
+    pool_size.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    pool_size.descriptorCount = swapchain_context.image_count;
+
+    VkDescriptorPoolCreateInfo desc_pool_info{};
+    desc_pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    desc_pool_info.poolSizeCount = 1;
+    desc_pool_info.pPoolSizes = &pool_size;
+    desc_pool_info.maxSets = swapchain_context.image_count;
+
+    RT_VK_CHECK(vkCreateDescriptorPool(swapchain_context.device_combination->logical_device, &desc_pool_info, context.allocator, &swapchain_context.swapchain_per_frame_descriptor_pool));
+
     RT_LOG_INFO_PLATFORM("Swapchain created.");
 }
 
 void destroy(VulkanContextRef context, VulkanSwapchainContext& swapchain_context)
 {
+    vkDestroyDescriptorPool(swapchain_context.device_combination->logical_device, swapchain_context.swapchain_per_frame_descriptor_pool, context.allocator);
     for (u32 i = 0; i < swapchain_context.images.size(); ++i) {
         vulkan_image_destroy(context, swapchain_context, swapchain_context.images[i]);
     }

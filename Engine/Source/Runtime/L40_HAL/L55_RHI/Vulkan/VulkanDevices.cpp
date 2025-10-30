@@ -250,17 +250,37 @@ b8 vulkan_logical_device_create(VulkanContextRef ref, VulkanSwapchainContext& sw
     dc.shader_sets.clear();
     dc.shader_sets.resize(1);
 
+    VkDescriptorSetLayoutBinding global_ubo_layout_binding{};
+    global_ubo_layout_binding.binding = 0;
+    global_ubo_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    global_ubo_layout_binding.descriptorCount = 1;
+    global_ubo_layout_binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    global_ubo_layout_binding.pImmutableSamplers = nullptr;
+
+    VkDescriptorSetLayoutCreateInfo global_layout_info{};
+    global_layout_info.bindingCount = 1;
+    global_layout_info.pBindings = &global_ubo_layout_binding;
+    global_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    RT_VK_CHECK(vkCreateDescriptorSetLayout(dc.logical_device, &global_layout_info, ref.allocator, &dc.set0_global_layout));
+
+    RT_VK_CHECK(vkCreateDescriptorSetLayout(dc.logical_device, &global_layout_info, ref.allocator, &dc.set1_material_layout));
+    RT_VK_CHECK(vkCreateDescriptorSetLayout(dc.logical_device, &global_layout_info, ref.allocator, &dc.set2_object_layout));
+
     RT_LOG_INFO_PLATFORM("Logical device created.");
     return true;
 }
 b8 vulkan_physical_device_destroy();
 b8 vulkan_logical_device_destroy(VulkanContextRef ref, VulkanDeviceCombination& dc)
 {
+    vkDestroyDescriptorSetLayout(dc.logical_device, dc.set0_global_layout, ref.allocator);
+    vkDestroyDescriptorSetLayout(dc.logical_device, dc.set1_material_layout, ref.allocator);
+    vkDestroyDescriptorSetLayout(dc.logical_device, dc.set2_object_layout, ref.allocator);
+
     vulkan_buffer_destroy({ref.instance, ref.allocator, &dc}, dc.vertex_buffer);
     vulkan_buffer_destroy({ref.instance, ref.allocator, &dc}, dc.index_buffer);
 
     for (VulkanShaderSet& shader_set : dc.shader_sets) {
-        vulkan_object_shader_destroy(dc.logical_device, shader_set);
+        vulkan_object_shader_destroy(ref, shader_set);
     }
 
     for (auto& [type, buffers] : dc.command_buffers) {
