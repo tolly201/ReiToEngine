@@ -272,6 +272,11 @@ b8 vulkan_logical_device_create(VulkanContextRef ref, VulkanSwapchainContext& sw
 b8 vulkan_physical_device_destroy();
 b8 vulkan_logical_device_destroy(VulkanContextRef ref, VulkanDeviceCombination& dc)
 {
+    // Multi Graphic Card will not be all initialized so check here.
+    if (dc.logical_device == VK_NULL_HANDLE) {
+        return true;
+    }
+
     vkDestroyDescriptorSetLayout(dc.logical_device, dc.set0_global_layout, ref.allocator);
     vkDestroyDescriptorSetLayout(dc.logical_device, dc.set1_material_layout, ref.allocator);
     vkDestroyDescriptorSetLayout(dc.logical_device, dc.set2_object_layout, ref.allocator);

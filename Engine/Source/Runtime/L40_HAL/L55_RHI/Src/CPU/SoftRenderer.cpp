@@ -3,6 +3,8 @@
 #include <cmath>
 #include <cstring>
 #include <unordered_map>
+#include <limits>
+#include <algorithm>
 #include "L20_Platform/Include.h"
 
 namespace {
@@ -190,7 +192,7 @@ void SoftRenderer::DrawFrame(size_t frame_index, uint8_t*& data, size_t& buffer_
     size_t frame_size = currentFrame.height * currentFrame.width * currentFrame.channels;
     for (size_t i = 0; i < frame_size; ++i) {
         currentFrame.buffer[i] = 0;
-        currentFrame.zBuffer[i] = std::numeric_limits<double>::max();
+        currentFrame.zBuffer[i] = (std::numeric_limits<double>::max)();
     }
 
     for (size_t i = 0; i < object_count; ++i) {
@@ -335,10 +337,10 @@ void SoftRenderer::DrawTriangle(uint8_t* data, double* zBuffer, Vec3d v0, Vec3d 
     transformed_v2.y = (1.0 - transformed_v2.y) * 0.5 * height;
 
     // box
-    int minX = std::max(0, (int)std::min({transformed_v0.x, transformed_v1.x, transformed_v2.x}));
-    int minY = std::max(0, (int)std::min({transformed_v0.y, transformed_v1.y, transformed_v2.y}));
-    int maxX = std::min((int)width - 1, (int)std::max({transformed_v0.x, transformed_v1.x, transformed_v2.x}));
-    int maxY = std::min((int)height - 1, (int)std::max({transformed_v0.y, transformed_v1.y, transformed_v2.y}));
+    int minX = (std::max)(0, (int)(std::min)({transformed_v0.x, transformed_v1.x, transformed_v2.x}));
+    int minY = (std::max)(0, (int)(std::min)({transformed_v0.y, transformed_v1.y, transformed_v2.y}));
+    int maxX = (std::min)((int)width - 1, (int)(std::max)({transformed_v0.x, transformed_v1.x, transformed_v2.x}));
+    int maxY = (std::min)((int)height - 1, (int)(std::max)({transformed_v0.y, transformed_v1.y, transformed_v2.y}));
 
     // 计算三角形的边向量
     Vec4d _edge0 = transformed_v1 - transformed_v0;

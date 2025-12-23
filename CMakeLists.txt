@@ -29,8 +29,18 @@ if(MSVC)
   # Enforce standard conforming preprocessor and C++20 (guard in case of generator overriding)
   add_compile_options(/Zc:preprocessor)
 else()
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+    # Clang/GCC configuration
+    # Enable common warnings but disable -Werror to allow compilation despite warnings
+    add_compile_options(
+        -Wall
+        -Wextra
+        -Wno-unused-parameter
+        -Wno-unused-private-field
+        -Wno-missing-field-initializers
+        -Wno-unknown-pragmas
+        -Wno-unused-variable
+        -Wno-unused-function        -Wno-pointer-to-int-cast
+        -Wno-int-to-pointer-cast    )
 endif()
 
 find_package(Vulkan REQUIRED)
@@ -53,6 +63,7 @@ include_directories(
 include_directories(${Vulkan_INCLUDE_DIRS})
 
 set(MI_OVERRIDE OFF CACHE BOOL "" FORCE)
+set(MI_WIN_REDIRECT OFF CACHE BOOL "" FORCE)
 set(MI_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(MI_BUILD_SHARED ON CACHE BOOL "" FORCE)
 set(MI_BUILD_STATIC ON  CACHE BOOL "" FORCE)

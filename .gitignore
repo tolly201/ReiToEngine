@@ -4,3 +4,4 @@
 nvim_tempfiles/
 .vs/
 out/
+temps/
