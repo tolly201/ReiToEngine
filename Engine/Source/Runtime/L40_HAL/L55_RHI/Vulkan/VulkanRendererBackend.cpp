@@ -353,13 +353,17 @@ b8 VulkanRenderBackend::CreateSurface(RT_Platform_State& platform_state, Surface
 
     PlatformCreateVulkanSurface(platform_state, desc, instance, swapchain.surface);
 
+    //warning:
+    //todo need to put all these configs into config file later
     swapchain.requirements = {};
     swapchain.requirements.queue_families[VulkanQueueFamilyIndicesType::GRAPHICS] = true;
     swapchain.requirements.queue_families[VulkanQueueFamilyIndicesType::PRESENT] = true;
     swapchain.requirements.queue_families[VulkanQueueFamilyIndicesType::TRANSFER] = true;
     swapchain.requirements.queue_families[VulkanQueueFamilyIndicesType::COMPUTE] = true;
     swapchain.requirements.sample_anisotropy = true;
-    swapchain.requirements.discrete_gpu = true;
+    //todo temp
+    //for macOS Silicon compatibility
+    swapchain.requirements.discrete_gpu = false;
 
     platform_get_required_vulkan_extensions(swapchain.requirements.required_extensions);
 
