@@ -54,7 +54,7 @@ cmake --build --preset macos-clang-debug
 **Windows:**
 ```powershell
 # Run the Editor
-.\
+.\builds\windows-llvm-x64\ReiToEngine\bin\ReiToEditor.exe
 ```
 
 ## Credits
